@@ -1,0 +1,99 @@
+\section [Estado de los datos] {\textbf{Estado de los datos}}
+Los datos utilizados en el presente trabajo proceden del estudio \textit{David et al.} \cite{David2014} y se encuentran en el repositorio EBI (European Bioinformatics Institute) ENA (European Nucleotide Archive) con el número de acceso ERP006059.
+
+Comprenden un total de 820 ficheros en formato fastq cada uno de los cuales corresponde a un día de toma de muestra y secuenciación. Los donantes fueron dos varones de 26 y 36 años denominados sujeto A y B, respectivamente. Las muestras fueron tomadas de saliva y heces para analizar el microbioma de boca e intestino, generando tres grupos de estudio:
+\begin{itemize}
+\addtolength{\itemsep}{-3mm} 
+ 	\item Boca del donante A: muestras recogidas entre los días 26-364 que comprenden un total de 286 ficheros.
+	\item Intestino del donante A: muestras recogidas entre los días 0-364 que comprenden un total de 342 ficheros.
+	\item Intestino del donante B: muestras recogidas entre los días 0-318 que comprenden un total de 192 ficheros.
+\end{itemize}
+
+No se tomaron muestras de saliva del sujeto B. Como puede observarse en los grupos anteriores, la saliva comenzó a recolectarse más tarde y hay que destacar que en todos los grupos hay algunos días sin muestra (razones sin especificar). Las muestras las tomaban los propios donantes en casa guardándolas temporalmente a -20ºC hasta que se transportaban al laboratorio donde se almacenaban a -80ºC.
+
+También se tomaron metadatos sobre el estilo de vida mediante una aplicación iOS que utiliza una base de datos SQL donde los sujetos anotaban diariamente 13 categorías: alimentación, movimientos intestinales, notas, dieta, ejercicio, aptitud física, cambio de ubicación, medicación, estado de ánimo, higiene bucal, sueño, micción y consumo de vitaminas.
+
+Respecto a la identificación de microorganismos, se decantaron por secuenciar la región V4 del ARN ribosomal 16S con la plataforma Illumina GAIIx. El ADN fue amplificado utilizando \textit{barcoding} y secuenciando lecturas \textit{paired end} de 100 pb. El primer obstáculo con los datos se encuentra aquí, ya que en el repositorio no hay dos archivos por muestra como suele ocurrir cuando se trabaja con \textit{paired end} (Materiales y métodos). Existen 820 archivos únicos (uno por día) con \textit{reads} de longitud $<$= 100 pb. Se desconoce el procedimiento llevado a cabo por los autores, aunque puede hipotetizarse que o bien utilizaron \textit{single end} pero han cometido una errata al describir la forma de secuenciación, o bien utilizaron \textit{paired end} pero posteriormente los solaparon creando lecturas \textit{single} de 100 pb con mejor calidad o incluso que solo hayan utilizado uno de los dos pares (5' o 3'). Para este trabajo son necesarias secuencias no apareadas (únicas) para posteriores análisis así que se da por hecho que las secuencias de los ficheros descargados del repositorio son \textit{single} ya que 100 pb son suficientes para una resolución biológicamente significativa si se eligen juiciosamente los cebadores \cite{Liu2007}.
+
+Se han encontrado otras incidencias en los datos como la falta de metadatos para la muestra ``Stool69.1260101.fastq'' y la existencia dos muestras para el mismo día (concretamente los días 79, 127, 128, 231, 238, 275, 277, 284 en saliva sujeto A; los días 7, 44, 74, 79, 82, 84, 106, 120, 162, 277 en intestino sujeto A y el día 177 en intestino sujeto B).
+
+Para hacerse una idea de la calidad de los datos, se utilizó FastQC generando un informe para cada uno de los 820 ficheros. Como es muy tedioso ir inspeccionando uno por uno, se utilizó MultiQC para obtener un fichero resumen de todos ellos. El resultado puede observarse en la figura \ref{multiQC_pre}. El primer plot muestra la calidad medida con \textit{phred score (q)} a lo largo de las bases en las 820 muestras. En general la calidad es buena pues casi todas las bases (a excepción de dos) presentan valores superiores a 20. La calidad tiende a bajar un poco en los extremos de las secuencias, fenómeno que suele darse en secuenciación frecuentemente. El segundo plot muestra la calidad en base al número de secuencias. Se forma algo parecido a una campana de Gauss, mostrando que la mayoría de las secuencias tienen calidad q=35 y hay muy pocas de ``mala calidad'' (q$<$30) en su extremo izquierdo.
+
+\begin{figure}[!h]
+ \centering
+  \subfigure{
+    \includegraphics[width=1\textwidth]{./Figuras/per_base_quality_PRE.png}}
+  \subfigure{
+    \includegraphics[width=1\textwidth]{./Figuras/per_seq_quality_PRE.png}}
+ \caption{Múltiples imágenes}
+ \label{multiQC_pre}
+\end{figure}
+
+\section [Preprocesado] {\textbf{Preprocesado}}
+Antes de realizar cualquier análisis es necesario un preprocesado. Del secuenciador se obtiene el fragmento de ADN mencionados en el apartado 1.1.2 -- \textit{barcoding} (figura \ref{barcoding}). A esto se le denomina ``multiplex'' y a la acción de procesarlo se le denomina ``demultiplexar''. Además, hemos visto que la plataforma de secuenciación no es perfecta y en ocasiones se obtienen calidades no deseadas.
+
+En este caso no es necesario realizar un demultiplexado ya que los autores han realizado este paso previamente y los datos que se encuentran en el repositorio ya están libres de adaptadores. Se comprobó buscando la secuencia del cebador de PCR directo (GTGCCAGCMGCCGCGGTAA) y el cebador reverso (GGACTACHVGGGTWTCTAAT) en las \textit{reads} pero no fueron hayadas (ni tampoco las secuencias reversa, complementaria y reversa-complementaria a los cebadores). Por ello se deduce que ya fueron eliminados.
+
+En general las calidades de secuenciación eran buenas como se ha visto en el apartado anterior, pero aún pueden eliminarse algunas secuencias que tenían peor calidad. El valor q al cual filtrar es arbitrario, siempre hay que llegar a un compromiso entre quedarse con lecturas de buena calidad pero sin perder demasiada información. En este caso, con un valor de 30 se pierden pocas lecturas y nos quedamos con una buena calidad: habían 211.731.053 \textit{reads} de partida y tras el filtrado quedan 208.266.760 \textit{reads}, así que se ha eliminado el 1,636\% de las lecturas al filtrar. Las secuencias fueron filtradas con seq\_crumbs para eliminar todas aquellas con calidad media q$<$30. Los resultados pueden observarse en la figura \ref{multiQC_post}. Como se ha filtrado por calidad media no se observa ningún cambio en el primer plot de calidad a lo largo de las bases. Sin embargo, en el segundo plot se ve muy claro que el programa ha eliminado todas las \textit{reads} por debajo de 30, perdiendo esa cola que rozaba la franja sombreada en naranja. 
+
+\begin{figure}[!h]
+ \centering
+  \subfigure{
+    \includegraphics[width=1\textwidth]{./Figuras/per_base_quality_POST.png}}
+  \subfigure{
+    \includegraphics[width=1\textwidth]{./Figuras/per_seq_quality_POST.png}}
+ \caption{Múltiples imágenes}
+ \label{multiQC_post}
+\end{figure}
+
+El número de lecturas que se obtienen cada día también es un factor importante. Si en un fichero aparecen tan solo 2 o 3 \textit{reads} es un indicativo de que algo no salió bien en la secuenciación ese día. Por tanto, se ha realizado un paso más de preprocesado de los datos, eliminando aquellos ficheros que contenían un número de \textit{reads} inferior a 10.000. Este valor también es arbitrario en base al compromiso cantidad-calidad de información, esto es, si elimino muchas secuencias me quedaré sin información pero si incluyo los ficheros con pocas \textit{reads} estaré introduciendo errores a mi análisis. Los días eliminados del estudio aparecen detallados en la tabla \ref{muestras_eliminadas}. De 208.266.760 \textit{reads} que venían del paso anterior, ahora obtenemos 208.231.302 \textit{reads} totales con las que se va a realizar todo el análisis.
+
+\begin{table}[htb]
+\centering
+\begin{tabular}{| p{4.2cm}| p{3.2cm} | p{2.2cm} |}
+\hline
+ID muestra & Número de \textit{reads} & Donante\\
+\hline \hline \hline
+Stool448.1259730 & 1 & Sujeto B\\ \hline
+Stool196.1259770 & 2 & Sujeto A\\ \hline
+Stool13.1259916 & 4 & Sujeto A\\ \hline
+Saliva267.1260193 & 5 & Sujeto A\\ \hline
+Stool85.1260354 & 8 & Sujeto A\\ \hline
+Stool217.1260272 & 8 & Sujeto A\\ \hline
+Stool63.1259769 & 29 & Sujeto A\\ \hline
+Stool120.1259849 & 31 & Sujeto A\\ \hline
+Stool147.1260039 & 39 & Sujeto A\\ \hline
+Stool36.1259652 & 54 & Sujeto A\\ \hline
+Stool453.1260253 & 1006 & Sujeto B\\ \hline
+Stool92.1259811 & 1423 & Sujeto A\\ \hline
+Stool452.1259809 & 1738 & Sujeto B\\ \hline
+Stool384.1259728 & 2501 & Sujeto B\\ \hline
+Stool340.1260381 & 2746 & Sujeto A\\ \hline
+Stool4.1260013 & 3553 & Sujeto A\\ \hline
+Stool343.1259705 & 4004 & Sujeto A\\ \hline
+Stool454.1260333 & 4491 & Sujeto B\\ \hline
+Stool382.1260123 & 6395 & Sujeto B\\ \hline
+Stool345.1259808 & 7420 & Sujeto A\\ \hline
+TOTAL & 35458 &\\ \hline
+\end{tabular}
+\caption{Tabla de ancho fijo.}
+\label{muestras_eliminadas}
+\end{table}
+
+\section [Clasificación taxonómica] {\textbf{Clasificación taxonómica}}
+Para este paso se utilizó QIIME v1.9.1. Tras el filtro de calidad, se convirtieron los ficheros fastq en fasta que es el formato de entrada en QIIME. A continuación se eliminaron quimeras, que son combinaciones de dos o más secuencias producidas durante el proceso de PCR como un artefacto. De 208.266.760 \textit{reads} de partida se obtienen 206.928.490 \textit{reads} tras este paso, por lo que el 0,64\% de las secuencias eran quimeras. Para la selección de OTUs se eligió la estrategia \textit{open-reference} al 97\% de similitud con la base de datos Greengenes y con el método UCLUST. Por último, se asignó la taxonomía resumiendo los taxones a nivel de género (L6).
+
+En este procedimiento se parte de un gran número de ficheros que contienen secuencias de ADN tomadas a lo largo de un año y se obtiene una gran tabla que resume la abundancia absoluta de OTUs (filas) que había cada uno de los días de ese año (columnas). Se genera una tabla de abundancia por cada muestra y sujeto con las siguientes dimensiones:
+
+\begin{itemize}
+\addtolength{\itemsep}{-3mm} 
+ 	\item Saliva del donante A: 573 (OTUs) x 285 (días).
+	\item Heces del donante A: 582 (OTUs) x 329 (días).
+	\item Heces del donante B: 402 (OTUs) x 186 (días).
+\end{itemize}
+
+Todo este proceso queda detallado en el \textit{pipeline} del anexo 1, en el que pueden encontrarse todos los \textit{scripts} de QIIME utilizados con la explicación de cada opción. Es totalmente reproducible e incluye además un \textit{script} de creación propia implementado en Python, que formatea el fichero de salida de QIIME para ser utiilzado por la siguiente herramienta.
+
+\section [Estudio estadístico] {\textbf{Estudio estadístico}}
+
+\section [Correlaciones] {\textbf{Correlaciones}}

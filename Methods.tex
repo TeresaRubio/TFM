@@ -1,0 +1,67 @@
+\section{Preprocesado: FastQC, MultiQC y seq\_crumbs}
+FastQC (\url{http://www.bioinformatics.babraham.ac.uk/projects/fastqc/}) es una herramienta de control de calidad para datos de secuenciación, de código abierto e implementada en Java. Permite un fichero de entrada en distintos formatos (fastq, SAM o BAM) y produce un fichero de salida en formato HTML con gráficos y tablas que permiten evaluar los datos. Proporciona mucha información sobre una única muestra: estadísticas numéricas (codificación de calidad según la plataforma utilizada, número total de secuencias...), \textit{score} de calidad, contenido en GC, distribución de longitud de secuencias, etc. Así se puede detectar rápidamente cualquier problema que hay que tener en cuenta antes de realizar análisis posteriores.
+
+MultiQC (\url{http://multiqc.info/}) es una herramienta de código abierto, implementada en Python que da soporte a muchas herramientas bioinformáticas, entre ellas FastQC. Produce un reporte HTML muy parecido pero permite un análisis a lo largo de varias muestras. La visualización de las muestras en conjunto permite realizar comparaciones y también recopila estadísticas numéricas de cada muestra para ver cómo se comportan los datos.
+
+seq\_crumbs(\url{https://bioinf.comav.upv.es/seq\_crumbs/}) es un software de código abierto implementado en Python que utiliza Biopython e incluye utilidades para procesar secuencias. Toma un fichero de secuencias como entrada y crea un nuevo fichero de salida con las secuencias procesadas. Dentro de sus muchas funciones, caben destacar: filtrado de secuencias por calidad media, filtrado por longitud según un umbral máximo y mínimo, eliminación de regiones de baja calidad en los extremos (\textit{trimming}), conversión de formatos, etc.
+
+
+\section{QIIME}
+QIIME (\url{http://qiime.org/index.html}) \cite{Caporaso2010} son la siglas en inglés de \textit{Quantitative Insights Into Microbial Ecology}. Es un \textit{pipeline} bioinformático de código abierto para realizar análisis de microbiomas a partir de datos de secuenciación. Fue construido utilizando la herramienta PyCogent con una implementación modular para poder elegir entre las distintas alternativas dentro de todas sus funciones. Todos los análisis se realizan utilizando \textit{scripts} de python (.py). El flujo de trabajo puede observarse en la figura \ref{QIIME}.
+
+\begin{figure}[!h]
+   \centering
+   \includegraphics[width=6in]{./Figuras/QIIME.png}
+   \caption[Flujo de trabajo de QIIME.] {Flujo de trabajo de QIIME.}
+   \label{QIIME}
+\end{figure}
+
+\subsection [Preprocesado] {\textbf{Preprocesado}}
+QIIME incorpora su propio método de preprocesado. Un \textit{script} realiza el filtrado de \textit{reads} por calidad, longitud y el demultiplexado simultáneamente. Para ello utiliza un fichero ``mapa'' proporcionado por el usuario que incluye el nombre de la muestra, la secuencia del \textit{barcode}, la secuencia de los \textit{primers} y una descripción como elementos obligatorios (permitiendo añadir más elementos optativos). 
+
+\subsection [Selección de OTUs] {\textbf{Selección de OTUs}} 
+OTU (del inglés \textit{Operational Taxonomic Unit}) es una unidad taxonómica operativa, es decir, una unidad de clasificación elegida por el investigador para individualizar los objetos de su estudio sin juzgar si se corresponden a una entidad biológica particular. Se aplica cuando se tienen datos de secuencias de ADN o morfológicos. Puede considerarse OTU un individuo, una población, una especie o cualquier otro taxón. QIIME ofrece tres estrategias de selección diferentes para este paso:
+	\begin{itemize}
+	\addtolength{\itemsep}{-3mm}  % separacion entre items
+	\item \textit{\textbf{Closed-reference}}: Las lecturas son agrupadas contra una colección de secuencias referencia y las que no agrupan son excluidas del análisis. Es el método más rápido, al ser muy paralelizable y se obtienen mejores taxonomías porque son OTUs definidas previamente. Sin embargo, no permite detectar nuevas OTUs así que depende mucho de lo bien caracterizada que esté la base de datos.
+	\item \textit{\textbf{De novo}}: Las lecturas se agrupan por similitud unas contra otras, sin ningún tipo de referencia externa. El beneficio es que todas las \textit{reads} son agrupadas pero no es paralelizable por lo que sería un proceso muy lento para grandes sets de datos.
+	\item \textit{\textbf{Open-reference}}: Las lecturas son agrupadas contra la referencia y las que no se encuentran en la referencia son agrupadas posteriormente \textit{de novo}. Presenta la ventaja de que todas las reads son agrupadas y además es paralelizable la mitad del proceso. Suele ser la estrategia preferida aunque no es recomendable utilizarla en datos con pocas referencias porque el proceso puede tardar días en completarse.
+	\end{itemize}
+	
+De entre los diferentes métodos que incorpora QIIME, se ha elegido \textbf{uclust} (\url{http://drive5.com/usearch/manual/uclust_algo.html}). Es un algoritmo diseñado para agrupar secuencias de nucleótidos o aminoácidos en base a su similitud. Cada grupo o \textit{cluster} está definido por una secuencia representativa conocida como ``centroide". Sigue dos criterios de agrupamiento simples, con respecto a un umbral de similitud (T) dado: (1) todas las secuencias dentro de un \textit{cluster} tienen similitud $>$= T con la secuencia centroide y (2) todos los centroides tienen similitud $<$ T entre ellos. Hay que tener en cuenta que una secuencia puede coincidir con dos centroides diferentes con similitud $>$ T. Idealmente, se asignará al centroide más cercano, pero puede haber dos o más a la misma distancia, en cuyo caso la asignación de \textit{cluster} es ambigua y debe hacerse una elección arbitraria. La similitud se calcula utilizando alineamiento global. Además, se trata de un algoritmo voraz (también conocido como \textit{greedy}) que es aquél que elige la opción óptima en cada paso local esperando llegar a una solución general óptima, por lo que es importante el orden en que van entrando las secuencias. Si la secuencia entrante coincide con un centroide existente, se asigna a ese grupo y si no coincide, se convierte en el centroide de un nuevo grupo. Esto significa que las secuencias deben estar ordenadas para que los centroides más adecuados tienden a aparecer más temprano. Dado que las lecturas más abundantes tienen más probabilidades de ser secuencias de amplicones correctas, y por tanto son más probables de ser verdaderas secuencias biológicas, considera las secuencias de entrada en orden de disminución de la abundancia.
+
+De todas las bases de datos existentes, se ha elegido como referencia \textbf{Greengenes} (\url{http://greengenes.secondgenome.com}). Contiene taxonomía de 16S de calidad controlada, basada en una filogenia \textit{de novo} que proporciona conjuntos de OTUs estándar. Está bajo la licencia Creative Commons BY-SA 3.0.
+
+Al final del proceso, se obtiene una tabla cuya primera columna es el identificador de OTU y la segunda columna son los conteos que pueden obtenerse en valor absoluto o relativo.
+
+\subsection [Asignación de taxonomía]{\textbf{Asignación de taxonomía}}
+Una vez se ha creado la tabla OTU, QIIME permite asignar una taxonomía a cada secuencia representativa. Actualmente los métodos implementados son BLAST, clasificador RDP, RTAX, mothur y uclust. Después se realiza un resumen de la representación de los grupos taxonómicos dentro de cada muestra según un nivel elegido por el usuario. Ese nivel dependerá del formato que se devuelva desde el paso de la asignación de taxonomía. La base de datos de Greengenes utiliza los siguientes niveles:
+    \begin{itemize}
+    \addtolength{\itemsep}{-3mm}  % separacion entre items
+    \item Nivel 1 = Reino (por ejemplo, \textit{Bacterias}), 
+    \item Nivel 2 = Filo (por ejemplo, \textit{Actinobacteria}), 
+    \item Nivel 3 = Clase (por ejemplo, \textit{Actinobacteria}), 
+    \item Nivel 4 = Orden (por ejemplo, \textit{Actinomycetales}), 
+    \item Nivel 5 = Familia (por ejemplo, \textit{Streptomycetaceae}), 
+    \item Nivel 6 = Género (por ejemplo, \textit{Streptomyces}), 
+    \item Nivel 7 = Especies (por ejemplo, \textit{mirabilis}).
+    \end{itemize}
+    
+La salida de este proceso es una tabla donde la primera columna es la taxonomía y en la segunda columna se mantienen los conteos en valor absoluto o relativo.
+
+Un paso adicional que incorpora es el alineamiento de las secuencias para construir un árbol filogenético que incluye las OTUs \textit{de novo}. Estos dos últimos pasos, asignación taxonómica y generación de árboles, son opcionales dejando al usuario la alternativa de desactivarlos si no le resultan necesarios.
+
+\section{CCruncher} 
+For example, your methods might be contingent upon the ideal gas law
+\begin{equation}
+\label{IdealGasLaw}
+PV = nRT.
+\end{equation}
+The constant $R$ in \eqref{IdealGasLaw} is called the \textit{Boltzmann constant} and has value
+\begin{equation*}
+R \approx \unitfrac[8.314]{J}{K\cdot mol}. 
+\end{equation*}
+We are measuring the volume $V$ in meters (\unit{m}), the pressure $P$ in pascals (\unit{Pa}), the amount of gas $n$ in moles (\unit{mol}), and the temperature $T$ in kelvin (\unit{K}).
+
+\section{Fourier} 
+\section{LIMITS: Lotka-Volterra} 

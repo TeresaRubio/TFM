@@ -1,0 +1,29 @@
+A lo largo de la evolución, billones de seres vivos han convivido en simbiosis con el ser humano y son fundamentales para su salud. A este conjunto se le denomina \textbf{microbiota normal, flora microbiana} o \textbf{microbioma humano}. Se estima que tenemos 10 veces más microbios en nuestro organismo que células propias, pero estos huéspedes no ocupan mucho espacio ya que son mucho más pequeños que una célula humana (de la masa total del cuerpo humano, el microbioma serían 200 gramos aproximadamente). Adquirimos los microorganismos a partir del nacimiento, durante el parto y la lactancia, y a lo largo de nuestra vida van colonizando nuestra piel, mucosas y, sobre todo, el  tubo intestinal con clara preferencia por el intestino grueso. Los obtenemos de los alimentos, el agua y el contacto con otras personas. La importancia del microbioma radica en sus numerosas funciones: regulación de procesos digestivos, producción de sustancias bacteriostáticas y antibióticos naturales contra patógenos, desactivación de contaminantes, disminución del colesterol alto, etc.
+
+La forma tradicional de estudiar los microorganismos de cualquier ambiente ha sido mediante técnicas de cultivo. Se obtiene la muestra del medio natural (suelo, agua o heces), se cultiva en un medio previamente definido con las condiciones óptimas y cuando los microorganismos crecen formando colonias, se extrae su material genético para analizarlo. A día de hoy, esta técnica se sigue llevando a cabo en ocasiones en las que se quiere estudiar uno o varios taxones conocidos ya que es muy sencilla y barata. Sin embargo, no todos los microorganismos presentes en las muestras ambientales son cultivables. Se estima que sólo el 1\% de las bacterias del suelo y entre el 0,1 - 0,01\% de las bacterias marinas. A estos microorganismos se les denomina \textbf{no cultivables} y se debe al desconocimiento de los requisitos específicos del cultivo y a la existencia de grupos de microorganismos que deben mantenerse en equilibrio para sobrevivir.
+
+La \textbf{metagenómica} surge como alternativa a las técnicas de cultivo para explicar cuáles son los microorganismos presentes en cualquier muestra y estudiar todo el ADN genómico presente en dicha muestra. En este caso, se obtiene la muestra natural, se aislan los microorganismos presentes, se extrae su material genético y se secuencia todo el genoma o la región de interés. Ejemplos históricos en metagenómica son los estudios de Tyson et al., 2004 y \cite{Venter2004}. El primero se realizó en ambientes extremos donde se encontró un grupo relativamente pequeño de microorganismos y el segundo, sin embargo, se realizó en el océano donde se encontró una enorme variedad de especies. Ambos ponen de manifiesto el esfuerzo que requiere la secuenciación de estas muestras y su posterior análisis. Gracias a la exponencial evolución hacia la secuenciación de siguiente generación, que ha permitido reducir costos y realizar proyectos más robustos, se pueden realizar estos estudios metagenómicos. Y gracias al desarrollo de la bioinformática se han obtenido herramientas potentes y sofisticadas para poder analizar esa inmensa cantidad de datos generada.
+
+Cuando se pretende caracterizar la estructura taxonómica de una comunidad microbiana se puede utilizar un gen marcador como el ARN ribosómico (ARNr) 16S o la secuenciación aleatoria también conocida como \textit{shotgun}. De esta última, añadir que se puede realizar por clonación utilizando vectores o por secuenciación directa pero en el estudio \cite{David2014}, se decantan por la primera aproximación ya que el 16S es considerado como el cronómetro molecular. Es un polirribonucleótido de unos 1500 nt, codificado por el gen rss y se encuentra en la subunidad pequeña 30S del ribosoma, orgánulo encargado de la síntesis celular de proteínas. Contiene distintas regiones, como puede observarse en la Figura \ref{16S}. Se utiliza como marcador porque es un gen presente en todas las bacterias y contiene regiones conservadas de forma universal, mientras que otras regiones son variables y esto es lo que hace posible la identificación a un nivel taxonómico suficientemente informativo. Para conseguir una identificación lo suficientemente específica, hay que tener en cuenta [1] la cobertura de secuenciación para microorganismos que se encuentran en una menor concentración; [2] la longitud de las \textit{reads}, ya que secuencias más largas permiten una asignación taxonómica más precisa y [3] la tasa de error en la secuenciación que puede generar una asignación incorrecta al enmascarar las regiones variables.
+
+\begin{figure}[h]
+   \centering
+   \includegraphics[width=3in]{nrmicro3330-f1.jpg} 
+   \caption{The caption of a figure should be a complete sentence.}
+   \label{16S}
+\end{figure}
+
+Los pasos en un proyecto metagenómico son:
+\setlength{\parskip}{0mm}
+\begin{enumerate}[1.]
+    \item Extracción del ADN.
+    \item Creación de librerías de 16S:
+    \begin{itemize}
+        \item Amplificación por PCR de la región a ser analizada. ...
+        \item Barcoding del ADN para multiplexar el ensayo. Este método permite secuenciar varias muestras en el misma run de secuenciación, mejorando así el costo-eficacia y el tiempo de obtención de los resultados. 
+    \end{itemize}
+    \item Secuenciación. ...
+    \item Análisis bioinformático. Existen varias herramientas pero las más utilizadas por su fácil manejo y su amplia documentación son QIIME y mothur. Ambos \textit{pipelines} incorporan algoritmos para llevar a cabo el control de calidad, agrupación de secuencias, asignación de taxonomía, cálculo de diversidad y visualización de resultados.
+    \item Interpretación de los resultados?.
+\end{enumerate}
+ 

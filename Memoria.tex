@@ -1,0 +1,202 @@
+\documentclass[a4paper,openright,12pt]{book}
+% http://minisconlatex.blogspot.com.es/2011/04/como-escribir-una-tesis-con-latex.html
+  % Dimensiones 210mm × 297mm (A4). 
+  % Márgenes: superior e inferior de 25 mm, interior de 35 mm y exterior de 20 mm
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[latin1]{inputenc}          %permite usar acentos directamente del teclado
+\usepackage[spanish,es-tabla]{babel}		%titulos en español
+\usepackage[latin1]{inputenc}
+\usepackage{multirow} 			% para las tablas
+\usepackage{graphicx}		       % figuras
+\usepackage{subfigure} 			% subfiguras
+\usepackage[margin=2cm,font=footnotesize,labelfont=bf,justification=centering]{caption}  % pie de foto
+\usepackage{amsthm, amsmath, amssymb} %símbolos adicionales
+\usepackage{setspace}\onehalfspacing         %interlineado
+\usepackage[loose,nice]{units} 		%replace "nice" by "ugly" for units in upright fractions
+\usepackage{fancyhdr} %Encabezados
+\usepackage{emptypage} %Paginas en blanco sin encabezados
+\usepackage{cite} % para contraer referencias
+\usepackage{enumerate} % enumerados
+\usepackage{hyperref} % hipervínculos
+
+
+% editamos los encabezados del primer capítulo (vacíos)
+% aqui definimos el encabezado de las paginas pares e impares.
+\lhead[]{}
+\chead[]{}
+\rhead[]{}
+\renewcommand{\headrulewidth}{0pt}
+% aqui definimos el pie de pagina de las paginas pares e impares.
+\lfoot[]{}
+\cfoot[]{}
+\rfoot[]{}
+\renewcommand{\footrulewidth}{0pt}
+% aqui definimos el encabezado y pie de pagina de la pagina inicial de un capitulo.
+\fancypagestyle{plain}{
+\fancyhead[L]{}
+\fancyhead[C]{}
+\fancyhead[R]{}
+\fancyfoot[L]{}
+\fancyfoot[C]{\thepage}
+\fancyfoot[R]{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+}
+
+\pagestyle{fancy}
+ 
+%Numeracion de capitulos/secciones
+\usepackage{titlesec}
+\titleformat{\chapter}
+  {\normalfont\LARGE\bfseries}{\thechapter}{1em}{}
+\titlespacing*{\chapter}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
+
+
+\begin{document}
+\setlength{\parskip}{3mm} % para que los párrafos queden separados
+%%%%%%%%%%
+% DEDICATORIA %
+%%%%%%%%%%
+\chapter*{}
+\pagenumbering{Roman} % para comenzar la numeracion de paginas en numeros romanos
+\begin{flushright}
+\textit{Dedicado a \\
+...}
+\end{flushright}
+
+
+%%%%%%%%%%%%%
+%	     INDICE	     %
+%%%%%%%%%%%%%
+\tableofcontents % indice de contenidos
+
+%\cleardoublepage
+\addcontentsline{toc}{chapter}{Índice de figuras} % para que aparezca en el indice de contenidos
+\listoffigures % indice de figuras
+
+
+%%%%%%%%%%%%%
+%AGRADECIMIENTOS%
+%%%%%%%%%%%%%
+\chapter*{Agradecimientos} % para que no añada la palabra "Capitulo" ni que se numere
+\addcontentsline{toc}{chapter}{Agradecimientos} % si queremos que aparezca en el índice
+ 
+¡Muchas gracias a todos!
+
+
+%%%%%%%%%%%%%
+%	   RESUMEN	     %
+%%%%%%%%%%%%%
+\chapter*{Resumen} % si no queremos que añada la palabra "Capitulo"
+\addcontentsline{toc}{chapter}{Resumen} % si queremos que aparezca en el índice
+
+En este proyecto se analizan datos del estudio \textit{David et al.} \cite{David2014} procedentes del microbioma de dos individuos. Se trata de datos de secuenciación de la región V4 del ARN ribosomal 16S de los microorganismos presentes en intestino y saliva, tomados a lo largo de un año. Además, se recopilaron datos del estilo de vida de los donantes tales como dieta, ejercicio o enfermedad. Esto supone un total aproximado de 64,8GB de datos. Los sujetos son interesantes porque el primero de ellos tuvo una infección de \textit{Salmonella} durante el estudio y el segundo realizó un viaje al extranjero, lo que nos permite ver cómo varía la dinámica del microbioma en estas situaciones.
+
+En primer lugar, se comprobó la calidad y longitud de la secuenciación y se hizo un filtro previo que redujo muy poco el set de datos. A continuación, se agruparon las \textit{reads} en OTUs al 97\% de similitud de secuencia y se asignó la taxonomía a nivel de género. Con estos datos se obtuvieron unas tablas que incluyen la abundancia absoluta de cada taxón, en cada día y en cada individuo.
+
+En segundo lugar, se hizo un estudio de variabilidad temporal de los microorganismos presentes a partir de su abundancia. Se busca si estos datos se ajustan a algún modelo y encontramos que siguen la ley de Taylor, lo cual nos permite definir a cada individuo con tan solo dos variables. Además, se comprueba la variabilidad haciendo un análisis ordenando por abundancia total a lo largo de los días y haciendo un \textit{ranking} de los microorganismos.
+
+Por último, se calculan las correlaciones de abundancia relativa entre géneros. Se realiza una clasificación previa en grupos de comportamiento en base a una perturbación y se comprueba la correlación entre y dentro de grupos. Mediante contraste bibliográfico se trata de explicar este comportamiento y se abren distintas perspectivas de futuro.
+
+
+%%%%%%%%%%%%%
+%    INTRODUCCION   %
+%%%%%%%%%%%%%
+%\renewcommand{\chaptername}{Introducción}
+\chapter{Introducción}
+\pagenumbering{arabic} % para empezar la numeración de paginas con números
+\markboth{INTRODUCCIÓN}{INTRODUCCIÓN} %Encabezado
+
+% editamos los encabezados para el resto de capítulos
+\lhead[\rightmark]{\rightmark}
+\chead[]{}
+\rhead[]{}
+\renewcommand{\headrulewidth}{0.5pt}
+
+\lfoot[]{}
+\cfoot[\thepage]{\thepage}
+\rfoot[]{}
+\renewcommand{\footrulewidth}{0.5pt}
+
+\fancypagestyle{plain}{
+\fancyhead[L]{}
+\fancyhead[C]{}
+\fancyhead[R]{}
+\fancyfoot[L]{}
+\fancyfoot[C]{\thepage}
+\fancyfoot[R]{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.5pt}
+}
+
+\input{introduction.tex}
+ 
+%%%%%%%%%%%%%
+%	    METODOS	     %
+%%%%%%%%%%%%%
+\chapter{Materiales y métodos}
+\markboth{MATERIALES Y MÉTODOS}{MATERIALES Y MÉTODOS}
+
+\input{Methods.tex}
+ 
+%%%%%%%%%%%%%
+%      RESULTADOS     %
+%%%%%%%%%%%%%
+\chapter{Resultados}
+\markboth{RESULTADOS}{RESULTADOS}
+
+\input{Results.tex}
+
+
+%%%%%%%%%%%%%
+%        DISCUSION       %
+%%%%%%%%%%%%%
+\chapter{Discusión y conclusiones}
+\markboth{DISCUSIÓN Y CONCLUSIONES}{DISCUSIÓN Y CONCLUSIONES}
+
+%%%%%%%%%%%%%
+%        FUTURO            %
+%%%%%%%%%%%%%
+\chapter{Perspectivas de futuro}
+\markboth{PERSPECTIVAS DE FUTURO}{PERSPECTIVAS DE FUTURO}
+ 
+%%%%%%%%%%%%%
+%     BIBLIOGRAFÍA      %
+%%%%%%%%%%%%%
+%Modo 1
+%\bibliographystyle{apalike}
+%\bibliography{/Users/Teresa/Desktop/TFM/LaTeX/referencias}% yyyy.bib es el fichero donde está salvada la bibliografía.
+
+
+% MODO 2
+\begin{thebibliography}{99}
+% Resumen
+\bibitem{David2014} {\bf David, L.A., Materna, A.C., Friedman, J., Campos-Baptista, M.I., Blackburn, M.C., Perrotta, A.,  Erdman S.E., and Alm, E.J.} 2014. Host lifestyle affects human microbiota on daily timescales. Genome biology, {\bf 15}(7), p. R89.
+
+% Introduccion
+\bibitem{Tyson2004} {\bf Tyson, G.W., Chapman, J., Hugenholtz, P., Allen, E.E., Ram, R.J., Richardson, P.M., Solovyev, V.V., Rubin E.M., Rokhsar D.S., and Banfield, J.F.} 2004. Community structure and metabolism through reconstruction of microbial genomes from the environment. Nature, {\bf 428}(6978), pp.37-43.
+\bibitem{Venter2004} {\bf Venter, J.C., Remington, K., Heidelberg, J.F., Halpern, A.L., Rusch, D., Eisen, J.A., Wu, D., Paulsen, I., Nelson, K.E., Nelson, W. and Fouts, D.E.} 2004. Environmental genome shotgun sequencing of the Sargasso Sea. Science, {\bf 304}(5667), pp.66-74.
+
+% Métodos
+\bibitem{Caporaso2010} {\bf Caporaso, J.G., Kuczynski, J., Stombaugh, J., Bittinger, K., Bushman, F.D., Costello, E.K., Fierer, N., Pena, A.G., Goodrich, J.K., Gordon, J.I., and Huttley, G. A.} 2010. QIIME allows analysis of high-throughput community sequencing data. Nature methods,  {\bf 7}(5), pp.335-336.
+
+% Resultados
+\bibitem{Liu2007} {\bf Liu, Z., Lozupone, C., Hamady, M., Bushman, F. D., and Knight, R.} 2007. Short pyrosequencing reads suffice for accurate microbial community analysis. Nucleic acids research, {\bf 35}(18), p. e120.
+
+\end{thebibliography}
+
+ 
+\end{document} 
+
+
+
+
+%%% INFORMACION %%%
+% Para la numeración del índice: http://tex.stackexchange.com/questions/297729/wheres-the-table-of-contents-article-class
+
+%Para numerar MIS capitulos y secciones: http://tex.stackexchange.com/questions/10326/how-to-set-the-chapter-style-in-report-class
+
+% Ejemplos de los principales phylum que existen en el microbioma humano: http://www.scielo.cl/scielo.php?script=sci_arttext&pid=S0717-75182011000400011
+
+%Servidor de análisis metagenómico: http://metagenomics.anl.gov/mgmain.html?mgpage=analysis
