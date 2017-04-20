@@ -1,13 +1,13 @@
 \section{Preprocesado: FastQC, MultiQC y seq\_crumbs}
-FastQC (\url{http://www.bioinformatics.babraham.ac.uk/projects/fastqc/}) es una herramienta de control de calidad para datos de secuenciación, de código abierto e implementada en Java. Permite un fichero de entrada en distintos formatos (fastq, SAM o BAM) y produce un fichero de salida en formato HTML con gráficos y tablas que permiten evaluar los datos. Proporciona mucha información sobre una única muestra: estadísticas numéricas (codificación de calidad según la plataforma utilizada, número total de secuencias...), \textit{score} de calidad, contenido en GC, distribución de longitud de secuencias, etc. Así se puede detectar rápidamente cualquier problema que hay que tener en cuenta antes de realizar análisis posteriores.
+\textbf{FastQC} (\url{http://www.bioinformatics.babraham.ac.uk/projects/fastqc/}) es una herramienta de control de calidad para datos de secuenciación, de código abierto e implementada en Java. Permite un fichero de entrada en distintos formatos (fastq, SAM o BAM) y produce un fichero de salida en formato HTML con gráficos y tablas que permiten evaluar los datos. Proporciona mucha información sobre una única muestra: estadísticas numéricas (codificación de calidad según la plataforma utilizada, número total de secuencias...), \textit{score} de calidad, contenido en GC, distribución de longitud de secuencias, etc. Así se puede detectar rápidamente cualquier problema que hay que tener en cuenta antes de realizar análisis posteriores.
 
-MultiQC (\url{http://multiqc.info/}) es una herramienta de código abierto, implementada en Python que da soporte a muchas herramientas bioinformáticas, entre ellas FastQC. Produce un reporte HTML muy parecido pero permite un análisis a lo largo de varias muestras. La visualización de las muestras en conjunto permite realizar comparaciones y también recopila estadísticas numéricas de cada muestra para ver cómo se comportan los datos.
+\textbf{MultiQC} (\url{http://multiqc.info/}) es una herramienta de código abierto, implementada en Python que da soporte a muchas herramientas bioinformáticas, entre ellas FastQC. Produce un reporte HTML muy parecido pero permite un análisis a lo largo de varias muestras. La visualización de las muestras en conjunto permite realizar comparaciones y también recopila estadísticas numéricas de cada muestra para ver cómo se comportan los datos.
 
-seq\_crumbs(\url{https://bioinf.comav.upv.es/seq\_crumbs/}) es un software de código abierto implementado en Python que utiliza Biopython e incluye utilidades para procesar secuencias. Toma un fichero de secuencias como entrada y crea un nuevo fichero de salida con las secuencias procesadas. Dentro de sus muchas funciones, caben destacar: filtrado de secuencias por calidad media, filtrado por longitud según un umbral máximo y mínimo, eliminación de regiones de baja calidad en los extremos (\textit{trimming}), conversión de formatos, etc.
+\textbf{seq\_crumbs} (\url{https://bioinf.comav.upv.es/seq\_crumbs/}) es un software de código abierto implementado en Python que utiliza Biopython e incluye utilidades para procesar secuencias. Toma un fichero de secuencias como entrada y crea un nuevo fichero de salida con las secuencias procesadas. Dentro de sus muchas funciones, caben destacar: filtrado de secuencias por calidad media, filtrado por longitud según un umbral máximo y mínimo, eliminación de regiones de baja calidad en los extremos (\textit{trimming}), conversión de formatos, etc.
 
 
 \section{QIIME}
-QIIME (\url{http://qiime.org/index.html}) \cite{Caporaso2010} son la siglas en inglés de \textit{Quantitative Insights Into Microbial Ecology}. Es un \textit{pipeline} bioinformático de código abierto para realizar análisis de microbiomas a partir de datos de secuenciación. Fue construido utilizando la herramienta PyCogent con una implementación modular para poder elegir entre las distintas alternativas dentro de todas sus funciones. Todos los análisis se realizan utilizando \textit{scripts} de python (.py). El flujo de trabajo puede observarse en la figura \ref{QIIME}.
+\textbf{QIIME} (\url{http://qiime.org/index.html}) \cite{Caporaso2010} son la siglas en inglés de \textit{Quantitative Insights Into Microbial Ecology}. Es un \textit{pipeline} bioinformático de código abierto para realizar análisis de microbiomas a partir de datos de secuenciación. Fue construido utilizando la herramienta PyCogent con una implementación modular para poder elegir entre las distintas alternativas dentro de todas sus funciones. Todos los análisis se realizan utilizando \textit{scripts} de python (.py). El flujo de trabajo puede observarse en la figura \ref{QIIME}.
 
 \begin{figure}[!h]
    \centering
@@ -52,6 +52,13 @@ La salida de este proceso es una tabla donde la primera columna es la taxonomía 
 Un paso adicional que incorpora es el alineamiento de las secuencias para construir un árbol filogenético que incluye las OTUs \textit{de novo}. Estos dos últimos pasos, asignación taxonómica y generación de árboles, son opcionales dejando al usuario la alternativa de desactivarlos si no le resultan necesarios.
 
 \section{CCruncher} 
+
+
+\section{Fourier}
+
+\section{LIMITS: Lotka-Volterra} 
+
+
 For example, your methods might be contingent upon the ideal gas law
 \begin{equation}
 \label{IdealGasLaw}
@@ -62,6 +69,3 @@ The constant $R$ in \eqref{IdealGasLaw} is called the \textit{Boltzmann constant
 R \approx \unitfrac[8.314]{J}{K\cdot mol}. 
 \end{equation*}
 We are measuring the volume $V$ in meters (\unit{m}), the pressure $P$ in pascals (\unit{Pa}), the amount of gas $n$ in moles (\unit{mol}), and the temperature $T$ in kelvin (\unit{K}).
-
-\section{Fourier} 
-\section{LIMITS: Lotka-Volterra} 

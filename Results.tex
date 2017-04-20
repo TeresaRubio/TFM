@@ -11,8 +11,8 @@ Comprenden un total de 820 ficheros en formato fastq cada uno de los cuales corr
 
 No se tomaron muestras de saliva del sujeto B. Como puede observarse en los grupos anteriores, la saliva comenzó a recolectarse más tarde y hay que destacar que en todos los grupos hay algunos días sin muestra (razones sin especificar). Las muestras las tomaban los propios donantes en casa guardándolas temporalmente a -20ºC hasta que se transportaban al laboratorio donde se almacenaban a -80ºC.
 
-También se tomaron metadatos sobre el estilo de vida mediante una aplicación iOS que utiliza una base de datos SQL donde los sujetos anotaban diariamente 13 categorías: alimentación, movimientos intestinales, notas, dieta, ejercicio, aptitud física, cambio de ubicación, medicación, estado de ánimo, higiene bucal, sueño, micción y consumo de vitaminas.
-
+También se tomaron metadatos sobre el estilo de vida mediante una aplicación iOS que utiliza una base de datos SQL donde los sujetos anotaban diariamente 13 categorías: alimentación, movimientos intestinales, notas, dieta, ejercicio, aptitud física, cambio de ubicación, medicación, estado de ánimo, higiene bucal, sueño, micción y consumo de vitaminas. Además, se dan dos escenarios de cambio en el ambiente del microbioma debido a que el individuo A hizo un viaje entre los días 71-122 desde América (residencia habitual) al suresde de Asia donde presentó episodios de diarrea por el cambio de dieta/entorno (entre los días 80-85 y 104-113) y el individuo B sufrió salmonelosis durante los días 151-159 pero no tomó antibióticos durante la infección.
+\clearpage
 Respecto a la identificación de microorganismos, se decantaron por secuenciar la región V4 del ARN ribosomal 16S con la plataforma Illumina GAIIx. El ADN fue amplificado utilizando \textit{barcoding} y secuenciando lecturas \textit{paired end} de 100 pb. El primer obstáculo con los datos se encuentra aquí, ya que en el repositorio no hay dos archivos por muestra como suele ocurrir cuando se trabaja con \textit{paired end} (Materiales y métodos). Existen 820 archivos únicos (uno por día) con \textit{reads} de longitud $<$= 100 pb. Se desconoce el procedimiento llevado a cabo por los autores, aunque puede hipotetizarse que o bien utilizaron \textit{single end} pero han cometido una errata al describir la forma de secuenciación, o bien utilizaron \textit{paired end} pero posteriormente los solaparon creando lecturas \textit{single} de 100 pb con mejor calidad o incluso que solo hayan utilizado uno de los dos pares (5' o 3'). Para este trabajo son necesarias secuencias no apareadas (únicas) para posteriores análisis así que se da por hecho que las secuencias de los ficheros descargados del repositorio son \textit{single} ya que 100 pb son suficientes para una resolución biológicamente significativa si se eligen juiciosamente los cebadores \cite{Liu2007}.
 
 Se han encontrado otras incidencias en los datos como la falta de metadatos para la muestra ``Stool69.1260101.fastq'' y la existencia dos muestras para el mismo día (concretamente los días 79, 127, 128, 231, 238, 275, 277, 284 en saliva sujeto A; los días 7, 44, 74, 79, 82, 84, 106, 120, 162, 277 en intestino sujeto A y el día 177 en intestino sujeto B).
@@ -28,6 +28,8 @@ Para hacerse una idea de la calidad de los datos, se utilizó FastQC generando un
  \caption{Múltiples imágenes}
  \label{multiQC_pre}
 \end{figure}
+
+\clearpage
 
 \section [Preprocesado] {\textbf{Preprocesado}}
 Antes de realizar cualquier análisis es necesario un preprocesado. Del secuenciador se obtiene el fragmento de ADN mencionados en el apartado 1.1.2 -- \textit{barcoding} (figura \ref{barcoding}). A esto se le denomina ``multiplex'' y a la acción de procesarlo se le denomina ``demultiplexar''. Además, hemos visto que la plataforma de secuenciación no es perfecta y en ocasiones se obtienen calidades no deseadas.
@@ -48,8 +50,9 @@ En general las calidades de secuenciación eran buenas como se ha visto en el apa
 
 El número de lecturas que se obtienen cada día también es un factor importante. Si en un fichero aparecen tan solo 2 o 3 \textit{reads} es un indicativo de que algo no salió bien en la secuenciación ese día. Por tanto, se ha realizado un paso más de preprocesado de los datos, eliminando aquellos ficheros que contenían un número de \textit{reads} inferior a 10.000. Este valor también es arbitrario en base al compromiso cantidad-calidad de información, esto es, si elimino muchas secuencias me quedaré sin información pero si incluyo los ficheros con pocas \textit{reads} estaré introduciendo errores a mi análisis. Los días eliminados del estudio aparecen detallados en la tabla \ref{muestras_eliminadas}. De 208.266.760 \textit{reads} que venían del paso anterior, ahora obtenemos 208.231.302 \textit{reads} totales con las que se va a realizar todo el análisis.
 
-\begin{table}[htb]
+\begin{table}[h]
 \centering
+\resizebox{10cm}{!} {
 \begin{tabular}{| p{4.2cm}| p{3.2cm} | p{2.2cm} |}
 \hline
 ID muestra & Número de \textit{reads} & Donante\\
@@ -76,10 +79,12 @@ Stool382.1260123 & 6395 & Sujeto B\\ \hline
 Stool345.1259808 & 7420 & Sujeto A\\ \hline
 TOTAL & 35458 &\\ \hline
 \end{tabular}
+}
 \caption{Tabla de ancho fijo.}
 \label{muestras_eliminadas}
 \end{table}
 
+\newpage
 \section [Clasificación taxonómica] {\textbf{Clasificación taxonómica}}
 Para este paso se utilizó QIIME v1.9.1. Tras el filtro de calidad, se convirtieron los ficheros fastq en fasta que es el formato de entrada en QIIME. A continuación se eliminaron quimeras, que son combinaciones de dos o más secuencias producidas durante el proceso de PCR como un artefacto. De 208.266.760 \textit{reads} de partida se obtienen 206.928.490 \textit{reads} tras este paso, por lo que el 0,64\% de las secuencias eran quimeras. Para la selección de OTUs se eligió la estrategia \textit{open-reference} al 97\% de similitud con la base de datos Greengenes y con el método UCLUST. Por último, se asignó la taxonomía resumiendo los taxones a nivel de género (L6).
 
@@ -92,8 +97,146 @@ En este procedimiento se parte de un gran número de ficheros que contienen secue
 	\item Heces del donante B: 402 (OTUs) x 186 (días).
 \end{itemize}
 
-Todo este proceso queda detallado en el \textit{pipeline} del anexo 1, en el que pueden encontrarse todos los \textit{scripts} de QIIME utilizados con la explicación de cada opción. Es totalmente reproducible e incluye además un \textit{script} de creación propia implementado en Python, que formatea el fichero de salida de QIIME para ser utiilzado por la siguiente herramienta.
+\clearpage
+Todo este proceso queda detallado en el \textit{pipeline} del anexo 1, en el que pueden encontrarse todos los \textit{scripts} de QIIME utilizados con la explicación de cada opción. Es totalmente reproducible e incluye además un \textit{script} de creación propia implementado en Python, que formatea los ficheros de salida de QIIME (un .txt por día) en el fichero de entrada de la siguiente herramienta de análisis, complexCruncher (que requiere un excel por individuo con una tabla donde aparezcan todos días).
 
-\section [Estudio estadístico] {\textbf{Estudio estadístico}}
+
+
+
+\section [Explorando la variabilidad temporal] {\textbf{Explorando la variabilidad temporal}}
+Para extraer las propiedades globales del sistema, se utilizó el software complexCruncher v.1.1rc12. Se utilizó en modo automático para generar todos los análisis que incluye de forma simultánea. A continuación se detallan todos los resultados obtenidos.
+
+\subsection{Abundancia de taxones}
+A partir de las tablas de abundancia absoluta obtenidas por QIIME, se representa mediante un histograma la abundancia total a lo largo del tiempo para dar una idea de los datos. En la muestra de saliva (figura \ref{abun_abs_saliva}) existe una abundancia alta a excepción de algunos días donde se aprecia un claro descenso. Para la muestra de intestino A (figura \ref{abun_abs_stoolA}) hay más días de muestra lo que dificulta un poco su visualización pero se aprecia, en general, que hay muchos días con abundancias pequeñas. Por último, la muestra de intestino B (figura \ref{abun_abs_stoolB}) tiene abundancias elevadas durante los primeros días pero a partir del día 20 aproximadamente casi todas las abundancias son inferiores.
+
+Los conteos absolutos están llenos de errores sistemáticos que se deben tanto al proceso de secuenciación como a la asignación taxonómica. Los cambios en abundancia estarían enmascarados por esos errores, así que se trabaja con abundancia relativa de los taxones para ver la variabilidad temporal. ComplexCruncher realiza internamente el cambio de abundancia absoluta a abundancia relativa y realiza todos los cálculos posteriores con estos valores.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=5.5in]{./Figuras/HostLifeStyle_Saliva_SalivaA_AbsFreqPlot.png}
+    \caption{Abundancia absoluta}
+    \label{abun_abs_saliva}
+\end{figure}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=5.5in]{./Figuras/HostLifeStyle_Stool_StoolA_AbsFreqPlot.png}
+    \caption{Abundancia absoluta}
+    \label{abun_abs_stoolA}
+\end{figure}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=5.5in]{./Figuras/HostLifeStyle_Stool_StoolB_AbsFreqPlot.png}
+    \caption{Abundancia absoluta}
+    \label{abun_abs_stoolB}
+\end{figure}
+
+
+\subsection{Ley de potencia de Taylor}
+Esta ley refleja el grado de correlación entre individuos de una población. Es una ley empírica propuesta por Taylor en 1961 \cite{Taylor1961} basada en la relación entre la media ($x_i$) y la varianza ($\sigma_i$) en la abundancia de poblaciones naturales:
+	\begin{equation*}
+	%$\sigma_i  = V\cdot x_i^{\beta}$ 
+	\end{equation*}
+
+Las constantes V y $\beta$ indican la amplitud y el tipo de distribución, respectivamente. 
+
+\newpage
+Con las tablas de abundancia relativa, complexCruncher comprueba si los datos se ajustan a un modelo lineal, no lineal o mixto. En este estudio se encuentra que las fluctuaciones de abundancia relativa en los taxones siguen la ley de potencias en todos los casos como se muestra en la figura \ref{taylor}. Se representa el ajuste de los datos al modelo no lineal representado en escala logarítmica para facilitar la visualización. El ajuste es robusto porque todos los casos presentan un coeficiente de determinación alto (R$^{2}>$ 0.9). Dentro de la ecuación, V corresponde a la ordenada en el origen y $\beta$ a la pendiente. Estos dos parámetros están relacionados con la estabilidad del sistema. En metagenómica existen, en general, dos tipos de propiedades estadísticas: $\beta$ = 0.5 (distribución de Poisson) y $\beta$ = 1 (distribución exponencial). En estos resultados se obtiene siempre una $\beta <$ 1, lo cual indica que los taxones dominantes son menos susceptibles a las perturbaciones que el resto. Por otro lado, V representa la variación máxima teórica correspondiente a un género hipotético de abundancia relativa 1. Si V es pequeña, la variabilidad de abundancia a lo largo del tiempo sería pequeña y si V es grande, la variabilidad sería grande. Puede observarse que la variabilidad es menor en saliva que en intestino.
+
+\begin{figure}[H]
+    \centering
+    \subfigure{
+    \includegraphics[width=4in]{./Figuras/HostLifeStyle_Saliva_SalivaA_stdVSmean_LLR_LOG.png}}
+    \subfigure{
+    \includegraphics[width=4in]{./Figuras/HostLifeStyle_Stool_StoolA_stdVSmean_LLR_LOG.png}}
+    \subfigure{
+    \includegraphics[width=4in]{./Figuras/HostLifeStyle_Stool_StoolB_stdVSmean_LLR_LOG.png}}
+    \caption{Ley de Taylor}
+    \label{taylor}
+\end{figure}
+
+\newpage
+Los parámetros de Taylor, V y $\beta$, están relacionados con el estado de salud del hospedador \cite{Marti2017}. En general, se considera un estado sano del hospedador cuando el microbioma es estable a lo largo del tiempo y un estado de enfermedad cuando presenta variabilidad temporal. Existen excepciones como por ejemplo en niños, donde el microbioma está en continuo cambio hasta que se desarrolla por completo y entonces aquí el concepto se invierte, se considera sano un microbioma variable y enfermo un microbioma estable. Ya hemos visto los valores de V y $\beta$ generales de los sujetos de este estudio pero ahora hay que analizarlos aprovechando las perturbaciones que causan el viaje y la infección de los individuos. Es un hecho empírico que los sujetos están enfermos durante el viaje y la infección pero se recuperan pasados estos sucesos. De este modo, la variabilidad temporal en el microbioma será mayor durante las perturbaciones y nuestra hipótesis es que se recupera la variabilidad inicial tras la perturbación. ComplexCruncher está preparado para hacer el cálculo de V y $\beta$ en todos estos casos, ya que permite introducir un fichero excel por individuo con varias hojas: la primera hoja puede ser el periodo anual completo, la segunda hoja puede incluir el periodo previo a la perturbación, la tercera el periodo de la perturbación y la cuarta el periodo tras la perturbación. El programa distingue entre periodos sanos y de perturbación, basta con añadir ``h\_'' al principio del nombre de la hoja para indicar los sanos (h de \textit{healthy}). Este paso se realizó aprovechando el mismo \textit{script} en Python que formateaba los datos para pasar de QIIME a complexCruncher. El \textit{script} genera las subtablas y produce 3 ficheros excel para introducir a complexCruncher:
+
+\begin{table}[!h]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+& Días & Información\\
+\hline
+\multirow{5}{2.3cm}{Saliva A} & 26 - 364 & Datos anuales\\ \cline{2-3}
+& 26 - 69 & Antes del viaje\\ \cline{2-3}
+& 72 - 122 & Durante el viaje\\ \cline{2-3}
+& 125 - 257 & Después del viaje\\ \cline{2-3}
+& 258 - 364 & Después del viaje\\ \cline{1-3}
+\multirow{5}{2.3cm}{Intestino A} & 0 - 364 & Datos anuales\\ \cline{2-3}
+& 0 - 70 & Antes del viaje\\ \cline{2-3}
+& 72 - 122 & Durante el viaje\\ \cline{2-3}
+& 123 - 257 & Después del viaje\\ \cline{2-3}
+& 259 - 364 & Después del viaje\\ \cline{1-3}
+\multirow{5}{2.3cm}{Intestino B} & 0 - 318 & Datos anuales\\ \cline{2-3}
+& 0 - 99 & Antes de la infección\\ \cline{2-3}
+& 100 - 143 & Antes de la infección\\ \cline{2-3}
+& 144 - 163 & Infección\\ \cline{2-3}
+& 164 - 318 & Después de la infección\\ \cline{1-3}
+\end{tabular}
+\caption{Tabla muy bonita.}
+\label{tabla:final}
+\end{table}
+
+
+El resultado obtenido para saliva de sujeto A se muestra en la figura \ref{v_beta_saliva}. Se muestran los valores de V y $\beta$ enfrentados para los 5 intervalos de datos introducidos. El punto azul representa los valores generales que ya habíamos visto en la figura \ref{taylor} A. El punto violeta nos muestra los valores antes del viaje, el amarillo durante el viaje y el negro y rojo a la vuelta del viaje. Se aprecia claramente que el viaje ha producido un aumento de la variabilidad en el microbioma del individuo pero al regresar a su rutina habitual, se recuperan valores similares a los iniciales. Sin embargo, el aumento de V tampoco ha sido muy grande en saliva (se pasa de $V \simeq 0.11$ a $V = 0.18$, lo que supone un aumento de 0.07 en V).
+
+El resultado obtenido para intestino es aún más interesante. En la figura \ref{v_beta_summary} se muestran combinados los valores V y $\beta$ para el sujeto A y B. El circulo turquesa y la estrella verde son los valores generales que se vieron en la figura \ref{taylor}B y \ref{taylor}C. Si nos centramos en el sujeto A, vemos en violeta el periodo anterior al viaje, en amarillo el periodo del viaje y en negro y rojo el periodo tras el viaje. Se observa, al igual que en saliva, que los valores aumentan mucho durante el viaje y se recuperan casi como al estado inicial a la vuelta. Respecto al sujeto B, se colorea en azul oscuro y gris el periodo antes de la infección, en turquesa con forma de triángulo el periodo de infección y en fucsia el periodo tras la infección. De nuevo, los valores son mayores durante la infección y se recuperan hacia valores similares al estado inicial (aunque de forma más dispersa que en el donante A). Se corrobora así la hipótesis de que se recupera un estado similar, aunque no igual, al de partida tras una perturbación.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=5.5in]{./Figuras/cplxCrnch_HostLifeStyle_Saliva_unWeighted_Summary.png}
+    \caption{V y beta saliva}
+    \label{v_beta_saliva}
+\end{figure}
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=5.5in]{./Figuras/cplxCrnch_HostLifeStyle_Stool_unWeighted_Summary.png}
+    \caption{ V y beta stool}
+    \label{v_beta_stool}
+\end{figure}
+
+Se genera un último plot resumen para comparar entre muestras. Hemos visto que tanto en saliva como en intestino aumentan los valores de V y $\beta$ al producirse una alteración, sin embargo, el aumento es más significativo en intestino que en saliva como puede observarse en la figura \ref{v_beta_summary}. Se puede observar que en saliva la diferencia de V es aproximadamente 0.1 mientras que en intestino $\bigtriangleup \simeq 0.4$, esto supone un aumento cuatro veces mayor en la variabilidad.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=5.5in]{./Figuras/cplxCrnch_unWeighted_Summary.png}
+    \caption{ V y beta summary}
+    \label{v_beta_summary}
+\end{figure}
+
+
+
+\subsection{Rango}
+
+\begin{figure}[!h]
+    \includegraphics[width=1\textwidth]{./Figuras/HostLifeStyle_Saliva_SalivaA_Rank.png}
+    \caption{Rango saliva}
+    \label{rank_saliva}
+\end{figure}
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=1\textwidth]{./Figuras/HostLifeStyle_Stool_StoolA_Rank.png}
+    \caption{Rango stoolA}
+    \label{rank_stoolA}
+\end{figure}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=1\textwidth]{./Figuras/HostLifeStyle_Stool_StoolB_Rank.png}
+    \caption{Rango stoolB}
+    \label{rank_stoolB}
+\end{figure}
 
 \section [Correlaciones] {\textbf{Correlaciones}}
