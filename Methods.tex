@@ -6,8 +6,9 @@
 \textbf{seq\_crumbs} (\url{https://bioinf.comav.upv.es/seq\_crumbs/}) es un software de código abierto implementado en Python que utiliza Biopython e incluye utilidades para procesar secuencias. Toma un fichero de secuencias como entrada y crea un nuevo fichero de salida con las secuencias procesadas. Dentro de sus muchas funciones, caben destacar: filtrado de secuencias por calidad media, filtrado por longitud según un umbral máximo y mínimo, eliminación de regiones de baja calidad en los extremos (\textit{trimming}), conversión de formatos, etc.
 
 
+
 \section{QIIME}
-\textbf{QIIME} (\url{http://qiime.org/index.html}) \cite{Caporaso2010} son la siglas en inglés de \textit{Quantitative Insights Into Microbial Ecology}. Es un \textit{pipeline} bioinformático de código abierto para realizar análisis de microbiomas a partir de datos de secuenciación. Fue construido utilizando la herramienta PyCogent con una implementación modular para poder elegir entre las distintas alternativas dentro de todas sus funciones. Todos los análisis se realizan utilizando \textit{scripts} de python (.py). El flujo de trabajo puede observarse en la figura \ref{QIIME}.
+\textbf{QIIME} (\url{http://qiime.org/index.html}) \cite{Caporaso2010} son la siglas en inglés de \textit{Quantitative Insights Into Microbial Ecology}. Es un \textit{pipeline} bioinformático de código abierto para realizar análisis de microbiomas a partir de datos de secuenciación. Fue construido utilizando el lenguaje de programación Python con una implementación modular en forma de \textit{scripts} para poder usar cualquier punto dentro de su flujo de trabajo (figura \ref{QIIME}) de manera independiente.
 
 \begin{figure}[!h]
    \centering
@@ -16,56 +17,125 @@
    \label{QIIME}
 \end{figure}
 
-\subsection [Preprocesado] {\textbf{Preprocesado}}
-QIIME incorpora su propio método de preprocesado. Un \textit{script} realiza el filtrado de \textit{reads} por calidad, longitud y el demultiplexado simultáneamente. Para ello utiliza un fichero ``mapa'' proporcionado por el usuario que incluye el nombre de la muestra, la secuencia del \textit{barcode}, la secuencia de los \textit{primers} y una descripción como elementos obligatorios (permitiendo añadir más elementos optativos). 
+\clearpage
+QIIME acepta ficheros de entrada en formato fastq, fasta+qual o sff. Incorpora su propio método de preprocesado, aunque no fue utilizado en este trabajo, que realiza el filtrado de \textit{reads} por calidad, longitud y el demultiplexado simultáneamente a partir de un fichero ``mapa'' con los metadatos. En este proyecto se ha utilizado QIIME para la selección de OTUs y para la asignación de taxonomía, que son los dos siguientes pasos que incorpora el flujo de trabajo. Incluye tres pasos adicionales con sus respectivas visualizaciones que tampoco fueron utilizados: creación de árboles filogenéticos, estudio de diversidad $\alpha$ y $\beta$ y método de rarefacción.
+
 
 \subsection [Selección de OTUs] {\textbf{Selección de OTUs}} 
 OTU (del inglés \textit{Operational Taxonomic Unit}) es una unidad taxonómica operativa, es decir, una unidad de clasificación elegida por el investigador para individualizar los objetos de su estudio sin juzgar si se corresponden a una entidad biológica particular. Se aplica cuando se tienen datos de secuencias de ADN o morfológicos. Puede considerarse OTU un individuo, una población, una especie o cualquier otro taxón. QIIME ofrece tres estrategias de selección diferentes para este paso:
+
 	\begin{itemize}
 	\addtolength{\itemsep}{-3mm}  % separacion entre items
-	\item \textit{\textbf{Closed-reference}}: Las lecturas son agrupadas contra una colección de secuencias referencia y las que no agrupan son excluidas del análisis. Es el método más rápido, al ser muy paralelizable y se obtienen mejores taxonomías porque son OTUs definidas previamente. Sin embargo, no permite detectar nuevas OTUs así que depende mucho de lo bien caracterizada que esté la base de datos.
-	\item \textit{\textbf{De novo}}: Las lecturas se agrupan por similitud unas contra otras, sin ningún tipo de referencia externa. El beneficio es que todas las \textit{reads} son agrupadas pero no es paralelizable por lo que sería un proceso muy lento para grandes sets de datos.
-	\item \textit{\textbf{Open-reference}}: Las lecturas son agrupadas contra la referencia y las que no se encuentran en la referencia son agrupadas posteriormente \textit{de novo}. Presenta la ventaja de que todas las reads son agrupadas y además es paralelizable la mitad del proceso. Suele ser la estrategia preferida aunque no es recomendable utilizarla en datos con pocas referencias porque el proceso puede tardar días en completarse.
+	\item \textit{\textbf{Closed-reference}}: Las lecturas son agrupadas contra una colección de secuencias referencia y las que no agrupan son excluidas del análisis. Es el método más rápido, al ser muy paralelizable y se obtienen mejores taxonomías porque son OTUs definidas previamente. Sin embargo, no permite detectar nuevas OTUs así que depende mucho de lo bien caracterizada que esté la base de datos. Los métodos de agrupación que se pueden utilizar son: \textit{blast, uclust} y \textit{usearch}.
+	\item \textit{\textbf{De novo}}: Las lecturas se agrupan por similitud unas contra otras, sin ningún tipo de referencia externa. El beneficio es que todas las \textit{reads} son agrupadas pero no es paralelizable por lo que sería un proceso muy lento para grandes sets de datos. Los métodos de agrupación son: \textit{uclust} y \textit{usearch}.
+	\item \textit{\textbf{Open-reference}}: Las lecturas son agrupadas contra la referencia y las que no se encuentran en la referencia son agrupadas posteriormente \textit{de novo}. Presenta la ventaja de que todas las reads son agrupadas y además es paralelizable la mitad del proceso. Suele ser la estrategia preferida aunque no es recomendable utilizarla en datos con pocas referencias porque el proceso puede tardar días en completarse. Los métodos de agrupación son: \textit{cd-hit, mothur, prefix/suffix, trie, uclust} y \textit{usearch}.
 	\end{itemize}
-	
-De entre los diferentes métodos que incorpora QIIME, se ha elegido \textbf{uclust} (\url{http://drive5.com/usearch/manual/uclust_algo.html}). Es un algoritmo diseñado para agrupar secuencias de nucleótidos o aminoácidos en base a su similitud. Cada grupo o \textit{cluster} está definido por una secuencia representativa conocida como ``centroide". Sigue dos criterios de agrupamiento simples, con respecto a un umbral de similitud (T) dado: (1) todas las secuencias dentro de un \textit{cluster} tienen similitud $>$= T con la secuencia centroide y (2) todos los centroides tienen similitud $<$ T entre ellos. Hay que tener en cuenta que una secuencia puede coincidir con dos centroides diferentes con similitud $>$ T. Idealmente, se asignará al centroide más cercano, pero puede haber dos o más a la misma distancia, en cuyo caso la asignación de \textit{cluster} es ambigua y debe hacerse una elección arbitraria. La similitud se calcula utilizando alineamiento global. Además, se trata de un algoritmo voraz (también conocido como \textit{greedy}) que es aquél que elige la opción óptima en cada paso local esperando llegar a una solución general óptima, por lo que es importante el orden en que van entrando las secuencias. Si la secuencia entrante coincide con un centroide existente, se asigna a ese grupo y si no coincide, se convierte en el centroide de un nuevo grupo. Esto significa que las secuencias deben estar ordenadas para que los centroides más adecuados tienden a aparecer más temprano. Dado que las lecturas más abundantes tienen más probabilidades de ser secuencias de amplicones correctas, y por tanto son más probables de ser verdaderas secuencias biológicas, considera las secuencias de entrada en orden de disminución de la abundancia.
 
-De todas las bases de datos existentes, se ha elegido como referencia \textbf{Greengenes} (\url{http://greengenes.secondgenome.com}). Contiene taxonomía de 16S de calidad controlada, basada en una filogenia \textit{de novo} que proporciona conjuntos de OTUs estándar. Está bajo la licencia Creative Commons BY-SA 3.0.
+Se seleccionó \textit{Closed-reference} y al final del proceso, se obtiene una tabla cuya primera columna es el identificador de OTU y la segunda columna son los conteos que pueden generarse en valor absoluto o relativo.
 
-Al final del proceso, se obtiene una tabla cuya primera columna es el identificador de OTU y la segunda columna son los conteos que pueden obtenerse en valor absoluto o relativo.
+\paragraph [Uclust]{\textbf{\textit{Uclust (\url{http://drive5.com/usearch/manual/uclust_algo.html})}}}
+Fue el método de agrupación utilizado. Es un algoritmo diseñado para agrupar secuencias de nucleótidos o aminoácidos en base a su similitud. Cada grupo o \textit{cluster} está definido por una secuencia representativa conocida como ``centroide". Sigue dos criterios de agrupamiento simples, con respecto a un umbral de similitud (T) dado: (1) todas las secuencias dentro de un \textit{cluster} tienen similitud $>$= T con la secuencia centroide y (2) todos los centroides tienen similitud $<$ T entre ellos. Hay que tener en cuenta que una secuencia puede coincidir con dos centroides diferentes con similitud $>$ T. Idealmente, se asignará al centroide más cercano, pero puede haber dos o más a la misma distancia, en cuyo caso la asignación de \textit{cluster} es ambigua y debe hacerse una elección arbitraria. La similitud se calcula utilizando alineamiento global. Además, se trata de un algoritmo voraz (también conocido como \textit{greedy}) que es aquél que elige la opción óptima en cada paso local esperando llegar a una solución general óptima, por lo que es importante el orden en que van entrando las secuencias. Si la secuencia entrante coincide con un centroide existente, se asigna a ese grupo y si no coincide, se convierte en el centroide de un nuevo grupo. Esto significa que las secuencias deben estar ordenadas para que los centroides más adecuados tienden a aparecer más temprano. Dado que las lecturas más abundantes tienen más probabilidades de ser secuencias de amplicones correctas, y por tanto son más probables de ser verdaderas secuencias biológicas, considera las secuencias de entrada en orden de disminución de la abundancia.
 
-\subsection [Asignación de taxonomía]{\textbf{Asignación de taxonomía}}
-Una vez se ha creado la tabla OTU, QIIME permite asignar una taxonomía a cada secuencia representativa. Actualmente los métodos implementados son BLAST, clasificador RDP, RTAX, mothur y uclust. Después se realiza un resumen de la representación de los grupos taxonómicos dentro de cada muestra según un nivel elegido por el usuario. Ese nivel dependerá del formato que se devuelva desde el paso de la asignación de taxonomía. La base de datos de Greengenes utiliza los siguientes niveles:
+\paragraph [Greengenes]{\textbf{\textit{Greengenes (\url{http://greengenes.secondgenome.com})}}}
+Es la base de datos que se eligió como referencia. Contiene taxonomía de 16S de calidad controlada, basada en una filogenia \textit{de novo} que proporciona conjuntos de OTUs estándar. Está bajo la licencia Creative Commons BY-SA 3.0. Incluye los siguientes niveles de taxonomía:
+
     \begin{itemize}
     \addtolength{\itemsep}{-3mm}  % separacion entre items
-    \item Nivel 1 = Reino (por ejemplo, \textit{Bacterias}), 
-    \item Nivel 2 = Filo (por ejemplo, \textit{Actinobacteria}), 
-    \item Nivel 3 = Clase (por ejemplo, \textit{Actinobacteria}), 
-    \item Nivel 4 = Orden (por ejemplo, \textit{Actinomycetales}), 
-    \item Nivel 5 = Familia (por ejemplo, \textit{Streptomycetaceae}), 
-    \item Nivel 6 = Género (por ejemplo, \textit{Streptomyces}), 
-    \item Nivel 7 = Especies (por ejemplo, \textit{mirabilis}).
+    \item Nivel 1 = Reino (por ejemplo, \textit{Bacteria}), 
+    \item Nivel 2 = Filo (por ejemplo, \textit{Firmicutes}), 
+    \item Nivel 3 = Clase (por ejemplo, \textit{Bacilli}), 
+    \item Nivel 4 = Orden (por ejemplo, \textit{Lactobacillales}), 
+    \item Nivel 5 = Familia (por ejemplo, \textit{Streptococcaceae}), 
+    \item Nivel 6 = Género (por ejemplo, \textit{Streptococcus}), 
+    \item Nivel 7 = Especies (por ejemplo, \textit{pneumoniae}).
     \end{itemize}
-    
-La salida de este proceso es una tabla donde la primera columna es la taxonomía y en la segunda columna se mantienen los conteos en valor absoluto o relativo.
 
-Un paso adicional que incorpora es el alineamiento de las secuencias para construir un árbol filogenético que incluye las OTUs \textit{de novo}. Estos dos últimos pasos, asignación taxonómica y generación de árboles, son opcionales dejando al usuario la alternativa de desactivarlos si no le resultan necesarios.
+Un ejemplo del formato sería:
 
-\section{CCruncher} 
+\begin{center} \textbf{\textit{k\_\_Bacteria; p\_\_Firmicutes; c\_\_Bacilli; o\_\_Lactobacillales; f\_\_Streptococcaceae; g\_\_Streptococcus; s\_\_pneumoniae}} \end{center}
+
+
+\subsection [Asignación taxonómica]{\textbf{Asignación taxonómica}}
+Una vez se ha creado la tabla OTU, QIIME permite asignar una taxonomía a cada secuencia representativa. Actualmente los métodos implementados son BLAST, clasificador RDP, RTAX, mothur y uclust. Después se realiza un resumen de la representación de los grupos taxonómicos dentro de cada muestra según un nivel elegido por el usuario. Ese nivel dependerá del formato que se devuelva desde el paso de la asignación de taxonomía (1,2,3,4,5,6 o 7).  La salida de este proceso es una tabla donde la primera columna es la taxonomía y en la segunda columna se mantienen los conteos en valor absoluto o relativo.
+
+
+
+\section{complexCruncher} 
+Es un software de código abierto implementado en python por Jose Manuel Martí que sirve para el estudio de series temporales. Acepta como \textit{input} ficheros excel (en formato xlsx) y genera como \textit{output} una serie de gráficos (eps, svg, png, pdf o ps) y tablas (tex o xlsx). Se puede utilizar en modo automático, que genera todos los resultados, o interactivo, que genera los resultados que el usuario pide. En los siguientes apartados se especifica la forma de generar cada resultado.
+
+
+\subsection[Regresión lineal y exponencial]{\textbf{Regresión lineal y exponencial}}
+La recta de regresión, conocida también como recta de mejor ajuste o recta de mínimos cuadrados, es aquella que mejor se ajusta a los datos lo más estrechamente posible. La idea es que los valores de la recta estén lo más cerca posible de los valores observados pero siempre quedan distancias entre los puntos y la recta, que son los denominados errores residuales. Para realizar el ajuste, se suman todos los cuadrados de los errores residuales para obtener un solo error que se llama suma de los errores al cuadrado (SSE -- siglas en inglés de ``Sum of Squares Error'') y se elige la recta con el valor más pequeño SSE.
+
+En ocasiones los datos no se ajustan a una recta sino a una curva exponencial de la forma $y = A\cdot r^x$. En estos casos, se convierte la curva exponencial en recta por medio de logaritmos y se aplica el ajuste visto anteriormente. Aplicando logaritmos quedaría de la forma:
+
+\begin{equation}
+\log y = \log (A\cdot r^x)
+\end{equation}
+
+que con propiedades de logaritmos queda como:
+
+\begin{equation}
+\log y = \log A + x \cdot \log r
+\end{equation}
+
+donde la pendiente es $\log r$ y la intersección con el eje y es $\log A$.
+
+
+\subsection[Ley de potencia $x$-ponderada]{\textbf{Ley de potencia $x$-ponderada}}
+%Cuando se ajusta la ley de potencia de desviación estándar frente a la media, se tuvo en cuenta que cada media tiene incertidumbre y se puede estimar, para un tamaño de muestra $n$, por el SEM (error estándar de la media). En este caso, las incertidumbres afectan a la variable independiente, por lo que el ajuste no fue tan trivial como un ajuste y-ponderado, donde las incertidumbres afectan a la variable dependiente. Un método estándar para realizar este ajuste es (i) invertir las variables antes de aplicar los pesos, (ii) realizar el ajuste ponderado, y (iii) revertir la inversión. Este método es determinista, pero la solución aproximada empeora con coeficientes de determinación más pequeños. Para superar esa limitación, se desarrolló un método estocástico con una estrategia de tipo bootstrap que evitó la inversión y es aplicable independientemente del coeficiente de determinación.
+
+%La idea básica de bootstrap es que la inferencia sobre una población a partir de datos de muestra puede ser modelada mediante un nuevo muestreo de los datos de la muestra y realizando la inferencia sobre una muestra a partir de datos remuestreados (75). Para adaptar esta idea general a nuestro problema, hemos re-muestreado la matriz de datos $x$ utilizando su matriz de errores. Es decir, para cada replicación, se calculó una nueva matriz de datos $x$ sobre la base de $x^*_i = x_i + v_i$, donde $v_i$ es una variable aleatoria gaussiana con media $\mu_i=0$ y desviación estándar $\sigma_i=\mathrm{SEM}_i$, como se definió anteriormente. Para cada repetición, se realizó un ajuste completo de la ley de potencia no ponderada, donde elegir entre leyes de potencia de ajuste ($y=Vx^\beta$) usando regresión lineal en datos transformados por log (LLR) versus regresión no lineal (NLR), seguimos principalmente \emph{General Guidelines for the Analysis of Biological Power Laws} (76). Los parámetros de la x-ponderación fueron estimados por promediar a través de todos los ajustes de repetición realizados, y sus errores se calcularon mediante el cálculo de la desviación estándar para todos los ajustes. Al final de cada paso, el error relativo se calculó comparando la estimación del parámetro de ajuste en el último paso con el anterior. Finalmente, tanto el coeficiente de determinación del ajuste como el coeficiente de correlación entre los parámetros de ajuste fueron estimados por promediado.
+
+
+\subsection[Normalización y zona sana]{\textbf{Normalización y zona sana}}
+Para mostrar todos los estudios bajo ejes comunes, se estandarizan los parámetros de Taylor utilizando el grupo de sujetos sanos para cada estudio individualmente. Con este enfoque, todos los estudios se pueden visualizar en un diagrama compartido con unidades de desviación estándar de los parámetros Taylor en sus ejes.
+
+Para el parámetro $V$, la estimación de la media ($\widehat{V}$) del grupo de sanos, compuesta por $h$ individuos, es:
+
+\begin{equation}
+\widehat{V} = \frac{1}{W_1}\sum_{i=1}^h V_i \omega_i=\sum_{i=1}^h V_i \omega_i
+\end{equation}
+
+con $W_1=\sum_i^h \omega_i=1$, donde $\omega_i$ son los pesos normalizados calculados como:
+
+\begin{equation}
+\omega_i = \frac{\frac{1}{\sigma^2_{V_i}}}{\sum_i^h\frac{1}{\sigma^2_{V_i}}}
+\end{equation}
+
+donde $\sigma_{V_i}$ es una estimación de la incertidumbre en $V_i$ obtenida junto con $V_i$ de la ley de potencia $x$-ponderada (descrita en el apartado anterior) para sujetos sanos.
+
+Del mismo modo, la estimación de la desviación estándar para la población sana ($\widehat{\sigma}_V$) es:
+\begin{equation}
+\widehat{\sigma}_V = \sqrt{\frac{1}{W_1-\frac{W_2}{W_1}}\sum_{i=1}^h\left[\omega_i\left(V_i-\hat{V}\right)^2\right]}
+\end{equation}
+con $W_2=\sum_i^h \omega_i^2$, que finalmente queda como:
+\begin{equation}
+\widehat{\sigma}_V = \sqrt{\frac{1}{1-\sum_i^h \omega_i^2}\sum_{i=1}^h\left[\omega_i\left(V_i-\hat{V}\right)^2\right]}
+\end{equation}
+
+
+% Esto está relacionado con el cálculo de la "healthy zone".
+
+\subsection[RSI y medidas de variabilidad]{\textbf{RSI y medidas de variabilidad}}
+El RSI se muestra como un porcentaje en una barra separada a la derecha del gráfico de la matriz de rango (figuras \ref{rank_saliva}, \ref{rank_stoolA} y \ref{rank_stoolB}). El RSI es estrictamente 1 para un elemento cuyo rango nunca cambia con el tiempo y es 0 para un elemento cuyo rango oscila entre los extremos. Por tanto, el RSI se calcula para cada elemento como 1 menos el cociente entre número de saltos de rango reales y el número máximo posible de saltos, todo a la potencia p:
+
+\begin{equation}
+{\rm RSI} = \left(1-\frac{\text{saltos de rango reales}}{\text{saltos de rango posibles}}\right)^p = \left(1-\frac{D}{(N-1)(t-1)}\right)^p
+\end{equation}
+
+Donde $D$ es el número total de saltos de rango dados por el elemento estudiado, $N$ es el número de elementos que han sido clasificados, y $t$ es el número de muestras temporales. El índice de potencia, $p = 4$, se eligió arbitrariamente para aumentar la resolución en la región estable.
+
+Finalmente, bajo las matrices de rango (figuras \ref{rank_saliva}, \ref{rank_stoolA} y \ref{rank_stoolB}), hay un gráfico con dos medidas relevantes para la variabilidad del rango a lo largo del tiempo. Por un lado, RV se calcula como un promedio para todos los taxones del valor absoluto de la resta entre el rango de cada taxón en el tiempo que se calcula y el rango global de cada taxón. Y por otro lado, DV se calcula como un promedio para todos los taxones del valor absoluto de la resta entre el rango de cada taxón en el tiempo que se calcula y el rango que tenía en el tiempo anterior.
+
+
+
+\section{Método de búsqueda de comportamientos}
+
 
 
 \section{Fourier}
 
+
+
 \section{LIMITS: Lotka-Volterra} 
-
-
-For example, your methods might be contingent upon the ideal gas law
-\begin{equation}
-\label{IdealGasLaw}
-PV = nRT.
-\end{equation}
-The constant $R$ in \eqref{IdealGasLaw} is called the \textit{Boltzmann constant} and has value
-\begin{equation*}
-R \approx \unitfrac[8.314]{J}{K\cdot mol}. 
-\end{equation*}
-We are measuring the volume $V$ in meters (\unit{m}), the pressure $P$ in pascals (\unit{Pa}), the amount of gas $n$ in moles (\unit{mol}), and the temperature $T$ in kelvin (\unit{K}).

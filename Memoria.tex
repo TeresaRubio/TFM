@@ -20,6 +20,10 @@
 \usepackage{cite} % para contraer referencias
 \usepackage{enumerate} % enumerados
 \usepackage{hyperref} % hipervínculos
+\usepackage{mathtools} %ecuaciones
+
+\setcounter{tocdepth}{4} %agregar subsubsecciones numeradas al indice
+%\setcounter{secnumdepth}{4}
 
 
 % editamos los encabezados del primer capítulo (vacíos)
@@ -98,7 +102,7 @@ En primer lugar, se comprobó la calidad y longitud de la secuenciación y se hizo
 
 En segundo lugar, se hizo un estudio de variabilidad temporal de los microorganismos presentes a partir de su abundancia. Se busca si estos datos se ajustan a algún modelo y encontramos que siguen la ley de Taylor, lo cual nos permite definir a cada individuo con tan solo dos variables. Además, se comprueba la variabilidad haciendo un análisis ordenando por abundancia total a lo largo de los días y haciendo un \textit{ranking} de los microorganismos.
 
-Por último, se calculan las correlaciones de abundancia relativa entre géneros. Se realiza una clasificación previa en grupos de comportamiento en base a una perturbación y se comprueba la correlación entre y dentro de grupos. Mediante contraste bibliográfico se trata de explicar este comportamiento y se abren distintas perspectivas de futuro.
+Por último, se calculan las correlaciones de abundancia relativa entre géneros. Se realiza una clasificación previa en grupos de comportamiento en base a una perturbación y se comprueba la correlación entre y dentro de grupos. El campo de las correlaciones se ha cuestionado como medida real de las interacciones y aunque existen modelos que pueden explicarlas mejor, esto solo es la punta del iceberg y aún nos queda un largo camino que recorrer para configurar todos los acontecimientos que se producen en nuestro microbioma. %Mediante contraste bibliográfico se trata de explicar este comportamiento y se abren distintas perspectivas de futuro.
 
 
 %%%%%%%%%%%%%
@@ -178,7 +182,8 @@ Por último, se calculan las correlaciones de abundancia relativa entre géneros. 
 % Introduccion
 \bibitem{Tyson2004} {\bf Tyson, G.W., Chapman, J., Hugenholtz, P., Allen, E.E., Ram, R.J., Richardson, P.M., Solovyev, V.V., Rubin E.M., Rokhsar D.S., and Banfield, J.F.} 2004. Community structure and metabolism through reconstruction of microbial genomes from the environment. Nature, {\bf 428}(6978), pp.37-43.
 \bibitem{Venter2004} {\bf Venter, J.C., Remington, K., Heidelberg, J.F., Halpern, A.L., Rusch, D., Eisen, J.A., Wu, D., Paulsen, I., Nelson, K.E., Nelson, W. and Fouts, D.E.} 2004. Environmental genome shotgun sequencing of the Sargasso Sea. Science, {\bf 304}(5667), pp.66-74.
-\bibitem{Blumm2012} {\bf Blumm, N., Ghoshal, G., Forró, Z., Schich, M., Bianconi, G., Bouchaud, J. P., and Barabási, A. L.} 2012. Dynamics of ranking processes in complex systems. Physical review letters, {\bf 109}(12), p.128701.
+%\bibitem{Blumm2012} {\bf Blumm, N., Ghoshal, G., Forró, Z., Schich, M., Bianconi, G., Bouchaud, J. P., and Barabási, A. L.} 2012. Dynamics of ranking processes in complex systems. Physical review letters, {\bf 109}(12), p.128701.
+\bibitem{McArdle1990} {\bf McArdle, B.H., Gaston, K.J., and Lawton, J.H.} 1990. Variation in the size of animal populations: patterns, problems and artefacts. The Journal of Animal Ecology, {\bf 59}(2), pp. 439-454.
 
 % Métodos
 \bibitem{Caporaso2010} {\bf Caporaso, J.G., Kuczynski, J., Stombaugh, J., Bittinger, K., Bushman, F.D., Costello, E.K., Fierer, N., Pena, A.G., Goodrich, J.K., Gordon, J.I., and Huttley, G. A.} 2010. QIIME allows analysis of high-throughput community sequencing data. Nature methods,  {\bf 7}(5), pp.335-336.
