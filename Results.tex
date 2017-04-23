@@ -229,10 +229,10 @@ Especialmente se ven dos picos máximos de DV en los días 60 y 80 aproximadamente
     \label{rank_saliva}
 \end{figure}
 
-
+\newpage
 En la figura \ref{rank_stoolA} está resumida la dinámica en la estabilidad de la muestra de intestino perteneciente al sujeto A. Aquí también se aprecia que los géneros más abundantes suelen ser los más estables. Sin duda lo que más llama la atención de esta figura es el desorden de rangos que se produce entre los puntos 71-122, correspondientes a los días en los que el sujeto estuvo de viaje en el extranjero (destacar que en estos datos también existen días sin muestra pero son a partir del regreso del viaje, por lo que se corresponden bien durante el mismo). Existen comportamientos muy interesantes como el género \textit{Anaerostipes} que era muy abundante antes del viaje pero durante el viaje disminuye y a la vuelta recupera su abundancia inicial. También los géneros \textit{Plesiomonas} y \textit{Fusobacterium} que no son nada abundantes pero durante el viaje se dan las condiciones óptimas para su crecimiento. Y por último, el orden \textit{Methylophilales} (etiqueta ``p\_Proteobacteria;*;g\_'') que no le afecta el viaje pero aumenta drásticamente su abundancia al rededor del día 230 por motivos desconocidos. Si nos fijamos en el RSI de este último orden, con valor 96.2\%, podría consierarse la isla de estabilidad más llamativa en este sujeto.
 
-En cuanto a la medida de variabilidad, se observa que ambas medidas se disparan durante el viaje. Además, cabe destacar que a partir del punto 100, RV baja simulando una exponencial lo que supone una recuperación al estado inicial que sigue un cierto patrón. Si el sujeto hubiera permanecido más tiempo en el extranjero hubiera sido muy interesante comprobar lo que sucede. Algunas posibilidades pueden ser (i) que alcance un nuevo estado de equilibrio, ya sea uno igual al estado inicial o uno nuevo (lo que sería interesante poder demostrar cuánto tiempo se necesita para adquirir el equilibrio) y (ii) que nunca alcance el estado de equilibrio (lo cual sería poco probable ya que las personas inmigrantes no sufren la diarrea del viajero eternamente).
+En cuanto a la medida de variabilidad, se observa que ambas medidas se disparan durante el viaje. Además, cabe destacar que a partir del punto 100, RV baja simulando una exponencial lo que supone una recuperación al estado inicial muy rápida.
 
 \begin{figure}[!h]
     \centering
@@ -244,7 +244,7 @@ En cuanto a la medida de variabilidad, se observa que ambas medidas se disparan 
 
 En la figura \ref{rank_stoolB} está resumida la dinámica en la estabilidad de la muestra de intestino perteneciente al donante B. De nuevo los géneros más estables se corresponden con los más abundantes en general. Además, también se aprecia un cambio brusco de rango en el punto 120 aproximadamente que se corresponde al día de inicio de la salmonelosis (apreciar que existen días donde no hubo muestra y en este gráfico se representan todos seguidos sin huecos como si fuera un muestreo continuo). Con esta turbación del sistema, géneros que eran muy abundantes ahora han disminuído su abundancia (como \textit{Lachnospira}); o al contrario, géneros poco abundantes que son oportunistas y aumentan su abundancia (como \textit{Dialister}). Luego existen comportamientos ajenos como \textit{Bacteroides} y el orden \textit{YS2} (etiqueta ``p\_Cyanobacteria;*;g\_'') que son muy estables en su alta y baja abundancia respectivamente. De hecho, el segundo es una clara isla de estabilidad con RSI = 97.7 cuando ocupa el puesto 43 en abundancia.
 
-Fijándonos en el gráfico inferior, la variabilidad sufre aumentos de un día a otro en varias ocasiones pero los picos más relevantes se obtienen a partir de la infección. Tanto RV como DV bajan casi exponencialmente como en el caso anterior pero parece que no recupera el estado inicial sino que más bien llega a un nuevo estado de variabilidad. De nuevo, con un muestreo durante más días se hubieran obtenido más conclusiones que serían interesantes.
+Fijándonos en el gráfico inferior, la variabilidad sufre aumentos de un día a otro en varias ocasiones pero los picos más relevantes se obtienen a partir de la infección. Tanto RV como DV bajan casi exponencialmente como en el caso anterior pero parece que no recupera el estado inicial sino que más bien llega a un nuevo estado de variabilidad.
 
 \begin{figure}[!h]
     \centering
@@ -253,4 +253,51 @@ Fijándonos en el gráfico inferior, la variabilidad sufre aumentos de un día a ot
     \label{rank_stoolB}
 \end{figure}
 
+
+
+
 \section [Correlaciones] {\textbf{Correlaciones}}
+Las correlaciones de abundancia en especies microbianas se utilizan en muchos trabajos para indicar interacción entre ellas. La correlación positiva indicaría una interacción mutualista, y la correlación negativa una interacción competitiva. Existen importantes sutilezas involucradas en el cálculo de las correlaciones entre especies de abundancias relativas, pero se han desarrollado algoritmos como SparCC \cite{Friedman2012} para mitigar estos problemas.
+
+En este proyecto también se han calculado las correlaciones aplicando el método de Pearson (Materiales y métodos) a las abundancias absolutas de todos los géneros. Además, se ha desarrollado un método de agrupación de los microorganismos más abundantes en base a su respuesta al viaje y a la infección (ver Materiales y métodos). Esto sirve para reorganizar la matriz de correlaciones y comprobar las correlaciones que se dan entre estos grupos de comportamiento. En la figura \ref{corrplot_saliva} vemos el resultado para la muestra de saliva. Los géneros a\_7, a\_4 y a\_14 muestran correlación negativa en algunas ocasiones. Los grupos presentan correlaciones positivas entre sus miembros aunque las correlaciones máximas se dan fuera de grupos (como a\_2 con a\_10 y a\_14, o a\_9 con a\_11). Esto quiere decir que los microorganismos que tienen la misma respuesta al viaje, no cambian de abundancia de forma similar (la figura \ref{group2_saliva} muestra este efecto).
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=4.5in]{./Figuras/corrplot_saliva.png}
+    \caption{Correlaciones saliva}
+    \label{corrplot_saliva}
+\end{figure}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=4in]{./Figuras/group2_saliva.png}
+    \caption{Grupo2 saliva}
+    \label{group2_saliva}
+\end{figure}
+
+Los resultados para intestino del donante A se encuentran en la figura \ref{corrplot_StoolA}. Aquí se han encontrado 4 grupos de comportamiento distinto y ninguna anti-correlación. El grupo rojo es el que presenta mejores correlaciones entre sus miembros, en la figura \ref{StoolA_G2} se representa la abundancia a lo largo del tiempo para comprobar su comportamiento. El verde y naranja solo tienen un miembro por lo que no se puede ver correlación interna de grupo y el violeta tiene correlación positiva pero no tan alta como el rojo. De nuevo, en algunos casos se dan correlaciones más fuertes entre grupos como es el caso de a\_13 y a\_10 que tienen mucha correlación con el grupo rojo.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=4in]{./Figuras/corrplot_StoolA.png}
+    \caption{Correlaciones intestinoA}
+    \label{corrplot_StoolA}
+\end{figure}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=4.5in]{./Figuras/StoolA_G2.png}
+    \caption{Grupo2 Intestino A}
+    \label{StoolA_G2}
+\end{figure}
+
+
+En la figura \ref{corrplot_StoolB} se muestra el intestino B como último caso. Cinco grupos han sido hallados, de los cuales el rojo vuelve a tener la mayor correlación interna. También se dan casos de correlación muy fuerte entre grupos distintos como \textit{Oscillospira} con \textbf{Phascolarctobacterium}. La proteobacteria del grupo violeta tiene correlación negativa con el resto y la máxima anti-correlación se da entre \textit{Ruminococcus} y el grupo rosa.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=5in]{./Figuras/corrplot_StoolB.png}
+    \caption{Correlaciones intestinoB}
+    \label{corrplot_StoolB}
+\end{figure}
+

@@ -129,12 +129,40 @@ Donde $D$ es el número total de saltos de rango dados por el elemento estudiado,
 Finalmente, bajo las matrices de rango (figuras \ref{rank_saliva}, \ref{rank_stoolA} y \ref{rank_stoolB}), hay un gráfico con dos medidas relevantes para la variabilidad del rango a lo largo del tiempo. Por un lado, RV se calcula como un promedio para todos los taxones del valor absoluto de la resta entre el rango de cada taxón en el tiempo que se calcula y el rango global de cada taxón. Y por otro lado, DV se calcula como un promedio para todos los taxones del valor absoluto de la resta entre el rango de cada taxón en el tiempo que se calcula y el rango que tenía en el tiempo anterior.
 
 
+\subsection[Coeficiente de correlación de Pearson]{\textbf{Coeficiente de correlación de Pearson}}
+Mide el grado de relación lineal entre dos variables cuantitativas ($X$ e $Y$) sobre una población y se calcula con la siguiente expresión:
+\begin{equation}
+\rho_{X,Y} = \frac{\sigma_{XY}} {\sigma_X \cdot \sigma_Y}
+\end{equation}
+
+donde $\sigma_{XY}$ es la covarianza de $(X,Y)$, $\sigma_X$ es la desviación típica de $X$ y $\sigma_Y$ es la desviación típica de $Y$.
+
+El resultado numérico fluctua entre el rango $[-1, +1]$. Una correlación de $+1$ significa que existe una relación lineal directa perfecta (positiva) entre las dos variables estudiadas. Una correlación de $-1$ significa es una relación lineal inversa perfecta (negativa). Y una correlación de $0$ se interpreta como que no existe una relación lineal (pero pueden darse otras).
+
+
 
 \section{Método de búsqueda de comportamientos}
+Se pretende agrupar taxones en grupos que reflejen su comportamiento frente a una perturbación (viaje o salmonelosis). Para ello, se desarrolló un método sencillo dividiendo las tablas de abundancia relativa en 3 periodos: antes ($a$), durante ($d$) y tras ($r$) el punto en cuestión. Para cada taxón, se calculó la mediana de su abundancia en cada uno de estos periodos ($M_a$, $M_d$, $M_t$). Por último, se calculan las diferencias $M_a - M_d$ y $M_t - M_d$. Si el primer incremento es positivo, quiere decir que la abundancia ha disminuído con la perturbación y si el incremento es negativo, quiere decir que ha aumentado. En el segundo incremento es lo contrario, valores positivos indican disminución de abundancia y valores negativos indican aumento. Además, se escoge un valor de $0.01$ para que el incremento se considere significativamente grande como para que haya cambio en la abundancia. A continuación se especifican los 7 grupos que se han considerado:
 
-
-
-\section{Fourier}
+\begin{table}[H]
+\centering
+\begin{tabular}{ >{\centering\arraybackslash}m{8cm} >{\arraybackslash}m{5cm}}
+\hline
+ & Grupos \\
+\hline \hline
+\multirow{7}{1cm}{}& Grupo1 \\ \cline{2-2}
+%\includegraphics[width=50mm]{./Figuras/StoolA_G2}
+& Grupo2 \\ \cline{2-2}
+& Grupo3 \\  \cline{2-2}
+& Grupo4 \\ \cline{2-2}
+& Grupo5 \\ \cline{2-2}
+& Grupo6 \\ \cline{2-2}
+& Grupo7 \\ \cline{2-2}
+\hline
+\end{tabular}
+\caption{Grupos.}
+\label{tabla:autores}
+\end{table}
 
 
 
