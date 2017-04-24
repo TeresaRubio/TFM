@@ -7,6 +7,7 @@
 \usepackage[latin1]{inputenc}          %permite usar acentos directamente del teclado
 \usepackage[spanish,es-tabla]{babel}		%titulos en español
 \usepackage[latin1]{inputenc}
+\usepackage{hyperref}			%hipervinculos al indice
 \usepackage{multirow, array} 		% para las tablas
 \usepackage{graphicx}		       	% figuras
 \usepackage{subfigure} 			% subfiguras
@@ -21,6 +22,7 @@
 \usepackage{enumerate} % enumerados
 \usepackage{hyperref} % hipervínculos
 \usepackage{mathtools} %ecuaciones
+\usepackage[usenames]{color} %colorear palabras
 
 \setcounter{tocdepth}{4} %agregar subsubsecciones numeradas al indice
 %\setcounter{secnumdepth}{4}
@@ -79,7 +81,7 @@
 %\cleardoublepage
 \addcontentsline{toc}{chapter}{Índice de figuras} % para que aparezca en el indice de contenidos
 \listoffigures % indice de figuras
-
+\listoftables % indice de tablas
 
 %%%%%%%%%%%%%
 %AGRADECIMIENTOS%
@@ -153,12 +155,13 @@ Por último, se calculan las correlaciones de abundancia relativa entre géneros. 
 
 \input{Results.tex}
 
-
 %%%%%%%%%%%%%
 %        DISCUSION       %
 %%%%%%%%%%%%%
 \chapter{Discusión y conclusiones}
 \markboth{DISCUSIÓN Y CONCLUSIONES}{DISCUSIÓN Y CONCLUSIONES}
+
+\input{Discussion.tex}
 
 %%%%%%%%%%%%%
 %        FUTURO            %
@@ -166,6 +169,8 @@ Por último, se calculan las correlaciones de abundancia relativa entre géneros. 
 \chapter{Perspectivas de futuro}
 \markboth{PERSPECTIVAS DE FUTURO}{PERSPECTIVAS DE FUTURO}
  
+ \input{Future.tex}
+
 %%%%%%%%%%%%%
 %     BIBLIOGRAFÍA      %
 %%%%%%%%%%%%%
@@ -184,18 +189,20 @@ Por último, se calculan las correlaciones de abundancia relativa entre géneros. 
 \bibitem{Venter2004} {\bf Venter, J.C., Remington, K., Heidelberg, J.F., Halpern, A.L., Rusch, D., Eisen, J.A., Wu, D., Paulsen, I., Nelson, K.E., Nelson, W. and Fouts, D.E.} 2004. Environmental genome shotgun sequencing of the Sargasso Sea. Science, {\bf 304}(5667), pp.66-74.
 %\bibitem{Blumm2012} {\bf Blumm, N., Ghoshal, G., Forró, Z., Schich, M., Bianconi, G., Bouchaud, J. P., and Barabási, A. L.} 2012. Dynamics of ranking processes in complex systems. Physical review letters, {\bf 109}(12), p.128701.
 \bibitem{McArdle1990} {\bf McArdle, B.H., Gaston, K.J., and Lawton, J.H.} 1990. Variation in the size of animal populations: patterns, problems and artefacts. The Journal of Animal Ecology, {\bf 59}(2), pp. 439-454.
+\bibitem{Taylor1961} {\bf Taylor, L.R.} 1961. Aggregation, Variance and the mean. Nature {\bf 189}, pp. 732-35.
 
 % Métodos
 \bibitem{Caporaso2010} {\bf Caporaso, J.G., Kuczynski, J., Stombaugh, J., Bittinger, K., Bushman, F.D., Costello, E.K., Fierer, N., Pena, A.G., Goodrich, J.K., Gordon, J.I., and Huttley, G. A.} 2010. QIIME allows analysis of high-throughput community sequencing data. Nature methods,  {\bf 7}(5), pp.335-336.
+\bibitem{Edgar2010} {\bf Edgar, R. C.} 2010. Search and clustering orders of magnitude faster than BLAST. Bioinformatics, {\bf 26}(19), pp. 2460-2461.
 
 % Resultados
 \bibitem{Liu2007} {\bf Liu, Z., Lozupone, C., Hamady, M., Bushman, F. D., and Knight, R.} 2007. Short pyrosequencing reads suffice for accurate microbial community analysis. Nucleic acids research, {\bf 35}(18), p. e120.
-
-\bibitem{Taylor1961} {\bf Taylor, L.R.} 1961. Aggregation, Variance and the mean. Nature {\bf 189}, pp. 732-35.
-
 \bibitem{Marti2017} {\bf Marti, J.M., Martínez-Martínez, D., Rubio, T., Gracia, C., Peña, M., Latorre, A., Moya, A. and Garay, C.P.} 2017. Health and disease imprinted in the time variability of the human microbiome. mSystems, {\bf2}(2), pp. e00144-16.
-
 \bibitem{Friedman2012} {\bf Friedman, J., and Alm, E.J.} 2012. Inferring correlation networks from genomic survey data. PLoS Comput Biol, {\bf 8}(9), p. e1002687.
+
+% Futuro
+\bibitem{Fisher2014} {\bf Fisher, C.K., and Mehta, P.} 2014. Identifying keystone species in the human gut microbiome from metagenomic timeseries using sparse linear regression. PloS one, {\bf 9}(7), p. e102451.
+\bibitem{Pilosof2017} {\bf Pilosof, S., Porter, M.A., Pascual, M., and Kéfi, S.} 2017. The Multilayer Nature of Ecological Networks. Nature Ecology \& Evolution, {\bf 1}. \textcolor{cyan}{\underline{\url{https://doi.org/10.1038/s41559-017-0101}}}
 
 \end{thebibliography}
 

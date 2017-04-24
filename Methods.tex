@@ -33,8 +33,8 @@ OTU (del inglés \textit{Operational Taxonomic Unit}) es una unidad taxonómica op
 
 Se seleccionó \textit{Closed-reference} y al final del proceso, se obtiene una tabla cuya primera columna es el identificador de OTU y la segunda columna son los conteos que pueden generarse en valor absoluto o relativo.
 
-\paragraph [Uclust]{\textbf{\textit{Uclust (\url{http://drive5.com/usearch/manual/uclust_algo.html})}}}
-Fue el método de agrupación utilizado. Es un algoritmo diseñado para agrupar secuencias de nucleótidos o aminoácidos en base a su similitud. Cada grupo o \textit{cluster} está definido por una secuencia representativa conocida como ``centroide". Sigue dos criterios de agrupamiento simples, con respecto a un umbral de similitud (T) dado: (1) todas las secuencias dentro de un \textit{cluster} tienen similitud $>$= T con la secuencia centroide y (2) todos los centroides tienen similitud $<$ T entre ellos. Hay que tener en cuenta que una secuencia puede coincidir con dos centroides diferentes con similitud $>$ T. Idealmente, se asignará al centroide más cercano, pero puede haber dos o más a la misma distancia, en cuyo caso la asignación de \textit{cluster} es ambigua y debe hacerse una elección arbitraria. La similitud se calcula utilizando alineamiento global. Además, se trata de un algoritmo voraz (también conocido como \textit{greedy}) que es aquél que elige la opción óptima en cada paso local esperando llegar a una solución general óptima, por lo que es importante el orden en que van entrando las secuencias. Si la secuencia entrante coincide con un centroide existente, se asigna a ese grupo y si no coincide, se convierte en el centroide de un nuevo grupo. Esto significa que las secuencias deben estar ordenadas para que los centroides más adecuados tienden a aparecer más temprano. Dado que las lecturas más abundantes tienen más probabilidades de ser secuencias de amplicones correctas, y por tanto son más probables de ser verdaderas secuencias biológicas, considera las secuencias de entrada en orden de disminución de la abundancia.
+\paragraph [Uclust]{\textbf{\textit{Uclust (\url{http://drive5.com/usearch/manual/uclust_algo.html})}}} 
+Fue el método de agrupación utilizado. Es un algoritmo diseñado para agrupar secuencias de nucleótidos o aminoácidos en base a su similitud \cite{Edgar2010}. Cada grupo o \textit{cluster} está definido por una secuencia representativa conocida como ``centroide". Sigue dos criterios de agrupamiento simples, con respecto a un umbral de similitud (T) dado: (1) todas las secuencias dentro de un \textit{cluster} tienen similitud $>$= T con la secuencia centroide y (2) todos los centroides tienen similitud $<$ T entre ellos. Hay que tener en cuenta que una secuencia puede coincidir con dos centroides diferentes con similitud $>$ T. Idealmente, se asignará al centroide más cercano, pero puede haber dos o más a la misma distancia, en cuyo caso la asignación de \textit{cluster} es ambigua y debe hacerse una elección arbitraria. La similitud se calcula utilizando alineamiento global. Además, se trata de un algoritmo voraz (también conocido como \textit{greedy}) que es aquél que elige la opción óptima en cada paso local esperando llegar a una solución general óptima, por lo que es importante el orden en que van entrando las secuencias. Si la secuencia entrante coincide con un centroide existente, se asigna a ese grupo y si no coincide, se convierte en el centroide de un nuevo grupo. Esto significa que las secuencias deben estar ordenadas para que los centroides más adecuados tienden a aparecer más temprano. Dado que las lecturas más abundantes tienen más probabilidades de ser secuencias de amplicones correctas, y por tanto son más probables de ser verdaderas secuencias biológicas, considera las secuencias de entrada en orden de disminución de la abundancia.
 
 \paragraph [Greengenes]{\textbf{\textit{Greengenes (\url{http://greengenes.secondgenome.com})}}}
 Es la base de datos que se eligió como referencia. Contiene taxonomía de 16S de calidad controlada, basada en una filogenia \textit{de novo} que proporciona conjuntos de OTUs estándar. Está bajo la licencia Creative Commons BY-SA 3.0. Incluye los siguientes niveles de taxonomía:
@@ -142,27 +142,31 @@ El resultado numérico fluctua entre el rango $[-1, +1]$. Una correlación de $+1$
 
 
 \section{Método de búsqueda de comportamientos}
-Se pretende agrupar taxones en grupos que reflejen su comportamiento frente a una perturbación (viaje o salmonelosis). Para ello, se desarrolló un método sencillo dividiendo las tablas de abundancia relativa en 3 periodos: antes ($a$), durante ($d$) y tras ($r$) el punto en cuestión. Para cada taxón, se calculó la mediana de su abundancia en cada uno de estos periodos ($M_a$, $M_d$, $M_t$). Por último, se calculan las diferencias $M_a - M_d$ y $M_t - M_d$. Si el primer incremento es positivo, quiere decir que la abundancia ha disminuído con la perturbación y si el incremento es negativo, quiere decir que ha aumentado. En el segundo incremento es lo contrario, valores positivos indican disminución de abundancia y valores negativos indican aumento. Además, se escoge un valor de $0.01$ para que el incremento se considere significativamente grande como para que haya cambio en la abundancia. A continuación se especifican los 7 grupos que se han considerado:
+Se pretende agrupar taxones en grupos que reflejen su comportamiento frente a una perturbación (viaje o salmonelosis). Para ello, se desarrolló un método sencillo dividiendo las tablas de abundancia relativa en 3 periodos: antes ($a$), durante ($d$) y tras ($r$) el punto en cuestión. Para cada taxón, se calculó la mediana de su abundancia en cada uno de estos periodos ($M_a$, $M_d$, $M_t$). Por último, se calculan los incrementos $\Delta M_1 = M_a - M_d$ y $\Delta M_2 = M_t - M_d$. Si $\Delta M_1$ es positivo, quiere decir que la abundancia ha disminuído con la perturbación y si el incremento es negativo, quiere decir que ha aumentado. En $\Delta M_2$ es lo contrario, valores positivos indican disminución de abundancia y valores negativos indican aumento. Además, se escoge un valor de $0.01$ para que el incremento se considere significativamente grande como para que haya cambio en la abundancia. A continuación se especifican los 7 grupos que se han considerado:
 
-\begin{table}[H]
+\begin{table}[h]
 \centering
-\begin{tabular}{ >{\centering\arraybackslash}m{8cm} >{\arraybackslash}m{5cm}}
+\resizebox{15cm}{!} {
+\begin{tabular}{| p{3cm}| p{5cm} | p{6.5cm} |}
 \hline
- & Grupos \\
+Grupo & Valores & Comportamiento\\
 \hline \hline
-\multirow{7}{1cm}{}& Grupo1 \\ \cline{2-2}
-%\includegraphics[width=50mm]{./Figuras/StoolA_G2}
-& Grupo2 \\ \cline{2-2}
-& Grupo3 \\  \cline{2-2}
-& Grupo4 \\ \cline{2-2}
-& Grupo5 \\ \cline{2-2}
-& Grupo6 \\ \cline{2-2}
-& Grupo7 \\ \cline{2-2}
-\hline
+\textbf{\textcolor{green}{Grupo 1}} & $\Delta M_1 < 0.01$ y \newline $\Delta M_2 > 0.01$ & Aumenta tras la perturbación.\\ \hline
+\textbf{\textcolor{red}{Grupo 2}} & $\Delta M_1 > 0.01$ y \newline $\Delta M_2 > 0.01$ & Disminuye durante la perturbación y recupera el estado inicial.\\ \hline
+%\textcolor{orange}
+{Grupo 3} & $\Delta M_1 > 0.01$ y \newline $\Delta M_2 < 0.01$ & Disminuye tras la perturbación.\\ \hline
+%\textcolor{pink}
+{Grupo 4} & $\Delta M_1 < -0.01$ y \newline $\Delta M_2 > -0.01$ & Aumenta con la perturbación.\\ \hline
+%\textcolor{purple}
+{Grupo 5} & $\Delta M_1 < - 0.01$ y \newline $\Delta M_2 > -0.01$ & Aumenta durante la perturbación y recupera el estado inicial.\\ \hline
+\textbf{\textcolor{cyan}{Grupo 6}} & $\Delta M_1 > -0.01$ y \newline $\Delta M_2 < -0.01$ & Disminuye tras la perturbación.\\ \hline
+\textbf{Grupo 7} & $-0.01 < \Delta M_1 < 0.01$ y $-0.01 < \Delta M_2 < 0.01$ & Sin variación o con variación independiente de la perturbación.\\ \hline
 \end{tabular}
-\caption{Grupos.}
-\label{tabla:autores}
+}
+\caption{Tabla de grupos.}
+\label{grupos_comportamiento}
 \end{table}
+
 
 
 
