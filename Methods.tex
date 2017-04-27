@@ -1,25 +1,29 @@
+Para analizar la serie temporal anual en la que se centra este estudio, se llevaron a cabo una serie de pasos en el siguiente orden: preprocesado de las secuencias, clasificación taxonómica, análisis de la variabilidad y estudio de interacciones. En el presente capítulo, se exponen los distintos materiales y métodos utilizados a lo largo del trabajo y la justificación de su elección.
+
 \section{Preprocesado: FastQC, MultiQC y seq\_crumbs}
 \textbf{FastQC} (\url{http://www.bioinformatics.babraham.ac.uk/projects/fastqc/}) es una herramienta de control de calidad para datos de secuenciación, de código abierto e implementada en Java. Permite un fichero de entrada en distintos formatos (fastq, SAM o BAM) y produce un fichero de salida en formato HTML con gráficos y tablas que permiten evaluar los datos. Proporciona mucha información sobre una única muestra: estadísticas numéricas (codificación de calidad según la plataforma utilizada, número total de secuencias...), \textit{score} de calidad, contenido en GC, distribución de longitud de secuencias, etc. Así se puede detectar rápidamente cualquier problema que hay que tener en cuenta antes de realizar análisis posteriores.
 
 \textbf{MultiQC} (\url{http://multiqc.info/}) es una herramienta de código abierto, implementada en Python que da soporte a muchas herramientas bioinformáticas, entre ellas FastQC. Produce un reporte HTML muy parecido pero permite un análisis a lo largo de varias muestras. La visualización de las muestras en conjunto permite realizar comparaciones y también recopila estadísticas numéricas de cada muestra para ver cómo se comportan los datos.
 
 \textbf{seq\_crumbs} (\url{https://bioinf.comav.upv.es/seq\_crumbs/}) es un software de código abierto implementado en Python que utiliza Biopython e incluye utilidades para procesar secuencias. Toma un fichero de secuencias como entrada y crea un nuevo fichero de salida con las secuencias procesadas. Dentro de sus muchas funciones, caben destacar: filtrado de secuencias por calidad media, filtrado por longitud según un umbral máximo y mínimo, eliminación de regiones de baja calidad en los extremos (\textit{trimming}), conversión de formatos, etc.
-
-
-
-\section{QIIME}
-\textbf{QIIME} (\url{http://qiime.org/index.html}) \cite{Caporaso2010} son la siglas en inglés de \textit{Quantitative Insights Into Microbial Ecology}. Es un \textit{pipeline} bioinformático de código abierto para realizar análisis de microbiomas a partir de datos de secuenciación. Fue construido utilizando el lenguaje de programación Python con una implementación modular en forma de \textit{scripts} para poder usar cualquier punto dentro de su flujo de trabajo (figura \ref{QIIME}) de manera independiente.
-
-\begin{figure}[!h]
-   \centering
-   \includegraphics[width=6in]{./Figuras/QIIME.png}
-   \caption[Flujo de trabajo de QIIME.] {Flujo de trabajo de QIIME.}
-   \label{QIIME}
-\end{figure}
+\\
+\\
+FastQC y MultiQC fueron utilizados por la gran cantidad de información que producen y sus vistosos gráficos. seq\_scrumbs se eligió porque incluye un script específico para filtrar por calidad media bastante fácil de usar y rápido.
 
 \clearpage
+\section{Clasificación taxonómica: QIIME}
+\textbf{QIIME} (\url{http://qiime.org/index.html}) \cite{Caporaso2010} son la siglas en inglés de \textit{Quantitative Insights Into Microbial Ecology}. Es un \textit{pipeline} bioinformático de código abierto para realizar análisis de microbiomas a partir de datos de secuenciación. Fue construido utilizando el lenguaje de programación Python con una implementación modular en forma de \textit{scripts} para poder usar cualquier punto dentro de su flujo de trabajo (figura \ref{QIIME}) de manera independiente.
+
 QIIME acepta ficheros de entrada en formato fastq, fasta+qual o sff. Incorpora su propio método de preprocesado, aunque no fue utilizado en este trabajo, que realiza el filtrado de \textit{reads} por calidad, longitud y el demultiplexado simultáneamente a partir de un fichero ``mapa'' con los metadatos. En este proyecto se ha utilizado QIIME para la selección de OTUs y para la asignación de taxonomía, que son los dos siguientes pasos que incorpora el flujo de trabajo. Incluye tres pasos adicionales con sus respectivas visualizaciones que tampoco fueron utilizados: creación de árboles filogenéticos, estudio de diversidad $\alpha$ y $\beta$ y método de rarefacción.
 
+Existen múltiples herramientas para realizar una clasificación taxonómica pero se eligió QIIME para reproducir y corroborar los resultados obtenidos por los autores de donde se obtuvieron los datos \cite{David2014}. Se obtienen diferencias taxonómicas a la hora de elegir una herramienta u otra, pero no son muy significativas y ambos métodos son robustos.
+
+\begin{figure}[]
+   \centering
+   \includegraphics[width=6in]{./Figuras/QIIME.png}
+   \caption[Flujo de trabajo de QIIME.] {Flujo de trabajo de QIIME. Se representan esquemáticamente todas las opciones de QIIME. Cada una de ellas las realiza un \textit{script} diferente, de tal manera que puede iniciarse el análisis en cualquier punto del flujo de trabajo.}
+   \label{QIIME}
+\end{figure}
 
 \subsection [Selección de OTUs] {\textbf{Selección de OTUs}} 
 OTU (del inglés \textit{Operational Taxonomic Unit}) es una unidad taxonómica operativa, es decir, una unidad de clasificación elegida por el investigador para individualizar los objetos de su estudio sin juzgar si se corresponden a una entidad biológica particular. Se aplica cuando se tienen datos de secuencias de ADN o morfológicos. Puede considerarse OTU un individuo, una población, una especie o cualquier otro taxón. QIIME ofrece tres estrategias de selección diferentes para este paso:
@@ -30,6 +34,8 @@ OTU (del inglés \textit{Operational Taxonomic Unit}) es una unidad taxonómica op
 	\item \textit{\textbf{De novo}}: Las lecturas se agrupan por similitud unas contra otras, sin ningún tipo de referencia externa. El beneficio es que todas las \textit{reads} son agrupadas pero no es paralelizable por lo que sería un proceso muy lento para grandes sets de datos. Los métodos de agrupación son: \textit{uclust} y \textit{usearch}.
 	\item \textit{\textbf{Open-reference}}: Las lecturas son agrupadas contra la referencia y las que no se encuentran en la referencia son agrupadas posteriormente \textit{de novo}. Presenta la ventaja de que todas las reads son agrupadas y además es paralelizable la mitad del proceso. Suele ser la estrategia preferida aunque no es recomendable utilizarla en datos con pocas referencias porque el proceso puede tardar días en completarse. Los métodos de agrupación son: \textit{cd-hit, mothur, prefix/suffix, trie, uclust} y \textit{usearch}.
 	\end{itemize}
+
+
 
 Se seleccionó \textit{Closed-reference} y al final del proceso, se obtiene una tabla cuya primera columna es el identificador de OTU y la segunda columna son los conteos que pueden generarse en valor absoluto o relativo.
 
@@ -60,36 +66,29 @@ Una vez se ha creado la tabla OTU, QIIME permite asignar una taxonomía a cada se
 
 
 
-\section{complexCruncher} 
-Es un software de código abierto implementado en python por Jose Manuel Martí que sirve para el estudio de series temporales. Acepta como \textit{input} ficheros excel (en formato xlsx) y genera como \textit{output} una serie de gráficos (eps, svg, png, pdf o ps) y tablas (tex o xlsx). Se puede utilizar en modo automático, que genera todos los resultados, o interactivo, que genera los resultados que el usuario pide. En los siguientes apartados se especifica la forma de generar cada resultado.
+\section{Análisis de variabilidad: complexCruncher} 
+Es un software de código abierto implementado en python que sirve para el estudio de la variabilidad en series temporales \cite{ccruncher2017}. Acepta como \textit{input} ficheros excel (en formato xlsx) y genera como \textit{output} una serie de gráficos (eps, svg, png, pdf o ps) y tablas (tex o xlsx). Se puede utilizar en modo automático, que genera todos los resultados, o interactivo, que genera los resultados que el usuario pide. En los siguientes apartados se especifica la forma de generar cada resultado.
 
 
 \subsection[Regresión lineal y exponencial]{\textbf{Regresión lineal y exponencial}}
-La recta de regresión, conocida también como recta de mejor ajuste o recta de mínimos cuadrados, es aquella que mejor se ajusta a los datos lo más estrechamente posible. La idea es que los valores de la recta estén lo más cerca posible de los valores observados pero siempre quedan distancias entre los puntos y la recta, que son los denominados errores residuales. Para realizar el ajuste, se suman todos los cuadrados de los errores residuales para obtener un solo error que se llama suma de los errores al cuadrado (SSE -- siglas en inglés de ``Sum of Squares Error'') y se elige la recta con el valor más pequeño SSE.
+Primero se comprueba si los datos se ajustan a una recta de regresión, conocida también como recta de mejor ajuste o recta de mínimos cuadrados, que es aquella que mejor se ajusta a los datos lo más estrechamente posible. La idea es que los valores de la recta estén lo más cerca posible de los valores observados pero siempre quedan distancias entre los puntos y la recta, que son los denominados errores residuales. Para realizar el ajuste, se suman todos los cuadrados de los errores residuales para obtener un solo error que se llama suma de los errores al cuadrado (SSE -- siglas en inglés de ``Sum of Squares Error'') y se elige la recta con el valor más pequeño SSE.
 
-En ocasiones los datos no se ajustan a una recta sino a una curva exponencial de la forma $y = A\cdot r^x$. En estos casos, se convierte la curva exponencial en recta por medio de logaritmos y se aplica el ajuste visto anteriormente. Aplicando logaritmos quedaría de la forma:
-
-\begin{equation}
-\log y = \log (A\cdot r^x)
-\end{equation}
-
-que con propiedades de logaritmos queda como:
-
+En ocasiones los datos no se ajustan a una recta sino a una curva exponencial de la forma $y = A\cdot r^x$. En estos casos, se convierte la curva exponencial en recta por medio de logaritmos y se aplica el ajuste visto anteriormente. Aplicando propiedades de logaritmos quedaría de la forma:
 \begin{equation}
 \log y = \log A + x \cdot \log r
 \end{equation}
 
-donde la pendiente es $\log r$ y la intersección con el eje y es $\log A$.
+donde la pendiente es $\log r$ y la intersección con el eje de ordenadas es $\log A$.
 
 
 \subsection[Ley de potencia $x$-ponderada]{\textbf{Ley de potencia $x$-ponderada}}
-%Cuando se ajusta la ley de potencia de desviación estándar frente a la media, se tuvo en cuenta que cada media tiene incertidumbre y se puede estimar, para un tamaño de muestra $n$, por el SEM (error estándar de la media). En este caso, las incertidumbres afectan a la variable independiente, por lo que el ajuste no fue tan trivial como un ajuste y-ponderado, donde las incertidumbres afectan a la variable dependiente. Un método estándar para realizar este ajuste es (i) invertir las variables antes de aplicar los pesos, (ii) realizar el ajuste ponderado, y (iii) revertir la inversión. Este método es determinista, pero la solución aproximada empeora con coeficientes de determinación más pequeños. Para superar esa limitación, se desarrolló un método estocástico con una estrategia de tipo bootstrap que evitó la inversión y es aplicable independientemente del coeficiente de determinación.
+Cuando se ajusta la ley de potencia de desviación estándar frente a la media, se tuvo en cuenta que cada media tiene incertidumbre y se puede estimar, para un tamaño de muestra $n$, por el SEM (error estándar de la media). En este caso, las incertidumbres afectan a la variable independiente, por lo que el ajuste no fue tan trivial como un ajuste y-ponderado, donde las incertidumbres afectan a la variable dependiente. Un método estándar para realizar este ajuste es (i) invertir las variables antes de aplicar los pesos, (ii) realizar el ajuste ponderado, y (iii) revertir la inversión. Este método es determinista, pero la solución aproximada empeora con coeficientes de determinación más pequeños. Para superar esa limitación, se desarrolló un método estocástico con una estrategia de tipo bootstrap que evitó la inversión y es aplicable independientemente del coeficiente de determinación.
 
-%La idea básica de bootstrap es que la inferencia sobre una población a partir de datos de muestra puede ser modelada mediante un nuevo muestreo de los datos de la muestra y realizando la inferencia sobre una muestra a partir de datos remuestreados (75). Para adaptar esta idea general a nuestro problema, hemos re-muestreado la matriz de datos $x$ utilizando su matriz de errores. Es decir, para cada replicación, se calculó una nueva matriz de datos $x$ sobre la base de $x^*_i = x_i + v_i$, donde $v_i$ es una variable aleatoria gaussiana con media $\mu_i=0$ y desviación estándar $\sigma_i=\mathrm{SEM}_i$, como se definió anteriormente. Para cada repetición, se realizó un ajuste completo de la ley de potencia no ponderada, donde elegir entre leyes de potencia de ajuste ($y=Vx^\beta$) usando regresión lineal en datos transformados por log (LLR) versus regresión no lineal (NLR), seguimos principalmente \emph{General Guidelines for the Analysis of Biological Power Laws} (76). Los parámetros de la x-ponderación fueron estimados por promediar a través de todos los ajustes de repetición realizados, y sus errores se calcularon mediante el cálculo de la desviación estándar para todos los ajustes. Al final de cada paso, el error relativo se calculó comparando la estimación del parámetro de ajuste en el último paso con el anterior. Finalmente, tanto el coeficiente de determinación del ajuste como el coeficiente de correlación entre los parámetros de ajuste fueron estimados por promediado.
+La idea básica de bootstrap es que la inferencia sobre una población a partir de datos de muestra puede ser modelada mediante un nuevo muestreo de los datos de la muestra y realizando la inferencia sobre una muestra a partir de datos remuestreados (75). Para adaptar esta idea general a nuestro problema, hemos re-muestreado la matriz de datos $x$ utilizando su matriz de errores. Es decir, para cada replicación, se calculó una nueva matriz de datos $x$ sobre la base de $x^*_i = x_i + v_i$, donde $v_i$ es una variable aleatoria gaussiana con media $\mu_i=0$ y desviación estándar $\sigma_i=\mathrm{SEM}_i$, como se definió anteriormente. Para cada repetición, se realizó un ajuste completo de la ley de potencia no ponderada, donde elegir entre leyes de potencia de ajuste ($y=Vx^\beta$) usando regresión lineal en datos transformados por log (LLR) versus regresión no lineal (NLR), seguimos principalmente \emph{General Guidelines for the Analysis of Biological Power Laws} (76). Los parámetros de la x-ponderación fueron estimados por promediar a través de todos los ajustes de repetición realizados, y sus errores se calcularon mediante el cálculo de la desviación estándar para todos los ajustes. Al final de cada paso, el error relativo se calculó comparando la estimación del parámetro de ajuste en el último paso con el anterior. Finalmente, tanto el coeficiente de determinación del ajuste como el coeficiente de correlación entre los parámetros de ajuste fueron estimados por promediado.
 
 
-\subsection[Normalización y zona sana]{\textbf{Normalización y zona sana}}
-Para mostrar todos los estudios bajo ejes comunes, se estandarizan los parámetros de Taylor utilizando el grupo de sujetos sanos para cada estudio individualmente. Con este enfoque, todos los estudios se pueden visualizar en un diagrama compartido con unidades de desviación estándar de los parámetros Taylor en sus ejes.
+\subsection[Estandarización]{\textbf{Estandarización}}
+Para mostrar varios estudios bajo ejes comunes, se estandarizan los parámetros de Taylor utilizando el grupo de sujetos sanos de cada estudio individualmente. Con este enfoque, todos los estudios se pueden visualizar en un diagrama compartido con unidades de desviación estándar de los parámetros Taylor en sus ejes.
 
 Para el parámetro $V$, la estimación de la media ($\widehat{V}$) del grupo de sanos, compuesta por $h$ individuos, es:
 
@@ -118,19 +117,21 @@ con $W_2=\sum_i^h \omega_i^2$, que finalmente queda como:
 % Esto está relacionado con el cálculo de la "healthy zone".
 
 \subsection[RSI y medidas de variabilidad]{\textbf{RSI y medidas de variabilidad}}
-El RSI se muestra como un porcentaje en una barra separada a la derecha del gráfico de la matriz de rango (figuras \ref{rank_saliva}, \ref{rank_stoolA} y \ref{rank_stoolB}). El RSI es estrictamente 1 para un elemento cuyo rango nunca cambia con el tiempo y es 0 para un elemento cuyo rango oscila entre los extremos. Por tanto, el RSI se calcula para cada elemento como 1 menos el cociente entre número de saltos de rango reales y el número máximo posible de saltos, todo a la potencia p:
+ComplexCruncher genera unas matrices de rango para los 50 taxones más abundantes (figuras \ref{rank_saliva}, \ref{rank_stoolA} y \ref{rank_stoolB}) que muestran el puesto de un taxón en el \textit{ranking} de abundancia. En la parte derecha de estas matrices aparece una barra midiendo el índice de estabilidad de rango (RSI -- siglas en inglés de \textit{Rank Stability Index}) en porcentaje. RSI puede oscilar entre 0 y 1, siendo estrictamente 1 para un elemento cuyo rango nunca cambia con el tiempo y 0 para un elemento cuyo rango oscila entre los extremos. Por tanto, RSI se calcula para cada elemento como:
 
 \begin{equation}
 {\rm RSI} = \left(1-\frac{\text{saltos de rango reales}}{\text{saltos de rango posibles}}\right)^p = \left(1-\frac{D}{(N-1)(t-1)}\right)^p
 \end{equation}
 
-Donde $D$ es el número total de saltos de rango dados por el elemento estudiado, $N$ es el número de elementos que han sido clasificados, y $t$ es el número de muestras temporales. El índice de potencia, $p = 4$, se eligió arbitrariamente para aumentar la resolución en la región estable.
+donde $D$ es el número total de saltos de rango dados por el elemento estudiado, $N$ es el número de elementos que han sido clasificados, y $t$ es el número de muestras temporales. El índice de potencia, $p = 4$, se eligió arbitrariamente para aumentar la resolución en la región estable.
 
-Finalmente, bajo las matrices de rango (figuras \ref{rank_saliva}, \ref{rank_stoolA} y \ref{rank_stoolB}), hay un gráfico con dos medidas relevantes para la variabilidad del rango a lo largo del tiempo. Por un lado, RV se calcula como un promedio para todos los taxones del valor absoluto de la resta entre el rango de cada taxón en el tiempo que se calcula y el rango global de cada taxón. Y por otro lado, DV se calcula como un promedio para todos los taxones del valor absoluto de la resta entre el rango de cada taxón en el tiempo que se calcula y el rango que tenía en el tiempo anterior.
+Finalmente, debajo de estas mismas matrices de rango, hay un gráfico con dos medidas relevantes para la variabilidad del rango a lo largo del tiempo. Por un lado, RV se calcula como un promedio para todos los taxones del valor absoluto de la resta entre el rango de cada taxón en el tiempo que se calcula y el rango global de cada taxón. Y por otro lado, DV se calcula como un promedio para todos los taxones del valor absoluto de la resta entre el rango de cada taxón en el tiempo que se calcula y el rango que tenía en el tiempo anterior.
 
+
+\section[Estudio de interacciones]{Estudio de interacciones}
 
 \subsection[Coeficiente de correlación de Pearson]{\textbf{Coeficiente de correlación de Pearson}}
-Mide el grado de relación lineal entre dos variables cuantitativas ($X$ e $Y$) sobre una población y se calcula con la siguiente expresión:
+En muchos trabajos se han utilizado las correlaciones como medida de interacción entre taxones, de tal manera que si dos géneros aparecen y desaparecen de forma similar a lo largo del tiempo quiere decir que están interaccionando. Existen diversos coeficientes que miden el grado de correlación, adaptados a la naturaleza de los datos, pero el más conocido es el coeficiente de correlación de Pearson y es el que se ha utilizado en los datos de abundancia. Mide el grado de relación lineal entre dos variables cuantitativas ($X$ e $Y$) sobre una población y se calcula con la siguiente expresión:
 \begin{equation}
 \rho_{X,Y} = \frac{\sigma_{XY}} {\sigma_X \cdot \sigma_Y}
 \end{equation}
@@ -140,9 +141,8 @@ donde $\sigma_{XY}$ es la covarianza de $(X,Y)$, $\sigma_X$ es la desviación típ
 El resultado numérico fluctua entre el rango $[-1, +1]$. Una correlación de $+1$ significa que existe una relación lineal directa perfecta (positiva) entre las dos variables estudiadas. Una correlación de $-1$ significa es una relación lineal inversa perfecta (negativa). Y una correlación de $0$ se interpreta como que no existe una relación lineal (pero pueden darse otras).
 
 
-
 \section{Método de búsqueda de comportamientos}
-Se pretende agrupar taxones en grupos que reflejen su comportamiento frente a una perturbación (viaje o salmonelosis). Para ello, se desarrolló un método sencillo dividiendo las tablas de abundancia relativa en 3 periodos: antes ($a$), durante ($d$) y tras ($r$) el punto en cuestión. Para cada taxón, se calculó la mediana de su abundancia en cada uno de estos periodos ($M_a$, $M_d$, $M_t$). Por último, se calculan los incrementos $\Delta M_1 = M_a - M_d$ y $\Delta M_2 = M_t - M_d$. Si $\Delta M_1$ es positivo, quiere decir que la abundancia ha disminuído con la perturbación y si el incremento es negativo, quiere decir que ha aumentado. En $\Delta M_2$ es lo contrario, valores positivos indican disminución de abundancia y valores negativos indican aumento. Además, se escoge un valor de $0.01$ para que el incremento se considere significativamente grande como para que haya cambio en la abundancia. A continuación se especifican los 7 grupos que se han considerado:
+Se pretende agrupar taxones en grupos que reflejen su comportamiento frente a una perturbación (viaje o salmonelosis) para reordenar la matriz de correlaciones. Para ello, se desarrolló un método sencillo dividiendo las tablas de abundancia relativa en 3 periodos: antes ($a$), durante ($d$) y tras ($r$) el punto en cuestión. Para cada taxón, se calculó la mediana de su abundancia en cada uno de estos periodos ($M_a$, $M_d$, $M_t$). Por último, se calculan los incrementos $\Delta M_1 = M_a - M_d$ y $\Delta M_2 = M_t - M_d$. Si $\Delta M_1$ es positivo, quiere decir que la abundancia ha disminuído con la perturbación y si el incremento es negativo, quiere decir que ha aumentado. En $\Delta M_2$ es lo contrario, valores positivos indican disminución de abundancia y valores negativos indican aumento. Además, se escoge un valor de $0.01$ para que el incremento se considere significativamente grande como para que haya cambio en la abundancia. A continuación se especifican los 7 grupos que se han considerado:
 
 \begin{table}[h]
 \centering
@@ -153,21 +153,33 @@ Grupo & Valores & Comportamiento\\
 \hline \hline
 \textbf{\textcolor{green}{Grupo 1}} & $\Delta M_1 < 0.01$ y \newline $\Delta M_2 > 0.01$ & Aumenta tras la perturbación.\\ \hline
 \textbf{\textcolor{red}{Grupo 2}} & $\Delta M_1 > 0.01$ y \newline $\Delta M_2 > 0.01$ & Disminuye durante la perturbación y recupera el estado inicial.\\ \hline
-%\textcolor{orange}
-{Grupo 3} & $\Delta M_1 > 0.01$ y \newline $\Delta M_2 < 0.01$ & Disminuye tras la perturbación.\\ \hline
-%\textcolor{pink}
-{Grupo 4} & $\Delta M_1 < -0.01$ y \newline $\Delta M_2 > -0.01$ & Aumenta con la perturbación.\\ \hline
-%\textcolor{purple}
-{Grupo 5} & $\Delta M_1 < - 0.01$ y \newline $\Delta M_2 > -0.01$ & Aumenta durante la perturbación y recupera el estado inicial.\\ \hline
-\textbf{\textcolor{cyan}{Grupo 6}} & $\Delta M_1 > -0.01$ y \newline $\Delta M_2 < -0.01$ & Disminuye tras la perturbación.\\ \hline
+\textbf{\textcolor{orange}{Grupo 3}} & $\Delta M_1 > 0.01$ y \newline $\Delta M_2 < 0.01$ & Disminuye tras la perturbación.\\ \hline
+\textbf{\textcolor{pink}{Grupo 4}} & $\Delta M_1 < -0.01$ y \newline $\Delta M_2 > -0.01$ & Aumenta con la perturbación.\\ \hline
+\textbf{\textcolor{Plum}{Grupo 5}} & $\Delta M_1 < - 0.01$ y \newline $\Delta M_2 > -0.01$ & Aumenta durante la perturbación y recupera el estado inicial.\\ \hline
+\textbf{\textcolor{SkyBlue}{Grupo 6}} & $\Delta M_1 > -0.01$ y \newline $\Delta M_2 < -0.01$ & Disminuye tras la perturbación.\\ \hline
 \textbf{Grupo 7} & $-0.01 < \Delta M_1 < 0.01$ y $-0.01 < \Delta M_2 < 0.01$ & Sin variación o con variación independiente de la perturbación.\\ \hline
 \end{tabular}
 }
-\caption{Tabla de grupos.}
+\caption[Tabla de grupos de comportamiento.]{Tabla de grupos de comportamiento de los microorganismos encontrados tras una perturbación. La primera columna recoge los nombres de los grupos y su color identificativo, la segunda columna incluye los valores de incremento de la mediana que debe tener cada taxón para pertenecer al grupo y la última columna describe el comportamiento del grupo.}
 \label{grupos_comportamiento}
 \end{table}
 
 
+\section{Aproximación para obtener interacciones: LIMITS} 
+Trabajos más actuales como el de \textit{Fisher et al.} \cite{Fisher2014}, han cuestionado que las correlaciones midan interacciones reales y, además, han desarrollado un nuevo método que se ha aplicado a los datos para comparar con correlaciones. El algoritmo se denomina LIMITS (siglas de \textit{Learning Interactions from MIcrobial Time Series}) y utiliza una regresión lineal con agregación bootstrap para inferir el modelo Lotka-Volterra tiempo discreto (dLV) en la dinámica de los microorganismos. 
 
+El modelo dLV, también conocido como modelo de Ricker, es un modelo clásico de población discreta que relaciona la abundancia de una especie $i$ a tiempo $t+1$ ($x_i(t+1)$) con la abundancia de todas las especies del ecosistema en el tiempo $t$ ($\vec{x}=\left\lbrace x_1(t),...,x_N(t)\right\rbrace$). Las interacciones  se calculan a través del coeficiente de interacción, $c_{ij})$, que describe la influencia que la especie $j$ tiene sobre la abundancia de la especie $i$. La dinámica se modela con la ecuación:
+\begin{equation}
+x_i(t+1) = \eta_i(t) \cdot x_i(t) \cdot exp (\sum_{j}c_{ij}(x_{j}(t) - <x_j>) )
+\end{equation}
+donde $\eta_i(t)$ es el ruido multiplicativo con distribución log-normal y $<x_j>$ es la abundancia de equilibrio de las especies $j$ y se establece por la capacidad de carga del entorno. Aplicando logaritmos se pueden obtener los coeficientes de interacción.
 
-\section{LIMITS: Lotka-Volterra} 
+El algoritmo LIMITS fue implementado en Mathematica (Wolfram Research, Inc.) y es de código abierto. Intenta inferir la matriz de interacciones entre microorganismos a partir de la abundancia absoluta de los microbios en el ecosistema. El procedimiento utiliza regresión por pasos y bootstrap que están esquematizados en la figura \ref{LIMITS}. La matriz se inicializa con valores en la diagonal, $c_{ii}$, distintos de cero porque se sabe que cada especie tiene que interaccionar consigo misma. En cada subsecuente iteración, se añade una interacción adicional $c_{ij}$ al modelo escaneando el resto de especies y eligiendo la que produce el menor error en el grupo test.
+
+\begin{figure}[h]
+   \centering
+   \includegraphics[width=6in]{./Figuras/LIMITS.png}
+   \caption[Procedimiento de LIMITS.] {Procedimiento de LIMITS. a) Utiliza una regresión por pasos, donde las interacciones se añaden secuencialmente a la regresión si su inclusión reduce el error de predicción por debajo de un umbral predefinido. b) El error se evalúa por agregación bootstrap, que consiste en dividir los datos de forma aleatoria en dos conjuntos: uno de entrenamiento utilizado para la regresión y otro de sondeo para evaluar el error. c) La regresión por pasos se aplica repetidas veces para construir varios conjuntos de entrenamiento que finalmente se simplifican en uno solo aplicando la mediana a todos ellos.}
+   \label{LIMITS}
+\end{figure}
+

@@ -22,7 +22,7 @@
 \usepackage{enumerate} % enumerados
 \usepackage{hyperref} % hipervínculos
 \usepackage{mathtools} %ecuaciones
-\usepackage[usenames]{color} %colorear palabras
+\usepackage[usenames,dvipsnames,table]{xcolor} %colorear palabras
 
 \setcounter{tocdepth}{4} %agregar subsubsecciones numeradas al indice
 %\setcounter{secnumdepth}{4}
@@ -98,13 +98,13 @@
 \chapter*{Resumen} % si no queremos que añada la palabra "Capitulo"
 \addcontentsline{toc}{chapter}{Resumen} % si queremos que aparezca en el índice
 
-En este proyecto se analizan datos del estudio \textit{David et al.} \cite{David2014} procedentes del microbioma de dos individuos. Se trata de datos de secuenciación de la región V4 del ARN ribosomal 16S de los microorganismos presentes en intestino y saliva, tomados a lo largo de un año. Además, se recopilaron datos del estilo de vida de los donantes tales como dieta, ejercicio o enfermedad. Esto supone un total aproximado de 64,8GB de datos. Los sujetos son interesantes porque el primero de ellos tuvo una infección de \textit{Salmonella} durante el estudio y el segundo realizó un viaje al extranjero, lo que nos permite ver cómo varía la dinámica del microbioma en estas situaciones.
+En este proyecto se analizan datos del estudio \textit{David et al.} \cite{David2014} procedentes del microbioma de dos individuos. Se trata de datos de secuenciación de la región V4 del gen que codifica el ARN ribosomal 16S de los microorganismos presentes en intestino y saliva, tomados a lo largo de un año. Además, se recopilaron datos del estilo de vida de los donantes tales como dieta, ejercicio o enfermedad. Esto supone un total aproximado de 64,8GB de datos. Los sujetos son interesantes porque el primero de ellos realizó un viaje al extranjero durante el estudio y el segundo tuvo una infección de \textit{Salmonella}, lo que nos permite ver cómo varía la dinámica del microbioma en estas situaciones.
 
 En primer lugar, se comprobó la calidad y longitud de la secuenciación y se hizo un filtro previo que redujo muy poco el set de datos. A continuación, se agruparon las \textit{reads} en OTUs al 97\% de similitud de secuencia y se asignó la taxonomía a nivel de género. Con estos datos se obtuvieron unas tablas que incluyen la abundancia absoluta de cada taxón, en cada día y en cada individuo.
 
-En segundo lugar, se hizo un estudio de variabilidad temporal de los microorganismos presentes a partir de su abundancia. Se busca si estos datos se ajustan a algún modelo y encontramos que siguen la ley de Taylor, lo cual nos permite definir a cada individuo con tan solo dos variables. Además, se comprueba la variabilidad haciendo un análisis ordenando por abundancia total a lo largo de los días y haciendo un \textit{ranking} de los microorganismos.
+En segundo lugar, se hizo un estudio de variabilidad temporal de los microorganismos presentes a partir de su abundancia. Se busca si estos datos se ajustan a algún modelo y encontramos que siguen la ley de Taylor, lo cual nos permite definir a cada individuo con tan solo dos variables. Además, se comprueba la variabilidad haciendo un análisis ordenando por abundancia total a lo largo de los días y haciendo un \textit{ranking} de los microorganismos. Estos resultados fueron incorporados al artículo recientemente publicado de \textit{Martí et al.} \cite{Marti2017} como la serie temporal más larga analizada por los autores.
 
-Por último, se calculan las correlaciones de abundancia relativa entre géneros. Se realiza una clasificación previa en grupos de comportamiento en base a una perturbación y se comprueba la correlación entre y dentro de grupos. El campo de las correlaciones se ha cuestionado como medida real de las interacciones y aunque existen modelos que pueden explicarlas mejor, esto solo es la punta del iceberg y aún nos queda un largo camino que recorrer para configurar todos los acontecimientos que se producen en nuestro microbioma. %Mediante contraste bibliográfico se trata de explicar este comportamiento y se abren distintas perspectivas de futuro.
+Por último, se calculan las correlaciones de abundancia relativa entre géneros. Se realiza una clasificación previa en grupos de comportamiento en base a una perturbación y se comprueba la correlación entre y dentro de grupos. El campo de las correlaciones se ha cuestionado como medida real de las interacciones y, aunque existen modelos que pueden explicarlas mejor, esto solo es la punta del iceberg y aún nos queda un largo camino que recorrer para configurar todos los acontecimientos que se producen en nuestro microbioma. %Mediante contraste bibliográfico se trata de explicar este comportamiento y se abren distintas perspectivas de futuro.
 
 
 %%%%%%%%%%%%%
@@ -194,14 +194,15 @@ Por último, se calculan las correlaciones de abundancia relativa entre géneros. 
 % Métodos
 \bibitem{Caporaso2010} {\bf Caporaso, J.G., Kuczynski, J., Stombaugh, J., Bittinger, K., Bushman, F.D., Costello, E.K., Fierer, N., Pena, A.G., Goodrich, J.K., Gordon, J.I., and Huttley, G. A.} 2010. QIIME allows analysis of high-throughput community sequencing data. Nature methods,  {\bf 7}(5), pp.335-336.
 \bibitem{Edgar2010} {\bf Edgar, R. C.} 2010. Search and clustering orders of magnitude faster than BLAST. Bioinformatics, {\bf 26}(19), pp. 2460-2461.
+\bibitem{ccruncher2017} {\bf Martí, J.M., and Garay, C.P.} 2017. ComplexCruncher: dynamics of ranking processes toolkit. In preparation.
+\bibitem{Fisher2014} {\bf Fisher, C.K., and Mehta, P.} 2014. Identifying keystone species in the human gut microbiome from metagenomic timeseries using sparse linear regression. PloS one, {\bf 9}(7), p. e102451.
 
 % Resultados
 \bibitem{Liu2007} {\bf Liu, Z., Lozupone, C., Hamady, M., Bushman, F. D., and Knight, R.} 2007. Short pyrosequencing reads suffice for accurate microbial community analysis. Nucleic acids research, {\bf 35}(18), p. e120.
-\bibitem{Marti2017} {\bf Marti, J.M., Martínez-Martínez, D., Rubio, T., Gracia, C., Peña, M., Latorre, A., Moya, A. and Garay, C.P.} 2017. Health and disease imprinted in the time variability of the human microbiome. mSystems, {\bf2}(2), pp. e00144-16.
+\bibitem{Marti2017} {\bf Martí, J.M., Martínez-Martínez, D., Rubio, T., Gracia, C., Peña, M., Latorre, A., Moya, A. and Garay, C.P.} 2017. Health and disease imprinted in the time variability of the human microbiome. mSystems, {\bf2}(2), pp. e00144-16.
 \bibitem{Friedman2012} {\bf Friedman, J., and Alm, E.J.} 2012. Inferring correlation networks from genomic survey data. PLoS Comput Biol, {\bf 8}(9), p. e1002687.
 
 % Futuro
-\bibitem{Fisher2014} {\bf Fisher, C.K., and Mehta, P.} 2014. Identifying keystone species in the human gut microbiome from metagenomic timeseries using sparse linear regression. PloS one, {\bf 9}(7), p. e102451.
 \bibitem{Pilosof2017} {\bf Pilosof, S., Porter, M.A., Pascual, M., and Kéfi, S.} 2017. The Multilayer Nature of Ecological Networks. Nature Ecology \& Evolution, {\bf 1}. \textcolor{cyan}{\underline{\url{https://doi.org/10.1038/s41559-017-0101}}}
 
 \end{thebibliography}
