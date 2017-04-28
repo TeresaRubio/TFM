@@ -22,9 +22,9 @@ Para hacerse una idea de la calidad de los datos, se utilizó FastQC generando un
 \begin{figure}[!h]
  \centering
   \subfigure{
-    \includegraphics[angle=90, width=3in]{./Figuras/mqc_fastqc_per_base_sequence_quality_plot_1.png}}
+    \includegraphics[width=1\textwidth]{./Figuras/per_base_quality_PRE.png}}
   \subfigure{
-    \includegraphics[angle=90, width=3in]{./Figuras/mqc_fastqc_per_sequence_quality_scores_plot_1.png}}
+    \includegraphics[width=1\textwidth]{./Figuras/per_seq_quality_PRE.png}}
  \caption[Control de calidad de los datos crudos]{Control de calidad de los datos crudos. El primer plot muestra la calidad medida con \textit{phred score (q)} a lo largo de las bases en las 820 muestras. El segundo plot muestra la calidad en base al número de secuencias. Ambos fueron generados con MultiQC.}
  \label{multiQC_pre}
 \end{figure}
@@ -186,7 +186,7 @@ Muestra & Días & Periodo\\
 & 164 - 318 & Después de la infección\\ \cline{1-3}
 \end{tabular}
 \caption[Resumen de subperiodos temporales.]{Se resume la división de las tablas de abundancias anuales en 4 subperiodos temporales para cada muestra. La primera columna indica la muestra, la segunda el intervalo de días que comprende el periodo y la tercera información acerca de cada periodo.}
-\label{tabla:final}
+\label{tabla_periodos}
 \end{table}
 
 
@@ -197,7 +197,7 @@ El resultado obtenido para intestino es aún más interesante. En la figura \ref{v
 \begin{figure}[!h]
     \centering
     \includegraphics[width=5.5in]{./Figuras/cplxCrnch_HostLifeStyle_Saliva_xWeighted_Summary.png}
-    \caption{$V$ y $\beta$ saliva}
+    \caption[$V$ y $\beta$ en saliva] {Se representan los parámetros de Taylor, $V$ y $\beta$, correspondientes a muestras de saliva en distintos periodos: durante todo el año, antes del viaje, durante el viaje y tras el viaje (dividido en dos subperiodos). Los errores fueron calculados por el método bootstrap.}
     \label{v_beta_saliva}
 \end{figure}
 
@@ -205,17 +205,17 @@ El resultado obtenido para intestino es aún más interesante. En la figura \ref{v
 \begin{figure}[!h]
     \centering
     \includegraphics[width=5.5in]{./Figuras/cplxCrnch_HostLifeStyle_Stool_xWeighted_Summary.png}
-    \caption{$V$ y $\beta$ stool}
+    \caption[$V$ y $\beta$ en intestino]{Se representan los parámetros de Taylor, $V$ y $\beta$, correspondientes a muestras de intestino en distintos periodos. Para el sujeto A: durante todo el año, antes del viaje, durante el viaje y tras el viaje (dividido en dos subperiodos). Para el sujeto B: durante todo el año, antes de la infección (dividido en dos subperiodos), durante la infección y tras la infección. Los errores fueron calculados por el método bootstrap.}
     \label{v_beta_stool}
 \end{figure}
 
 \clearpage
-Se genera un plot resumen para comparar entre muestras. Hemos visto que tanto en saliva como en intestino aumentan los valores de $V$ y $\beta$ al producirse una alteración, pero los ejes presentan escalas diferentes. Para visualizarlas conjuntamente se normalizaron los datos restando a cada parámetro el valor medio y dividiendo el resultado por la desviación estándar del grupo de sujetos sanos para cada estudio independientemente. Además, se puede definir un área denominada zona sana (ver Materiales y métodos) dentro de la cual quedan los puntos correspondientes a los periodos sanos (antes y después de la perturbación). Quedan fuera de este área los puntos correspondientes al periodo del viaje y a la infección además de las dos series anuales completas.
+Se genera un plot resumen para comparar entre muestras. Hemos visto que tanto en saliva como en intestino aumentan los valores de $V$ y $\beta$ al producirse una alteración, pero los ejes presentan escalas diferentes. Para visualizarlas conjuntamente se normalizan los datos (ver apartado normalización de materiales y métodos) restando a cada parámetro el valor medio y dividiendo el resultado por la desviación estándar del grupo de sujetos sanos para cada estudio independientemente (figura \cite{v_beta_summary}). Así, se define un área dentro de la cual quedan los puntos correspondientes a los periodos sanos (antes y después de la perturbación). Quedan fuera de este área los puntos correspondientes al periodo del viaje y a la infección además de las dos series anuales completas.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[width=5.5in]{./Figuras/cplxCrnch_xWeighted_STAN_Summary_mod.png}
-    \caption{ $V$ y $\beta$ summary}
+    \caption[$V$ y $\beta$ resumen de saliva e intestino] {Se representan conjuntamente los parámetros de Taylor, $V$ y $\beta$, correspondientes a muestras de intestino (azul) y saliva en distintos periodos (violeta). El área sombreada en rosa corresponde a la zona sana definida con la estandarización. El resto de puntos incluyen las perturbaciones y se encuentran a distintas $\sigma$ de distancia de la zona sana.}
     \label{v_beta_summary}
 \end{figure}
 
@@ -224,7 +224,7 @@ Se genera un plot resumen para comparar entre muestras. Hemos visto que tanto en
 \subsection{Clasificación por rango}
 Existe una dinámica en la estabilidad de los taxones. Imaginemos un día puntual en la vida del microbioma humano, supongamos que el taxón X es el más dominante ese día. Al día siguiente resulta que el taxón Y ha aumentado, por los motivos que sean, y ahora es el más dominante dejando al taxón X en segunda posición. Y al tercer día, el taxón Y vuelve a disminuir dejando al taxón X de nuevo en primera posición de abundancia. 
 
-Una forma de representar este \textit{ranking} de taxones se plasma en la figura \ref{rank_saliva}. En esta matriz se recogen en filas los 50 géneros más abundantes ordenados por abundancia y en columnas los días de toma de muestra. El color de cada celda representa el rango, esto es, el orden en \textit{ranking} de cada taxón, siendo amarillo la representación del primer puesto y violeta oscuro el último puesto. Por ejemplo, en el caso de saliva (figura \ref{rank_saliva}): amarillo se corresponde con el número 1 y violeta oscuro con el número 573 (que es el último taxón). En general, se aprecia que los géneros más abundantes suelen ser los más estables. El género más abundante es \textit{Streptococcus} y ocupa la primera posición en abundancia a lo largo de todos los días del año (ningún género lo supera en abundancia nunca). Otro género que llama mucho la atención es \textit{Chryseobacterium}, ya que los primeros días del año es muy poco abundante y a partir del día 50 aproximadamente, aumenta su abundancia. Luego hay otros patrones intermitentes, que aparecen y desaparecen en pocos días como por ejemplo el caso de \textit{Rummeliibacillus}.
+Una forma de representar este \textit{ranking} de taxones se plasma en la figura \ref{rank_saliva}. En esta matriz se recogen en filas los 50 géneros más abundantes ordenados por abundancia y en columnas los días de toma de muestra a lo largo de un año. Nótese que no hay 356 días como corresponde a un año, ya que existen días que tuvieron que ser eliminadas por bajo número de lecturas o incluso algunos días en los que directamente no hubo muestra. Se representan consecutivamente para facilitar la visualización. El color de cada celda representa el rango, esto es, el orden en \textit{ranking} de cada taxón, siendo amarillo la representación del primer puesto y violeta oscuro el último puesto. Por ejemplo, en el caso de saliva (figura \ref{rank_saliva}): amarillo se corresponde con el número 1 y violeta oscuro con el número 573 (que es el último taxón). En general, se aprecia que los géneros más abundantes suelen ser los más estables. El género más abundante es \textit{Streptococcus} y ocupa la primera posición en abundancia a lo largo de todos los días del año (ningún género lo supera en abundancia nunca). Otro género que llama mucho la atención es \textit{Chryseobacterium}, ya que los primeros días del año es muy poco abundante y a partir del día 50 aproximadamente, aumenta su abundancia. Luego hay otros patrones intermitentes, que aparecen y desaparecen en pocos días como por ejemplo el caso de \textit{Rummeliibacillus}.
 
 En la parte derecha de la figura se muestra el cálculo de RSI (discutido en Materiales y métodos) cuyo valor es 100\% para un elemento que nunca cambia en el \textit{ranking} con el tiempo y 0\% para un elemento que oscila entre la primera posición y la última de un día a otro. El color en esta columna muestra a su vez una ordenación en base al RSI, es decir, amarillo será el máximo valor de RSI en los 50 taxones y violeta oscuro será el mínimo valor de RSI. Por ejemplo, en el caso de saliva (figura \ref{rank_saliva}): amarillo es 100 (máximo RSI) y violeta oscuro es 82.4 (mínimo RSI). En el primer tercio de los 50 taxones, se observan valores de RSI elevados remarcando que los taxones más abundantes tienen más estabilidad. Sin embargo, en ocasiones se encuentran RSI elevados en el segundo o tercer tercio de los datos, generando las denominadas ``islas de estabilidad''. Serían géneros que a pesar de no ser los más abundantes, se mantienen estables en su rango a lo largo del tiempo. Algunos ejemplos en la muestra de saliva son \textit{Parvimonas} y \textit{Eikenella}.
 
@@ -235,7 +235,7 @@ Especialmente se ven dos picos máximos de DV en los días 60 y 80 aproximadamente
 
 \begin{figure}[!h]
     \includegraphics[width=1\textwidth]{./Figuras/HostLifeStyle_Saliva_SalivaA_Rank.png}
-    \caption{Rango saliva}
+    \caption[Matriz de rango: saliva A] {Matriz de rango correspondiente a la muestra de saliva A. En filas aparecen los 50 taxones más abundantes ordenados descendentemente, en columnas se representan los días del año donde hubo muestra y el color determina el rango de mayor (amarillo) a menor (violeta). En la parte derecha aparecen los valores de RSI y en la parte inferior las medidas de RV y DV, todo respecto a los 50 taxones.}
     \label{rank_saliva}
 \end{figure}
 
@@ -247,7 +247,7 @@ En cuanto a la medida de variabilidad, se observa que ambas medidas se disparan 
 \begin{figure}[!h]
     \centering
     \includegraphics[width=1\textwidth]{./Figuras/HostLifeStyle_Stool_StoolA_Rank.png}
-    \caption{Rango stoolA}
+    \caption[Matriz de rango: intestino A] {Matriz de rango correspondiente a la muestra de intestino A. En filas aparecen los 50 taxones más abundantes ordenados descendentemente, en columnas se representan los días del año donde hubo muestra y el color determina el rango de mayor (amarillo) a menor (violeta). En la parte derecha aparecen los valores de RSI y en la parte inferior las medidas de RV y DV, todo respecto a los 50 taxones.}
     \label{rank_stoolA}
 \end{figure}
 
@@ -259,46 +259,78 @@ Fijándonos en el gráfico inferior, la variabilidad sufre aumentos de un día a ot
 \begin{figure}[!h]
     \centering
     \includegraphics[width=1\textwidth]{./Figuras/HostLifeStyle_Stool_StoolB_Rank.png}
-    \caption{Rango stoolB}
+    \caption[Matriz de rango: intestino B] {Matriz de rango correspondiente a la muestra de intestino B. En filas aparecen los 50 taxones más abundantes ordenados descendentemente, en columnas se representan los días del año donde hubo muestra y el color determina el rango de mayor (amarillo) a menor (violeta). En la parte derecha aparecen los valores de RSI y en la parte inferior las medidas de RV y DV, todo respecto a los 50 taxones.}
     \label{rank_stoolB}
 \end{figure}
 
 
-
-
+\clearpage
 \section [Correlaciones] {\textbf{Correlaciones}}
 Las correlaciones de abundancia en especies microbianas se utilizan en muchos trabajos para indicar interacción entre ellas. La correlación positiva indicaría una interacción mutualista, y la correlación negativa una interacción competitiva. Trabajar con abundancia relativas produce estimaciones sesgadas porque, como deben sumar a 1, las fracciones no son independientes y tienden a tener una correlación negativa independiente de la verdadera correlación entre las abundancias absolutas subyacentes. Se han desarrollado algoritmos como SparCC \cite{Friedman2012} para mitigar estos problemas.
 
-En este proyecto también se han calculado las correlaciones aplicando el método de Pearson (Materiales y métodos) a las abundancias absolutas de todos los géneros. Además, se ha desarrollado un método de agrupación de los microorganismos más abundantes en base a su respuesta al viaje y a la infección (ver Materiales y métodos). Esto sirve para reorganizar la matriz de correlaciones y comprobar las correlaciones que se dan entre estos grupos de comportamiento. En la figura \ref{corrplot_saliva} vemos el resultado para la muestra de saliva. Los géneros a\_7, a\_4 y a\_14 muestran correlación negativa en algunas ocasiones. Los grupos presentan correlaciones positivas entre sus miembros aunque las correlaciones máximas se dan fuera de grupos (como a\_2 con a\_10 y a\_14, o a\_9 con a\_11). Esto quiere decir que los microorganismos que tienen la misma respuesta al viaje, no cambian de abundancia de forma similar (la figura \ref{group2_saliva} muestra este efecto).
+En este proyecto también se han calculado las correlaciones aplicando el método de Pearson (Materiales y métodos) a las abundancias absolutas de todos los géneros. Además, se ha desarrollado un método de agrupación de los microorganismos más abundantes en base a su respuesta al viaje y a la infección (ver Materiales y métodos). Esto sirve para reorganizar la matriz de correlaciones y comprobar las correlaciones que se dan entre estos grupos de comportamiento. En la figura \ref{corrplot_saliva} vemos el resultado para la muestra de saliva. Los géneros 4, 7 y 14 muestran correlación negativa en algunas ocasiones. Los grupos presentan correlaciones positivas entre sus miembros aunque las correlaciones máximas se dan fuera de grupos (como el género 2 con 10 y 14, o el género 9 con 11). Esto quiere decir que los microorganismos que tienen la una respuesta parecida al viaje, no son los que más correlacionan. En la figura \ref{group2_saliva} se muestra el comportamiento de los géneros que componen el grupo 2. Se representa la abundancia relativa frente al tiempo de 3 géneros y se puede comprobar que todos disminuyen su abundancia los días del viaje (40-75) pero la recuperan a la vuelta. En concreto, \textit{Prevotella} es el género que más disminuye durante el viaje y también es el más variable a lo largo del tiempo. Se puede observar cómo los géneros correlacionan bien en algunos puntos (como \textit{Haemophilus} y \textit{Porphyromonas} los primeros días) aunque, en general, la correlación no es muy grande dentro del grupo.
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=4.5in]{./Figuras/corrplot_saliva.png}
-    \caption{Correlaciones saliva}
+    \includegraphics[width=5in]{./Figuras/corrplot_saliva.png}
+    \caption[Correlaciones saliva A]{Matriz de correlaciones de los 15 taxones más abundantes correspondientes a la muestra saliva A. En azul se representan las correlaciones positivas y en rojo las negativas. El área de cada circulo corresponde al valor de correlación.}
+	\begin{tabular}{r@{: }l}
+	1 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Bacilli;o\_\_Lactobacillales;f\_\_Streptococcaceae;g\_\_Streptococcus \\
+	2 & k\_\_Bacteria;p\_\_Bacteroidetes;c\_\_Bacteroidia;o\_\_Bacteroidales;f\_\_Prevotellaceae;g\_\_Prevotella\\
+	3 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Bacilli;o\_\_Gemellales;f\_\_Gemellaceae;g\_\_Gemella\\
+	4 & k\_\_Bacteria;p\_\_Actinobacteria;c\_\_Actinobacteria;o\_\_Actinomycetales;f\_\_Micrococcaceae;g\_\_Rothia\\
+	5 & k\_\_Bacteria;p\_\_Proteobacteria;c\_\_Gammaproteobacteria;o\_\_Pasteurellales;f\_\_Pasteurellaceae;g\_\_Haemophilus\\
+	6 & k\_\_Bacteria;p\_\_Proteobacteria;c\_\_Betaproteobacteria;o\_\_Neisseriales;f\_\_Neisseriaceae;g\_\_\\
+	7 & k\_\_Bacteria;p\_\_Actinobacteria;c\_\_Actinobacteria;o\_\_Actinomycetales;f\_\_Actinomycetaceae;g\_\_Actinomyces\\
+	8 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Bacilli;o\_\_Lactobacillales;Other;Other\\
+	9 & k\_\_Bacteria;p\_\_Bacteroidetes;c\_\_Bacteroidia;o\_\_Bacteroidales;f\_\_Porphyromonadaceae;g\_\_Porphyromonas\\
+	10 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Veillonellaceae;g\_\_Veillonella\\
+	11 & k\_\_Bacteria;p\_\_Fusobacteria;c\_\_Fusobacteriia;o\_\_Fusobacteriales;f\_\_Fusobacteriaceae;g\_\_Fusobacterium\\
+	12 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Bacilli;o\_\_Lactobacillales;f\_\_Carnobacteriaceae;g\_\_Granulicatella\\
+	13 & k\_\_Bacteria;p\_\_Fusobacteria;c\_\_Fusobacteriia;o\_\_Fusobacteriales;f\_\_Leptotrichiaceae;g\_\_Leptotrichia\\
+	14 & k\_\_Bacteria;p\_\_Bacteroidetes;c\_\_Bacteroidia;o\_\_Bacteroidales;f\_\_[Paraprevotellaceae];g\_\_[Prevotella]\\
+	15 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;g\_\_\\
+	\end{tabular}
     \label{corrplot_saliva}
 \end{figure}
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=4in]{./Figuras/group2_saliva.png}
-    \caption{Grupo2 saliva}
+    \includegraphics[width=5in]{./Figuras/group2_saliva.png}
+    \caption[Abundancia relativa del grupo 2 en saliva]{Se representa la abundancia relativa a lo largo del tiempo del grupo 2 en la muestra de saliva. Este grupo consta de 3 géneros: \textit{Prevotella} (violeta), \textit{Haemophilus} (negro) y \textit{Porphyromonas} (verde). Se demuestra que no existe una buena relación entre correlaciones y grupos de comportamientos frente al viaje.}
+    	\begin{tabular}{r@{: }l}
+	lila &  2 -Prevotella \\
+	negro & 5-Haemophilus \\
+	verde & 9-Porphyromonas \\
+	\end{tabular}
     \label{group2_saliva}
 \end{figure}
 
-Los resultados para intestino del donante A se encuentran en la figura \ref{corrplot_StoolA}. Aquí se han encontrado 4 grupos de comportamiento distinto y ninguna anti-correlación. El grupo rojo es el que presenta mejores correlaciones entre sus miembros, en la figura \ref{StoolA_G2} se representa la abundancia a lo largo del tiempo para comprobar su comportamiento. El verde y naranja solo tienen un miembro por lo que no se puede ver correlación interna de grupo y el violeta tiene correlación positiva pero no tan alta como el rojo. De nuevo, en algunos casos se dan correlaciones más fuertes entre grupos como es el caso de a\_13 y a\_10 que tienen mucha correlación con el grupo rojo.
+Los resultados para intestino del donante A se encuentran en la figura \ref{corrplot_StoolA}. Aquí se han encontrado 4 grupos de comportamiento distinto y ninguna anti-correlación. El grupo 2 (rojo) es el que presenta mejores correlaciones entre sus miembros, en la figura \ref{StoolA_G2} se representa la abundancia a lo largo del tiempo para comprobar su comportamiento. Los grupos 1 (verde) y 3 (naranja) solo tienen un miembro por lo que no se puede ver correlación interna de grupo mientras que el grupo 5 (violeta) tiene correlación positiva pero no tan alta como el grupo 2. De nuevo, en algunos casos se dan correlaciones más fuertes entre grupos como es el caso de los géneros 10 y 13 que tienen mucha correlación con el grupo 2.
+
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=4in]{./Figuras/corrplot_StoolA.png}
-    \caption{Correlaciones intestinoA}
+    \includegraphics[width=5in]{./Figuras/corrplot_StoolA.png}
+    \caption[Correlaciones intestino A]{Matriz de correlaciones de los 15 taxones más abundantes correspondientes a la muestra intestino A. En azul se representan las correlaciones positivas y en rojo las negativas. El área de cada circulo corresponde al valor de correlación.}
+	\begin{tabular}{r@{: }l}
+1 & k\_\_Bacteria;p\_\_Bacteroidetes;c\_\_Bacteroidia;o\_\_Bacteroidales;f\_\_Bacteroidaceae;g\_\_Bacteroides\\
+2 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Ruminococcaceae;g\_\_\\
+3 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;g\_\_\\
+4 & k\_\_Bacteria;p\_\_Actinobacteria;c\_\_Actinobacteria;o\_\_Bifidobacteriales;f\_\_Bifidobacteriaceae;g\_\_Bifidobacterium\\
+5 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;g\_\_Blautia\\
+6 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Ruminococcaceae;g\_\_Faecalibacterium\\
+7 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;Other\\
+8 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Erysipelotrichi;o\_\_Erysipelotrichales;f\_\_Erysipelotrichaceae;g\_\_\\
+9 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;g\_\_Coprococcus\\
+10 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;g\_\_[Ruminococcus]\\
+11 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;g\_\_Roseburia\\
+12 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;g\_\_Dorea\\
+13 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_;g\_\_\\
+14 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;g\_\_Lachnospira\\
+15 & k\_\_Bacteria;p\_\_Bacteroidetes;c\_\_Bacteroidia;o\_\_Bacteroidales;f\_\_Porphyromonadaceae;g\_\_Parabacteroides\\
+	\end{tabular}
     \label{corrplot_StoolA}
-\end{figure}
-
-\begin{figure}[!h]
-    \centering
-    \includegraphics[width=4.5in]{./Figuras/StoolA_G2.png}
-    \caption{Grupo2 Intestino A}
-    \label{StoolA_G2}
 \end{figure}
 
 
@@ -307,7 +339,26 @@ En la figura \ref{corrplot_StoolB} se muestra el intestino B como último caso. C
 \begin{figure}[!h]
     \centering
     \includegraphics[width=5in]{./Figuras/corrplot_StoolB.png}
-    \caption{Correlaciones intestinoB}
+    \caption[Correlaciones intestino B]{Matriz de correlaciones de los 15 taxones más abundantes correspondientes a la muestra intestino B. En azul se representan las correlaciones positivas y en rojo las negativas. El área de cada circulo corresponde al valor de correlación.}
+    	\begin{tabular}{r@{: }l}
+1 & k\_\_Bacteria;p\_\_Bacteroidetes;c\_\_Bacteroidia;o\_\_Bacteroidales;f\_\_Bacteroidaceae;g\_\_Bacteroides\\
+2 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Ruminococcaceae;g\_\_\\
+3 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;g\_\_\\
+4 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Ruminococcaceae;g\_\_Faecalibacterium\\
+5 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Veillonellaceae;g\_\_Phascolarctobacterium\\
+6 & k\_\_Bacteria;p\_\_Bacteroidetes;c\_\_Bacteroidia;o\_\_Bacteroidales;f\_\_Rikenellaceae;g\_\_\\
+7 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_;g\_\_\\
+8 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Ruminococcaceae;g\_\_Ruminococcus\\
+9 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;g\_\_Blautia\\
+10 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;g\_\_Coprococcus\\
+11 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;g\_\_[Ruminococcus]\\
+12 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Ruminococcaceae;g\_\_Oscillospira\\
+13 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;Other\\
+14 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Ruminococcaceae;Other\\
+15 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Erysipelotrichi;o\_\_Erysipelotrichales;f\_\_Erysipelotrichaceae;g\_\_\\
+	\end{tabular}
     \label{corrplot_StoolB}
 \end{figure}
+
+
 

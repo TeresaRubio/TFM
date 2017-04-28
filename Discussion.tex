@@ -6,4 +6,15 @@ En este proyecto también se ha estudiado lo que ocurre en el caso de que un suje
 
 La aplicación de este tipo de estudios radica en monitorizar la administración de probióticos para prevenir y tratar enfermedades como la obesidad o la diabetes. Se requiere de forma paralela un análisis metabolómico para conocer la composición funcional de la flora intestinal y el estado inmunológico del hospedador. Con estas investigaciones, se pueden dilucidar los mecanismos moleculares del microbioma que influyen en las enfermedades y hará posible adoptar un nuevo enfoque en el desarrollo de terapias aprovechando los beneficios de la modulación de la microbiota intestinal sobre el metabolismo.
 
+Para alcanzar esa meta aún queda un largo camino que recorrer. Los trabajos hasta la fecha han supuesto un enorme avance y además se ha logrado en un periodo de tiempo relativamente corto. Como ya se ha comentado, tanto las tecnologías de secuenciación como los sistemas de clasificación no son perfectos todavía e introducen errores en los resultados. Además, se ha demostrado que los intentos de explicar las relaciones entre microorganismos mediante correlaciones no muestran las verdaderas interacciones \cite{Fisher2014}. En ese mismo artículo, los autores proponen una aproximación capaz de superar todos esos obstáculos a la que han llamado LIMITS (detallada en Materiales y métodos). Para comprobar su potencial y comparar los resultados expuestos en apartados anteriores, se aplicó LIMITS a los datos del estudio. En la figura \ref{LIMITS_salivaA} se puede observar un ejemplo que compara la matriz de correlaciones de saliva A con la matriz de interacciones propuesta por LIMITS para saliva A.
+
+\begin{figure}[!h]
+    \centering    
+    \subfigure{
+    \includegraphics[width=4.5in]{./Figuras/corrplot_salivaA_formatLIMITS.png}}
+    \subfigure{
+    \includegraphics[width=4.5in]{./Figuras/SalivaA_15otus_alltimes.jpg}}
+    \caption{Correlación Pearson vs. LIMITS en saliva A}
+    \label{LIMITS_salivaA}
+\end{figure}
 
