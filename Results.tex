@@ -90,12 +90,9 @@ TOTAL & 35458 &\\ \hline
 
 
 \section [Clasificación taxonómica] {\textbf{Clasificación taxonómica}}
-Para este paso se utilizó también QIIME v1.9.1. La selección de OTUs se llevó a cabo con la estrategia \textit{open-reference} al 97\% de similitud con la base de datos Greengenes y con el método UCLUST. Por último, se asignó la taxonomía resumiendo los taxones a nivel de género (L6). Cabe destacar que un gran número de géneros no pudieron ser clasificados y se quedan a nivel de familia, orden o incluso clase. En estos casos, la nomenclatura adoptada por QIIME es ``others'' o ``g\_\_''. Por ejemplo: 
+Para este paso se utilizó también QIIME v1.9.1. La selección de OTUs se llevó a cabo con la estrategia \textit{open-reference} al 97\% de similitud con la base de datos Greengenes y con el método UCLUST. Por último, se asignó la taxonomía resumiendo los taxones a nivel de género (L6). Cabe destacar que un gran número de géneros no pudieron ser clasificados y se quedan a nivel de familia, orden o incluso clase. En estos casos, la nomenclatura adoptada por QIIME es ``others'' o ``g\_\_''. Por ejemplo: `` \textbf{\textit{k\_\_Bacteria; p\_\_Firmicutes; c\_\_Bacilli; o\_\_Lactobacillales; f\_\_Streptococcaceae; Others}}'' o `` \textbf{\textit{k\_\_Bacteria; p\_\_Firmicutes; c\_\_Bacilli; o\_\_Lactobacillales; f\_\_Streptococcaceae; g\_\_}}''.
 
-\begin{center} \textbf{\textit{k\_\_Bacteria; p\_\_Firmicutes; c\_\_Bacilli; o\_\_Lactobacillales; f\_\_Streptococcaceae; Others}} \end{center}
-
-\begin{center} \textbf{\textit{k\_\_Bacteria; p\_\_Firmicutes; c\_\_Bacilli; o\_\_Lactobacillales; f\_\_Streptococcaceae; g\_\_}} \end{center}
-
+\clearpage
 Luego está el grupo ``Unassigned'' donde se guardan todas aquellas secuencias que no ha sido capaz de clasificar taxonómicamente a ningún nivel. Adquiere la siguiente nomenclatura: ``\textbf{\textit{Unassigned;Other;Other;Other;Other;Other}}''
 
 
@@ -119,6 +116,7 @@ Para extraer las propiedades globales del sistema, se utilizó el software comple
 \subsection{Abundancia de taxones}
 Una vez generadas las tablas de abundancia absoluta en el apartado anterior, se representa mediante un histograma la abundancia total cada día para dar una idea global de los datos. En la muestra de saliva (figura \ref{abun_abs_saliva}) existe, en general, una abundancia alta a excepción de algunos días donde se aprecia un claro descenso. En el caso de intestino A (figura \ref{abun_abs_stoolA}) hay más días de muestra, lo que dificulta un poco su visualización pero se aprecia que hay muchos días con abundancias muy bajas. Por último, la muestra de intestino B (figura \ref{abun_abs_stoolB}) tiene abundancias elevadas durante los primeros días pero a partir de aproximadamente el día 20, casi todas las abundancias son inferiores. Puede apreciarse que en ninguno de los tres casos hay abundancias inferiores a 10.000 por el filtro realizado durante el preprocesado.
 
+\clearpage
 Los conteos absolutos están llenos de errores sistemáticos que se deben tanto al proceso de secuenciación como a la asignación taxonómica. Los cambios en abundancia estarían enmascarados por esos errores, así que se trabaja con abundancia relativa de los taxones para ver la variabilidad temporal. ComplexCruncher realiza internamente el cambio de abundancia absoluta a abundancia relativa y realiza todos los cálculos posteriores con estos valores.
 
 \begin{figure}[!h]
@@ -128,16 +126,16 @@ Los conteos absolutos están llenos de errores sistemáticos que se deben tanto al
     \label{abun_abs_saliva}
 \end{figure}
 
-\begin{figure}[!h]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=5.5in]{./Figuras/HostLifeStyle_Stool_StoolA_AbsFreqPlot.png}
+    \includegraphics[width=5in]{./Figuras/HostLifeStyle_Stool_StoolA_AbsFreqPlot.png}
     \caption[Abundancia absoluta intestino A]{Histograma de la muestra intestino A que representa la abundancia total de los géneros en frecuencia absoluta a lo largo del tiempo (329 días). Los colores altos indican altas abundancias y los colores frios, bajas abundancias.}
     \label{abun_abs_stoolA}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=5.5in]{./Figuras/HostLifeStyle_Stool_StoolB_AbsFreqPlot.png}
+    \includegraphics[width=5in]{./Figuras/HostLifeStyle_Stool_StoolB_AbsFreqPlot.png}
     \caption[Abundancia absoluta intestino B]{Histograma de la muestra intestino B que representa la abundancia total de los géneros en frecuencia absoluta a lo largo del tiempo (186 días). Los colores altos indican altas abundancias y los colores frios, bajas abundancias.}
     \label{abun_abs_stoolB}
 \end{figure}
@@ -273,7 +271,7 @@ En este proyecto también se han calculado las correlaciones aplicando el método 
 \begin{figure}[!h]
     \centering
     \includegraphics[width=5in]{./Figuras/corrplot_saliva.png}
-    \caption[Correlaciones saliva A]{Matriz de correlaciones de los 15 taxones más abundantes correspondientes a la muestra saliva A. En azul se representan las correlaciones positivas y en rojo las negativas. El área de cada circulo corresponde al valor de correlación.}
+{\footnotesize
 	\begin{tabular}{r@{: }l}
 	1 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Bacilli;o\_\_Lactobacillales;f\_\_Streptococcaceae;g\_\_Streptococcus \\
 	2 & k\_\_Bacteria;p\_\_Bacteroidetes;c\_\_Bacteroidia;o\_\_Bacteroidales;f\_\_Prevotellaceae;g\_\_Prevotella\\
@@ -291,6 +289,8 @@ En este proyecto también se han calculado las correlaciones aplicando el método 
 	14 & k\_\_Bacteria;p\_\_Bacteroidetes;c\_\_Bacteroidia;o\_\_Bacteroidales;f\_\_[Paraprevotellaceae];g\_\_[Prevotella]\\
 	15 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;g\_\_\\
 	\end{tabular}
+}
+    \caption[Correlaciones saliva A]{Matriz de correlaciones de los 15 taxones más abundantes correspondientes a la muestra saliva A. En azul se representan las correlaciones positivas y en rojo las negativas. El área de cada circulo corresponde al valor de correlación.}
     \label{corrplot_saliva}
 \end{figure}
 
@@ -298,21 +298,16 @@ En este proyecto también se han calculado las correlaciones aplicando el método 
     \centering
     \includegraphics[width=5in]{./Figuras/group2_saliva.png}
     \caption[Abundancia relativa del grupo 2 en saliva]{Se representa la abundancia relativa a lo largo del tiempo del grupo 2 en la muestra de saliva. Este grupo consta de 3 géneros: \textit{Prevotella} (violeta), \textit{Haemophilus} (negro) y \textit{Porphyromonas} (verde). Se demuestra que no existe una buena relación entre correlaciones y grupos de comportamientos frente al viaje.}
-    	\begin{tabular}{r@{: }l}
-	lila &  2 -Prevotella \\
-	negro & 5-Haemophilus \\
-	verde & 9-Porphyromonas \\
-	\end{tabular}
     \label{group2_saliva}
 \end{figure}
 
-Los resultados para intestino del donante A se encuentran en la figura \ref{corrplot_StoolA}. Aquí se han encontrado 4 grupos de comportamiento distinto y ninguna anti-correlación. El grupo 2 (rojo) es el que presenta mejores correlaciones entre sus miembros, en la figura \ref{StoolA_G2} se representa la abundancia a lo largo del tiempo para comprobar su comportamiento. Los grupos 1 (verde) y 3 (naranja) solo tienen un miembro por lo que no se puede ver correlación interna de grupo mientras que el grupo 5 (violeta) tiene correlación positiva pero no tan alta como el grupo 2. De nuevo, en algunos casos se dan correlaciones más fuertes entre grupos como es el caso de los géneros 10 y 13 que tienen mucha correlación con el grupo 2.
+Los resultados para intestino del donante A se encuentran en la figura \ref{corrplot_StoolA}. Se han encontrado 4 grupos de comportamiento distinto y ninguna anti-correlación. El grupo 2 (rojo) es el que presenta mejores correlaciones entre sus miembros, en la figura \ref{StoolA_G2} se representa la abundancia a lo largo del tiempo para comprobar su comportamiento. Los grupos 1 (verde) y 3 (naranja) solo tienen un miembro por lo que no se puede ver correlación interna de grupo mientras que el grupo 5 (violeta) tiene correlación positiva pero no tan alta como el grupo 2. De nuevo, en algunos casos se dan correlaciones más fuertes entre grupos como es el caso de los géneros 10 y 13 que tienen mucha correlación con el grupo 2.
 
 
 \begin{figure}[!h]
     \centering
     \includegraphics[width=5in]{./Figuras/corrplot_StoolA.png}
-    \caption[Correlaciones intestino A]{Matriz de correlaciones de los 15 taxones más abundantes correspondientes a la muestra intestino A. En azul se representan las correlaciones positivas y en rojo las negativas. El área de cada circulo corresponde al valor de correlación.}
+    {\footnotesize
 	\begin{tabular}{r@{: }l}
 1 & k\_\_Bacteria;p\_\_Bacteroidetes;c\_\_Bacteroidia;o\_\_Bacteroidales;f\_\_Bacteroidaceae;g\_\_Bacteroides\\
 2 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Ruminococcaceae;g\_\_\\
@@ -330,16 +325,18 @@ Los resultados para intestino del donante A se encuentran en la figura \ref{corr
 14 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Lachnospiraceae;g\_\_Lachnospira\\
 15 & k\_\_Bacteria;p\_\_Bacteroidetes;c\_\_Bacteroidia;o\_\_Bacteroidales;f\_\_Porphyromonadaceae;g\_\_Parabacteroides\\
 	\end{tabular}
+}
+    \caption[Correlaciones intestino A]{Matriz de correlaciones de los 15 taxones más abundantes correspondientes a la muestra intestino A. En azul se representan las correlaciones positivas y en rojo las negativas. El área de cada circulo corresponde al valor de correlación.}
     \label{corrplot_StoolA}
 \end{figure}
 
 
-En la figura \ref{corrplot_StoolB} se muestra el intestino B como último caso. Cinco grupos han sido hallados, de los cuales el rojo vuelve a tener la mayor correlación interna. También se dan casos de correlación muy fuerte entre grupos distintos como \textit{Oscillospira} con \textbf{Phascolarctobacterium}. La proteobacteria del grupo violeta tiene correlación negativa con el resto y la máxima anti-correlación se da entre \textit{Ruminococcus} y el grupo rosa.
+En la figura \ref{corrplot_StoolB} se muestra el intestino B como último caso. Se han hallado 5 grupos, de los cuales el grupo 2 (rojo) tiene la mayor correlación interna. También hay casos de correlación muy fuerte entre grupos distintos como \textit{Oscillospira} con \textit{Phascolarctobacterium}. La proteobacteria del grupo 5 (violeta) tiene correlación negativa con el resto y la máxima anti-correlación se da entre \textit{Ruminococcus} y el grupo 4 (rosa).
 
 \begin{figure}[!h]
     \centering
     \includegraphics[width=5in]{./Figuras/corrplot_StoolB.png}
-    \caption[Correlaciones intestino B]{Matriz de correlaciones de los 15 taxones más abundantes correspondientes a la muestra intestino B. En azul se representan las correlaciones positivas y en rojo las negativas. El área de cada circulo corresponde al valor de correlación.}
+    {\footnotesize
     	\begin{tabular}{r@{: }l}
 1 & k\_\_Bacteria;p\_\_Bacteroidetes;c\_\_Bacteroidia;o\_\_Bacteroidales;f\_\_Bacteroidaceae;g\_\_Bacteroides\\
 2 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Ruminococcaceae;g\_\_\\
@@ -357,6 +354,8 @@ En la figura \ref{corrplot_StoolB} se muestra el intestino B como último caso. C
 14 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Clostridia;o\_\_Clostridiales;f\_\_Ruminococcaceae;Other\\
 15 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Erysipelotrichi;o\_\_Erysipelotrichales;f\_\_Erysipelotrichaceae;g\_\_\\
 	\end{tabular}
+    }
+    \caption[Correlaciones intestino B]{Matriz de correlaciones de los 15 taxones más abundantes correspondientes a la muestra intestino B. En azul se representan las correlaciones positivas y en rojo las negativas. El área de cada circulo corresponde al valor de correlación.}
     \label{corrplot_StoolB}
 \end{figure}
 

@@ -43,18 +43,14 @@ Se seleccionó \textit{Closed-reference} y al final del proceso, se obtiene una t
 Fue el método de agrupación utilizado. Es un algoritmo diseñado para agrupar secuencias de nucleótidos o aminoácidos en base a su similitud \cite{Edgar2010}. Cada grupo o \textit{cluster} está definido por una secuencia representativa conocida como ``centroide". Sigue dos criterios de agrupamiento simples, con respecto a un umbral de similitud (T) dado: (1) todas las secuencias dentro de un \textit{cluster} tienen similitud $>$= T con la secuencia centroide y (2) todos los centroides tienen similitud $<$ T entre ellos. Hay que tener en cuenta que una secuencia puede coincidir con dos centroides diferentes con similitud $>$ T. Idealmente, se asignará al centroide más cercano, pero puede haber dos o más a la misma distancia, en cuyo caso la asignación de \textit{cluster} es ambigua y debe hacerse una elección arbitraria. La similitud se calcula utilizando alineamiento global. Además, se trata de un algoritmo voraz (también conocido como \textit{greedy}) que es aquél que elige la opción óptima en cada paso local esperando llegar a una solución general óptima, por lo que es importante el orden en que van entrando las secuencias. Si la secuencia entrante coincide con un centroide existente, se asigna a ese grupo y si no coincide, se convierte en el centroide de un nuevo grupo. Esto significa que las secuencias deben estar ordenadas para que los centroides más adecuados tienden a aparecer más temprano. Dado que las lecturas más abundantes tienen más probabilidades de ser secuencias de amplicones correctas, y por tanto son más probables de ser verdaderas secuencias biológicas, considera las secuencias de entrada en orden de disminución de la abundancia.
 
 \paragraph [Greengenes]{\textbf{\textit{Greengenes (\url{http://greengenes.secondgenome.com})}}}
-Es la base de datos que se eligió como referencia. Contiene taxonomía de 16S de calidad controlada, basada en una filogenia \textit{de novo} que proporciona conjuntos de OTUs estándar. Está bajo la licencia Creative Commons BY-SA 3.0. Incluye los siguientes niveles de taxonomía:
-
-    \begin{itemize}
-    \addtolength{\itemsep}{-3mm}  % separacion entre items
-    \item Nivel 1 = Reino (por ejemplo, \textit{Bacteria}), 
-    \item Nivel 2 = Filo (por ejemplo, \textit{Firmicutes}), 
-    \item Nivel 3 = Clase (por ejemplo, \textit{Bacilli}), 
-    \item Nivel 4 = Orden (por ejemplo, \textit{Lactobacillales}), 
-    \item Nivel 5 = Familia (por ejemplo, \textit{Streptococcaceae}), 
-    \item Nivel 6 = Género (por ejemplo, \textit{Streptococcus}), 
-    \item Nivel 7 = Especies (por ejemplo, \textit{pneumoniae}).
-    \end{itemize}
+Es la base de datos que se eligió como referencia. Contiene taxonomía de 16S de calidad controlada, basada en una filogenia \textit{de novo} que proporciona conjuntos de OTUs estándar. Está bajo la licencia Creative Commons BY-SA 3.0. Incluye los siguientes niveles de taxonomía: 
+Nivel 1 = Reino (por ejemplo, \textit{Bacteria}), 
+Nivel 2 = Filo (por ejemplo, \textit{Firmicutes}), 
+Nivel 3 = Clase (por ejemplo, \textit{Bacilli}), 
+Nivel 4 = Orden (por ejemplo, \textit{Lactobacillales}), 
+Nivel 5 = Familia (por ejemplo, \textit{Streptococcaceae}), 
+Nivel 6 = Género (por ejemplo, \textit{Streptococcus}), 
+Nivel 7 = Especies (por ejemplo, \textit{pneumoniae}).
 
 Un ejemplo del formato sería:
 
@@ -84,11 +80,13 @@ donde la pendiente es $\log r$ y la intersección con el eje de ordenadas es $\lo
 \subsection[Ley de potencia $x$-ponderada]{\textbf{Ley de potencia $x$-ponderada}}
 Cuando se ajusta la ley de potencia de desviación estándar frente a la media, se tuvo en cuenta que cada media tiene incertidumbre y se puede estimar, para un tamaño de muestra $n$, por el SEM (error estándar de la media). En este caso, las incertidumbres afectan a la variable independiente, por lo que el ajuste no fue tan trivial como un ajuste y-ponderado, donde las incertidumbres afectan a la variable dependiente. Un método estándar para realizar este ajuste es (i) invertir las variables antes de aplicar los pesos, (ii) realizar el ajuste ponderado, y (iii) revertir la inversión. Este método es determinista, pero la solución aproximada empeora con coeficientes de determinación más pequeños. Para superar esa limitación, se desarrolló un método estocástico con una estrategia de tipo bootstrap que evitó la inversión y es aplicable independientemente del coeficiente de determinación.
 
-La idea básica de bootstrap es que la inferencia sobre una población a partir de datos de muestra puede ser modelada mediante un nuevo muestreo de los datos de la muestra y realizando la inferencia sobre una muestra a partir de datos remuestreados (75). Para adaptar esta idea general a nuestro problema, hemos re-muestreado la matriz de datos $x$ utilizando su matriz de errores. Es decir, para cada replicación, se calculó una nueva matriz de datos $x$ sobre la base de $x^*_i = x_i + v_i$, donde $v_i$ es una variable aleatoria gaussiana con media $\mu_i=0$ y desviación estándar $\sigma_i=\mathrm{SEM}_i$, como se definió anteriormente. Para cada repetición, se realizó un ajuste completo de la ley de potencia no ponderada, donde elegir entre leyes de potencia de ajuste ($y=Vx^\beta$) usando regresión lineal en datos transformados por log (LLR) versus regresión no lineal (NLR), seguimos principalmente \emph{General Guidelines for the Analysis of Biological Power Laws} (76). Los parámetros de la x-ponderación fueron estimados por promediar a través de todos los ajustes de repetición realizados, y sus errores se calcularon mediante el cálculo de la desviación estándar para todos los ajustes. Al final de cada paso, el error relativo se calculó comparando la estimación del parámetro de ajuste en el último paso con el anterior. Finalmente, tanto el coeficiente de determinación del ajuste como el coeficiente de correlación entre los parámetros de ajuste fueron estimados por promediado.
+La idea básica de bootstrap es que la inferencia sobre una población a partir de datos de muestra puede ser modelada mediante un nuevo muestreo de los datos de la muestra y realizando la inferencia sobre una muestra a partir de datos remuestreados. Para adaptar esta idea general al problema aquí descrito, se realizan múltiples replicaciones donde se re-muestrea la matriz de datos $x$ utilizando su matriz de errores. Es decir, se calcula cada vez una nueva matriz de datos $x$ sobre la base de $x^*_i = x_i + v_i$, donde $v_i$ es una variable aleatoria gaussiana con media $\mu_i=0$ y desviación estándar $\sigma_i=\mathrm{SEM}_i$. En cada repetición, se realiza un ajuste completo de la ley de potencia no ponderada. Los parámetros de la x-ponderación se estiman promediando a través de todos los ajustes de repetición realizados, y sus errores se determinan mediante el cálculo de la desviación estándar para todos los ajustes.
 
 
 \subsection[Estandarización]{\textbf{Estandarización}}
-Para mostrar varios estudios bajo ejes comunes, se estandarizan los parámetros de Taylor utilizando el grupo de sujetos sanos de cada estudio individualmente. Con este enfoque, todos los estudios se pueden visualizar en un diagrama compartido con unidades de desviación estándar de los parámetros Taylor en sus ejes.
+Se pueden visualizar varios estudios en un diagrama compartido con unidades de desviación estándar de los parámetros Taylor en sus ejes. Para ello se estandarizan $V$ y $\beta$ utilizando el grupo de sujetos sanos de cada estudio individualmente.
+
+%Para mostrar varios estudios bajo ejes comunes, se estandarizan los parámetros de Taylor utilizando el grupo de sujetos sanos de cada estudio individualmente. Con este enfoque, todos los estudios se pueden visualizar en un diagrama compartido con unidades de desviación estándar de los parámetros Taylor en sus ejes.
 
 Para el parámetro $V$, la estimación de la media ($\widehat{V}$) del grupo de sanos, compuesta por $h$ individuos, es:
 
@@ -102,7 +100,8 @@ con $W_1=\sum_i^h \omega_i=1$, donde $\omega_i$ son los pesos normalizados calcu
 \omega_i = \frac{\frac{1}{\sigma^2_{V_i}}}{\sum_i^h\frac{1}{\sigma^2_{V_i}}}
 \end{equation}
 
-donde $\sigma_{V_i}$ es una estimación de la incertidumbre en $V_i$ obtenida junto con $V_i$ de la ley de potencia $x$-ponderada (descrita en el apartado anterior) para sujetos sanos.
+donde $\sigma_{V_i}$ es una estimación de la incertidumbre en $V_i$ obtenida junto con $V_i$ de la ley de potencia $x$-ponderada (descrita en el apartado anterior) para sujetos sanos.\\
+
 
 Del mismo modo, la estimación de la desviación estándar para la población sana ($\widehat{\sigma}_V$) es:
 \begin{equation}
