@@ -58,6 +58,50 @@
   {\normalfont\LARGE\bfseries}{\thechapter}{1em}{}
 \titlespacing*{\chapter}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
 
+%Para el Anexo
+\usepackage{color}
+\definecolor{gray97}{gray}{.97}
+\definecolor{gray75}{gray}{.75}
+\definecolor{gray45}{gray}{.45}
+
+\usepackage{listings}
+\lstset{ frame=Ltb,
+framerule=0pt,
+aboveskip=0.5cm,
+framextopmargin=3pt,
+framexbottommargin=3pt,
+framexleftmargin=0.4cm,
+framesep=0pt,
+rulesep=.4pt,
+backgroundcolor=\color{gray97},
+rulesepcolor=\color{black},
+%
+stringstyle=\ttfamily,
+showstringspaces = false,
+basicstyle=\small\ttfamily,
+commentstyle=\color{gray45},
+keywordstyle=\bfseries,
+%
+numbers=left,
+numbersep=15pt,
+numberstyle=\tiny,
+numberfirstline = false,
+breaklines=true,
+}
+
+% minimizar fragmentado de listados
+\lstnewenvironment{listing}[1][]
+{\lstset{#1}\pagebreak[0]}{\pagebreak[0]}
+
+\lstdefinestyle{consola}
+{basicstyle=\scriptsize\bf\ttfamily,
+backgroundcolor=\color{gray75},
+basicstyle=\footnotesize %\small %\normalsize
+}
+
+\lstdefinestyle{Python}
+{language=Python,
+}
 
 \begin{document}
 \setlength{\parskip}{3mm} % para que los párrafos queden separados
@@ -67,8 +111,8 @@
 \chapter*{}
 \pagenumbering{Roman} % para comenzar la numeracion de paginas en numeros romanos
 \begin{flushright}
-\textit{Dedicado a \\
-...}
+\textit{``Me lo contaron y lo olvidé; lo vi y lo entendí; lo hice y lo aprendí.'' -- Confucio \\
+``Lo programé en Python y lo disfruté.'' -- Teresa}
 \end{flushright}
 
 
@@ -83,8 +127,8 @@
 %%%%%%%%%%%%%
 \chapter*{Agradecimientos} % para que no añada la palabra "Capitulo" ni que se numere
 \addcontentsline{toc}{chapter}{Agradecimientos} % si queremos que aparezca en el índice
- 
-¡Muchas gracias a todos!
+
+La realización de este trabajo fin de máster ha sido posible gracias a la dedicación como tutores de Carlos Peña Garay y Vicente Arnau Llombart, a todos los profesores del Máster en Bioinformática de la Universidad de Valencia por la formación recibida y a todas aquellas personas que siempre me han apoyado. Especial mención a la ayuda recibida de Jose Manuel Martí y Daniel Martínez por todo lo que he aprendido con vosotros. ¡Muchas gracias a todos!
 
 
 %%%%%%%%%%%%%
@@ -201,8 +245,15 @@ Por último, se calcularon las correlaciones de abundancia relativa entre géneros
 \listoftables % indice de tablas
 \addcontentsline{toc}{chapter}{Índice de tablas} % para que aparezca en el indice de contenidos
 
-%\includepdf[pages=-]{running/clasificacion}
-\addcontentsline{toc}{chapter}{Anexo I} % para que aparezca en el indice de contenidos
+
+%%%%%%
+%ANEXO%
+%%%%%%
+\clearpage
+\chapter*{Anexo I: \textit{Pipeline} de asignación taxonómica} % si no queremos que añada la palabra "Capitulo"
+\addcontentsline{toc}{chapter}{Anexo I: \textit{Pipeline} de asignación taxonómica} % si queremos que aparezca en el índice
+\input{Anexo.tex}
+
 
 \end{document} 
 

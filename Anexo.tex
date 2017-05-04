@@ -1,0 +1,341 @@
+\newenvironment{description2}{ \begin{description} \setlength{\itemsep}{0pt} \setlength{\parskip}{0pt}}{ \end{description} } 
+
+
+\noindent
+Software utilizado: fastQC, multiQC, seq\_crumbs 0.1.9, qiime 1.9.1\\
+
+\noindent
+Documentación:
+\begin{itemize}
+\item \url{http://www.bioinformatics.babraham.ac.uk/projects/fastqc}
+\item \url{http://multiqc.info}
+\item \url{https://bioinf.comav.upv.es/seq_crumbs}
+\item \url{http://qiime.org}
+\end{itemize}
+
+\section*{1. Descargar los datos en formato .fastq desde ENA (EBI)}
+En cada punto del \textit{pipeline} se crea un directorio para guardar los ficheros de salida de cada apartado. Como se genera una gran cantidad de datos, hay directorios que pueden ser borrados por el usuario si no son necesarios.
+\begin{listing}[style=consola, numbers=none]
+$ mkdir 01_Data_fastq
+$ cd 01_Data_fastq
+\end{listing}
+
+Los datos fueron depositados en \textit{European Bioinformatics Institute (EBI) European Nucleotide Archive (ENA)} con el código de acceso ERP006059. Son 820 archivos con formato fastq. Se descargan los datos via FTP:
+\begin{listing}[style=consola, numbers=none]
+$ wget ftp://ftp.sra.ebi.ac.uk/vol1/ERA318/ERA318858/fastq/seqs_Saliva* # Todas las muestras de saliva
+$ wget ftp://ftp.sra.ebi.ac.uk/vol1/ERA318/ERA318858/fastq/seqs_Stool* # Todas las muestras de intestino
+\end{listing}
+
+
+Descomprimir los datos:
+\begin{listing}[style=consola, numbers=none]
+$ gunzip *.gz
+\end{listing}
+
+También se descarga un fichero con los \textit{metadatos} (\url{http://www.biomedcentral.com/content/supplementary/gb-2014-15-7-r89-S18.csv}), que serán necesarios para identificar las muestras que corresponden a cada individuo y a cada día.
+
+
+\subsection*{ 1.1 Comprobar calidad de los datos con fastQC y multiQC}
+FastQC es un software que permite hacer un control de calidad de forma sencilla. Con la opción * se detectan todos los archivos con formato ".fastq" del directorio actual.
+\begin{listing}[style=consola, numbers=none]
+$ fastqc * # Los datos tienen la codificacion de calidad Sanger / Illumina 1.9
+\end{listing}
+Como hay 820 archivos, se utiliza multiQC para hacer un resumen de los datos analizados por fastQC. Con la opción . se detectan los archivos necesarios:
+\begin{listing}[style=consola, numbers=none]
+$ multiqc .
+\end{listing}
+
+\section*{ 2. Filtro de calidad utilizando seq\_crumbs 0.1.9}
+Este software ha sido desarrollado en Valencia e incorpora utilidades para procesar secuencias.
+\begin{listing}[style=consola, numbers=none]
+$ cd ..
+$ mkdir 02_Quality_filter
+$ cd 02_Quality_filter
+\end{listing}
+Como se trabaja con 820 ficheros, hay que lanzar varios trabajos a la vez. En este grupo de investigación existen cuatro servidores llamados SOM (1-4) y utilizan un sistema de colas para no colapsar las máquinas por todos los usuarios. 
+Modo de uso:
+\begin{center}
+  clusterlauncher -N ejemplo -n 1 -s som1 /bin/sleep 240 (lanza 1 proceso secuencial al sistema de colas llamado "ejemplo" para ejecutarlo en som1)
+\end{center}
+Opciones:
+\begin{description2}
+    \item  -N : nombre del trabajo.
+    \item  -n : número de procesos paralelos.
+    \item  -s : servidor/es donde lanzar el trabajo.
+\end{description2}
+
+  
+Para filtrar por calidad se utiliza el \textit{script filter\_by\_quality} de seq\_crumbs:
+\begin{description2}
+    \item  -q, --threshold : umbral de calidad.
+    \item  -o, --outfile : nombre del fichero de salida.
+\end{description2}
+\begin{listing}[style=consola, numbers=none]
+$ for i in ../01_Data_fastq/seqs_S*.fastq; 
+do clusterlauncher -N ${i:22:15} -n 1 -s som1 filter_by_quality $i -q 30 -o q30_${i:22};
+done
+\end{listing}
+
+%\section*{ 3. De .fastq a .fasta con QIIME}
+%```
+%cd ..
+%mkdir 03_Data_fasta
+%cd 03_Data_fasta
+%```
+%QIIME utiliza el formato fasta como entrada, así que incorpora un *script* para cambiar de formatos. Éste produce 2 ficheros: uno con secuencias (.fna) y otro con calidades (.qual).
+%
+%Para pasar a formato fasta se utiliza \textit{convert_fastaqual_fastq.py}:
+%  -c, --conversion_type : tipo de conversión (*fastaqual_to_fastq* o *fastq_to_fastaqual*)
+%  -f, --fasta_file_path : fichero de entrada (fasta o fastq)
+%  -a, --ascii_increment : número a sumar (restar si se parte desde FASTQ) a la puntuación de calidad para obtener el carácter ASCII
+%  --full_fasta_headers : para incluir las cabeceras de los archivos FASTA en el fichero de salida (en lugar de simplemente la etiqueta de secuencia).
+%```
+%for i in ../02_Quality_filter/q30_S*.fastq;
+%do clusterlauncher -N ${i:21} -n 1 -s som1 convert_fastaqual_fastq.py -c fastq_to_fastaqual -f ${i:21} -a 64 --full_fasta_headers;
+%done
+%```
+%Nótese que se utiliza la opción -a porque los datos de partida tienen la codificacion de calidad Sanger / Illumina 1.9.
+%
+%\section*{ 4. Eliminar quimeras}
+%```
+%cd ..
+%mkdir 04_Chimeras
+%cd 04_Chimeras
+%```
+%Las quimeras son artefactos producidos durante el proceso de PCR. Se trata de secuencias de ADN que contienen mezclas de otras secuencias. QIIME permite eliminarlas mediante dos pasos: primero identificar y luego limpiar las quimeras.
+%
+%1) Identificar quimeras con \textit{identify_chimeric_seqs.py}:
+%  -i, --input_fasta_fp : fichero de entrada en formato fasta.
+%  -m, --chimera_detection_method : método de detección de quimeras (*blast_fragments* o *ChimeraSlayer* o *usearch61*).
+%  -r, --reference_seqs_fp : ruta a la base de datos de referencia.
+%  -o, --output_fp : nombre del directorio de salida.
+%```
+%for i in ../03_Data_fasta/q30_*.fna;
+%do
+%clusterlauncher -N ${i:17} -n 1 identify_chimeric_seqs.py -i $i -m usearch61 -r 
+%/software/databases/gg_13_8_otus/rep_set/97_otus.fasta -o "chimeras_"${i:17};
+%done
+%```
+%2) Limpiar secuencias quimera con \textit{filter_fasta.py}:
+%  -f, --input_fasta_fp : fichero de entrada en formato fasta.
+%  -o, --output_fasta_fp : fichero de salida en formato fasta.
+%  -s, --seq_id_fp : lista de identificadores de secuencias que deben retenerse.
+%  -n, --negate : desecha los identificadores de secuencia pasados en lugar de mantenerlos.
+%```
+%for i in ../03_Data_fasta/q30_*.fna;
+%do
+%clusterlauncher -N non_chimeric_${i:17} -n 1 filter_fasta.py -f $i -o non_chimeric_${i:17} -s chimeras_${i:17}/chimeras.txt -n;
+%done
+%```
+%NOTA: es muy importante aquí usar -n porque le dice al *script* que descarte todas las secuencias que le hemos pasado a través de -s, es decir, que elimine las quimeras. Esto se hace así porque el *script identify_chimeric_seqs.py* ofrece una lista de las secuencias quiméricas y no de las secuencias no quiméricas.
+%
+%\subsection*{ 4.1 Eliminar ficheros con bajo número de lecturas}
+%Se hizo un conteo del número de *reads* por fichero tras todo el preprocesado y se guardó en un fichero adicional:
+%```
+%for i in q30_*.fasta; do r=$(awk '{s++}END{print s/2}' $i) ; echo $r $i | column -t; done > numero_reads.txt
+%```
+%Se muestran las 25 primeras líneas del fichero ordenado:
+%```
+%1	q30_seqs_Stool448.1259730.fastq.fastq
+%2	q30_seqs_Stool196.1259770.fastq.fastq
+%4	q30_seqs_Stool13.1259916.fastq.fastq
+%5	q30_seqs_Saliva267.1260193.fastq.fastq
+%8	q30_seqs_Stool217.1260272.fastq.fastq
+%8	q30_seqs_Stool85.1260354.fastq.fastq
+%29	q30_seqs_Stool63.1259769.fastq.fastq
+%31	q30_seqs_Stool120.1259849.fastq.fastq
+%39	q30_seqs_Stool147.1260039.fastq.fastq
+%54	q30_seqs_Stool36.1259652.fastq.fastq
+%1006	q30_seqs_Stool453.1260253.fastq.fastq
+%1423	q30_seqs_Stool92.1259811.fastq.fastq
+%1738	q30_seqs_Stool452.1259809.fastq.fastq
+%2501	q30_seqs_Stool384.1259728.fastq.fastq
+%2772	q30_seqs_Stool340.1260381.fastq.fastq
+%3554	q30_seqs_Stool4.1260013.fastq.fastq
+%4026	q30_seqs_Stool343.1259705.fastq.fastq
+%4493	q30_seqs_Stool454.1260333.fastq.fastq
+%6395	q30_seqs_Stool382.1260123.fastq.fastq
+%7462	q30_seqs_Stool345.1259808.fastq.fastq
+%11248	q30_seqs_Stool455.1260157.fastq.fastq
+%11459	q30_seqs_Stool372.1259688.fastq.fastq
+%11676	q30_seqs_Stool326.1260401.fastq.fastq
+%11859	q30_seqs_Stool138.1260296.fastq.fastq
+%13512	q30_seqs_Stool373.1259958.fastq.fastq
+%```
+%
+%Se eliminaron manualmente los 20 ficheros que tenían menos de 10000 lecturas.
+%
+%\section*{ 5. Seleccionar OTUs}
+%```
+%cd ..
+%mkdir 05_OTUs
+%cd 05_OTUs
+%```
+%OTU son las siglas en inglés de *Operational Taxonomic Unit*. Es una unidad de clasificación para individualizar los taxones del estudio.
+%
+%Para seleccionar OTUs se utiliza \textit{pick_open_reference_otus.py}:
+%  -i, --input_fps : fichero de secuencias de entrada.
+%  -o, --output_dir : directorio de salida.
+%  -p : parámetos para introducir en los distintos pasos del script. 
+%  
+%En este caso se utiliza como parámetros un fichero auxiliar llamado "uc_fast_params.txt" con el siguiente contenido:
+%```
+%pick_otus:enable_rev_strand_match True
+%```
+%Esta instrucción sirve para que tenga en cuenta ambos sentidos de lectura de la secuencia cuando haga el "pick_otus".
+%
+%```
+%for i in ../04_Chimeras/non_chimeric_*.fna;
+%do
+%clusterlauncher -N otus_${i:15} -s som1 -n 1 pick_open_reference_otus.py -i $i -o "otus_"${i:15} -p uc_fast_params.txt;
+%done
+%```
+%
+%\section*{ 6. Resumir taxones}
+%```
+%cd ..
+%mkdir 06_Summarize_taxa
+%cd 06_Summarize_taxa
+%```
+%El *script summarize_taxa.py* proporciona información resumida de la representación de los grupos taxonómicos dentro de cada muestra:
+%  -i, --otu_table_fp : fichero de entrada (tabla OTU que contiene información taxonómica).
+%  -o, --output_dir : directorio de salida.
+%  -L, --level : nivel taxonómico para el que se proporciona la información resumida. [Niveles: 1(Reino),2(Phylum),3(Clase),4(Orden),5(Familia),6(Género),7(Especie)]
+%  --suppress_biom_table_output : la tabla de taxones con formato BIOM no se creará en el directorio de salida.
+%  -a, --absolute_abundance : para obtener como resultado una tabla con la abundancia absoluta de cada grupo taxonómico. Por defecto (si no se pone -a), este *script* utiliza abundancia relativa.
+%```
+%for i in ../05_OTUs/otus_non_chimeric_q30_*/otu_table_mc2_w_tax.biom;
+%do
+%clusterlauncher -N ${i:11:38} -n 1 summarize_taxa.py -i $i -o absolute_L6_${i:11:-25} -L 6 --suppress_biom_table_output -a;
+%done
+%```
+%
+%\section*{ 7. Datos para complexCruncher}
+%Agrupar las tablas de abundancia en 3 directorios según el tipo de muestra: donante A saliva, donante A intestino y donante B intestino. Para muestras de saliva es fácil porque se distinguen los ficheros por su nombre:
+%```
+%mkdir Saliva_DonorA
+%for i in *q30_Saliva*; do 
+%  mv $i/otu_table_mc2_w_tax_L6.txt Saliva_DonorA/$i; 
+%  rm -r $i;
+%done
+%```
+%Para muestras de intestino hay que separar entre sujeto A y B. Para ello he creado un fichero auxiliar que contienen los nombres de las tablas de abundancia del sujeto B. Ese fichero lo he obtenido a partir de los metadatos simplemente ordenando la tabla por la columna 18 "Description" y guardando los elementos de la primera columna que fueran "DonorB Stool". Es necesario que el fichero auxiliar se encuentre en el directorio actual de trabajo.
+%```
+%mkdir Stool_DonorB
+%for i in *q30_Stool*;
+%do 
+%	for line in $(cat Stool_DonorB.txt); 
+%		do if [ $line = ${i:34:-10} ];
+%			then mv $i/otu_table_mc2_w_tax_L6.txt Stool_DonorB/$i; 
+%			rm -r $i;
+%			fi;
+%done;
+%done
+%```
+%El resto de tablas que quedan son de intestino de Sujeto A. Así que los muevo a su carpeta con la misma estrategia utilizada en saliva:
+%```
+%mkdir Stool_DonorA
+%for i in *q30_Stool*; do 
+%  mv $i/otu_table_mc2_w_tax_L6.txt Stool_DonorA/$i; 
+%  rm -r $i;
+%done
+%```
+%
+%En este punto se tienen 3 directorios con mútliples ficheros, cada uno de ellos es una tabla de abundancia para cada día. La idea es juntar todos esas tablas pequeñas en una tabla grande con entradas únicas que resuma todas las abundancias a lo largo del año.
+%
+%Además, para pasos posteriores se necesita subdividir esa tabla grande final en subtablas que abarcan distintos intervalos de tiempo. Todo ello lo hace un *script* implementado en python. Se muestra como ejemplo el *script* de saliva A (los *scripts* para intestino A e intestino B pueden encontrarse en el material suplementario con los nombres "merge&split_stoolA.py" y "merge&split_stoolB.py", respectivamente):
+%\begin{lstlisting}[style=Python]
+%import glob
+%import pandas as pd
+%
+%
+%# Fichero auxiliar con el nombre de los ficheros a añadir
+%f_sup = open("Saliva_curada.txt","r")
+%f_sup_text = f_sup.read().split("\n")
+%f_sup.close()
+%
+%# Generar lista de tablas
+%list_of_dic = []
+%for i in f_sup_text:
+%    try:
+%        # Ficheros de abundancia absoluta:
+%        fich = "absolute_L6_" + i
+%        f_in = open(fich, "r")
+%        text = f_in.read()
+%        f_in.close()
+%        
+%        # Quitar cabecera
+%        sentences = text.split("\n")
+%        sentences = '\t'.join(sentences)
+%        sentences = sentences.split("\t")
+%        
+%        sample = sentences[2]
+%        sentences = sentences[3:]
+%        
+%        # Crear un diccionario que servira como tabla    
+%        otu = []
+%        percentage = []
+%        
+%        for j in range(len(sentences)):
+%            if j%2 == 0:
+%                otu.append(sentences[j])
+%            else:
+%                percentage.append(float(sentences[j]))
+%            
+%        raw_data = {
+%                'otu_id': otu,
+%                sample: percentage} 
+%        
+%        df_a = pd.DataFrame(raw_data, columns = ['otu_id', sample])
+%        list_of_dic.append(df_a)
+%    except:
+%        print("No esta el fichero" + str(i))
+%
+%# Crear una tabla unica final
+%f_table = list_of_dic[0]
+%
+%for k in range(1, len(list_of_dic)):
+%    f_table = pd.merge(f_table, list_of_dic[k], on='otu_id', how='outer')
+%
+%
+%# Dividir tabla final en intervalos de tiempo y guardar cada subtabla en una hoja excel
+%df2 = f_table.iloc[:,1:40]
+%df2.insert(0, 'otu_id',value=f_table.iloc[:,0])
+%df3 = f_table.iloc[:,40:75]
+%df3.insert(0, 'otu_id',value=f_table.iloc[:,0])
+%df4 = f_table.iloc[:,75:203]
+%df4.insert(0, 'otu_id',value=f_table.iloc[:,0])
+%df5 = f_table.iloc[:,203:]
+%df5.insert(0, 'otu_id',value=f_table.iloc[:,0])
+%
+%# Formatear salida
+%pd.set_option("expand_frame_repr", False)
+%
+%# Escribir cada dataframe en una hoja Excel diferente
+%writer = pd.ExcelWriter('HostLifeStyle_SalivaA_curada_absoluta.xlsx')
+%f_table.to_excel(writer, sheet_name='SalivaA', index = True, na_rep = 0)
+%df2.to_excel(writer, sheet_name='h_SalivaA_Day26to69',index = False, na_rep = 0)
+%df3.to_excel(writer, sheet_name='SalivaA_Day72to122',index = False, na_rep = 0)
+%df4.to_excel(writer, sheet_name='h_SalivaA_Day123to257',index = False, na_rep = 0)
+%df5.to_excel(writer, sheet_name='h_SalivaA_Day258to364',index = False, na_rep = 0)
+%
+%# Cerrar el escritor Pandas Excel y guardar el fichero
+%writer.save()
+%\end{lstlisting}
+%
+%Se ejecuta un *script* por directorio y se obtienen las 3 tablas:
+%\begin{listing}[style=consola, numbers=none]
+%$ cd Saliva_DonorA
+%$ python merge&split_salivaA.py
+%\end{lstlisting}
+%\begin{listing}[style=consola, numbers=none]
+%$ cd..
+%$ cd Stool_DonorA
+%$ python merge&split_stoolA.py
+%\end{lstlisting}
+%\begin{listing}[style=consola, numbers=none]
+%$ cd ..
+%$ cd Stool_DonorB
+%$ python merge&split_stoolB.py
+%\end{lstlisting}
+
