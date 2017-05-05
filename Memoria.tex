@@ -1,33 +1,30 @@
 \documentclass[a4paper,openright,12pt]{book}
-% http://minisconlatex.blogspot.com.es/2011/04/como-escribir-una-tesis-con-latex.html
-  % Dimensiones 210mm × 297mm (A4). 
-  % Márgenes: superior e inferior de 25 mm, interior de 35 mm y exterior de 20 mm
 
 \usepackage[margin=2.5cm]{geometry}
-\usepackage[latin1]{inputenc}          %permite usar acentos directamente del teclado
-\usepackage[spanish,es-tabla]{babel}		%titulos en español
+\usepackage[latin1]{inputenc}			% permite usar acentos directamente del teclado
+\usepackage[spanish,es-tabla]{babel}	% titulos en español
 \usepackage[latin1]{inputenc}
-\usepackage{hyperref}			%hipervinculos al indice
-\usepackage{multirow, array} 		% para las tablas
-\usepackage{graphicx}		       	% figuras
-\usepackage{subfigure} 			% subfiguras
-\usepackage{float}				%obligar posición de las figuras con [H]
-\usepackage[margin=2cm,font=footnotesize,labelfont=bf,justification=centering]{caption}  % pie de foto
-\usepackage{amsthm, amsmath, amssymb} %símbolos adicionales
-\usepackage{setspace}\onehalfspacing         %interlineado
-\usepackage[loose,nice]{units} 		%replace "nice" by "ugly" for units in upright fractions
-\usepackage{fancyhdr} %Encabezados
-\usepackage{emptypage} %Paginas en blanco sin encabezados
-\usepackage{cite} % para contraer referencias
-\usepackage{enumerate} % enumerados
-\usepackage{hyperref} % hipervínculos
-\usepackage{mathtools} %ecuaciones
-\usepackage[usenames,dvipsnames,table]{xcolor} %colorear palabras
+\usepackage{hyperref}				% hipervinculos al indice
+\usepackage{multirow, array} 			% para las tablas
+\usepackage{graphicx}		       		% figuras
+\usepackage{subfigure} 				% subfiguras
+\usepackage{float}					% obligar posición de las figuras con [H]
+\usepackage[margin=1cm,font=footnotesize,labelfont=bf,justification=centering]{caption}  % pie de foto
+\usepackage{amsthm, amsmath, amssymb}	% símbolos adicionales
+\usepackage{setspace}\onehalfspacing        	% interlineado
+\usepackage[loose,nice]{units} 				% unidades en fracciones
+\usepackage{fancyhdr} 					% encabezados
+\usepackage{emptypage} 					% paginas en blanco sin encabezados
+\usepackage{cite} 						% para contraer referencias
+%\usepackage{enumerate} 					% enumerados
+\usepackage{enumitem}					% enumerados
+\usepackage{hyperref} 					% hipervínculos
+\usepackage{mathtools} 					% ecuaciones
+\usepackage[usenames,dvipsnames,table]{xcolor} % colorear palabras
 
 \setcounter{tocdepth}{4} %agregar subsubsecciones numeradas al indice
-%\setcounter{secnumdepth}{4}
 
-% editamos los encabezados del primer capítulo (vacíos)
+% Se editan los encabezados del primer capítulo (vacíos)
 % aqui definimos el encabezado de las paginas pares e impares.
 \lhead[]{}
 \chead[]{}
@@ -92,19 +89,16 @@ breaklines=true,
 % minimizar fragmentado de listados
 \lstnewenvironment{listing}[1][]
 {\lstset{#1}\pagebreak[0]}{\pagebreak[0]}
-
+% escribir con apariencia de consola
 \lstdefinestyle{consola}
-{basicstyle=\scriptsize\bf\ttfamily,
-backgroundcolor=\color{gray75},
-basicstyle=\footnotesize %\small %\normalsize
-}
-
-\lstdefinestyle{Python}
-{language=Python,
-}
+{basicstyle=\scriptsize\bf\ttfamily, backgroundcolor=\color{gray75},
+basicstyle=\footnotesize}
+% escribir con apariencia de Python
+\lstdefinestyle{Python}{language=Python,}
 
 \begin{document}
-\setlength{\parskip}{3mm} % para que los párrafos queden separados
+\setlength{\parskip}{3mm} 		% que los párrafos queden separados
+
 %%%%%%%%%%
 % DEDICATORIA %
 %%%%%%%%%%
@@ -119,19 +113,22 @@ basicstyle=\footnotesize %\small %\normalsize
 %%%%%%%%%%%%%
 %	     INDICE	     %
 %%%%%%%%%%%%%
-\tableofcontents % indice de contenidos
-\listoffigures % indice de figuras
-\addcontentsline{toc}{chapter}{Índice de figuras} % para que aparezca en el indice de contenidos
-\listoftables % indice de tablas
-\addcontentsline{toc}{chapter}{Índice de tablas} % para que aparezca en el indice de contenidos
+\renewcommand{\baselinestretch}{1}
+\tableofcontents 							% indice de contenidos
+\listoffigures 								% indice de figuras
+\addcontentsline{toc}{chapter}{Índice de figuras} 	% para que aparezca en el indice
+\listoftables 								% indice de tablas
+\addcontentsline{toc}{chapter}{Índice de tablas} 	% para que aparezca en el indice
 
 %%%%%%%%%%%%%
 %AGRADECIMIENTOS%
 %%%%%%%%%%%%%
 \chapter*{Agradecimientos} % para que no añada la palabra "Capitulo" ni que se numere
-\addcontentsline{toc}{chapter}{Agradecimientos} % si queremos que aparezca en el índice
+\addcontentsline{toc}{chapter}{Agradecimientos} % que aparezca en el índice
 
-La realización de este trabajo fin de máster ha sido posible gracias a la dedicación como tutores de Carlos Peña Garay y Vicente Arnau Llombart, a todos los profesores del Máster en Bioinformática de la Universidad de Valencia por la formación recibida y a todas aquellas personas que siempre me han apoyado. Especial mención a la ayuda recibida de Jose Manuel Martí y Daniel Martínez por todo lo que he aprendido con vosotros. También quiero agradecer al grupo la oportunidad de haber podido colaborar en el proceso de elaboración de un artículo científico. Es para mi una gran satisfacción tener una publicación como segunda autora siendo aún estudiante de máster. Muchas gracias a todos, he crecido como investigadora y como persona con vuestra ayuda.
+La realización de este trabajo fin de máster ha sido posible gracias a la dedicación como tutores de Carlos Peña Garay y Vicente Arnau Llombart, a todos los profesores del Máster en Bioinformática de la Universidad de Valencia por la formación recibida y a todas aquellas personas que siempre me han apoyado. Especial mención a la ayuda recibida de Jose Manuel Martí y Daniel Martínez por todo lo que he aprendido con vosotros. 
+
+También quiero agradecer al grupo la oportunidad de haber podido colaborar en el proceso de elaboración de un artículo científico. Es para mi una gran satisfacción tener una publicación como segunda autora siendo aún estudiante de máster. Muchas gracias a todos, he crecido como investigadora y como persona con vuestra ayuda.
 
 
 %%%%%%%%%%%%%
@@ -152,7 +149,6 @@ Por último, se calcularon las correlaciones de abundancia entre géneros. Se real
 %%%%%%%%%%%%%
 %    INTRODUCCION   %
 %%%%%%%%%%%%%
-%\renewcommand{\chaptername}{Introducción}
 \chapter{Introducción}
 \pagenumbering{arabic} % para empezar la numeración de paginas con números
 \markboth{INTRODUCCIÓN}{INTRODUCCIÓN} %Encabezado
@@ -198,12 +194,21 @@ Por último, se calcularon las correlaciones de abundancia entre géneros. Se real
 \input{Results.tex}
 
 %%%%%%%%%%%%%
+%        FUTURO            %
+%%%%%%%%%%%%%
+\chapter{Perspectivas de futuro}
+\markboth{PERSPECTIVAS DE FUTURO}{PERSPECTIVAS DE FUTURO}
+\input{Future.tex}
+
+%%%%%%%%%%%%%
 %        DISCUSION       %
 %%%%%%%%%%%%%
 \chapter{Discusión y conclusiones}
 \markboth{DISCUSIÓN Y CONCLUSIONES}{DISCUSIÓN Y CONCLUSIONES}
 
 \input{Discussion.tex}
+
+
 
 %%%%%%%%%%%%%
 %     BIBLIOGRAFÍA      %
@@ -246,9 +251,8 @@ Por último, se calcularon las correlaciones de abundancia entre géneros. Se real
 \clearpage
 \chapter*{Anexo I: \textit{Pipeline} de asignación taxonómica} % si no queremos que añada la palabra "Capitulo"
 \markboth{ANEXO I}{ANEXO I}
-\addcontentsline{toc}{chapter}{Anexo I: \textit{Pipeline} de asignación taxonómica} % si queremos que aparezca en el índice
+\addcontentsline{toc}{chapter}{Anexo I: \textit{Pipeline} de asignación taxonómica} % que aparezca en el índice
 \input{Anexo.tex}
-
 
 
 \end{document} 

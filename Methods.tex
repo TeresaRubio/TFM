@@ -1,16 +1,14 @@
-La serie temporal anual en la que se centra este estudio, se divide en 3 bloques de muestras: saliva del sujeto A, intestino del sujeto A e intestino del sujeto B. Como ya se ha comentado, existen 2 perturbaciones durante el periodo de estudio: un viaje al extranjero y una salmonelosis, producidas en sujeto A y B, respectivamente. Las muestras las toman los propios sujetos y posteriormente son secuenciadas en laboratorio mediante la plataforma Illumina GAIIx. 
-
-Para el análisis completo, se llevan a cabo una serie de pasos en el siguiente orden: preprocesado de los datos, clasificación taxonómica, análisis de la variabilidad y estudio de interacciones. En el presente capítulo, se exponen los distintos materiales y métodos utilizados a lo largo del trabajo y la justificación de su elección.
+La serie temporal anual en la que se centra este estudio, se divide en 3 bloques de muestras: saliva del sujeto A, intestino del sujeto A e intestino del sujeto B. Durante el periodo de estudio el donante A realiza un viaje al extranjero y el donante B sufre una salmonelosis. Las muestras son tomadas por los propios sujetos y posteriormente se secuencian en laboratorio mediante la plataforma Illumina GAIIx. Para el análisis completo, se llevan a cabo una serie de pasos en el siguiente orden: preprocesado de los datos, clasificación taxonómica, análisis de la variabilidad y estudio de interacciones. En el presente capítulo, se exponen los distintos materiales y métodos utilizados a lo largo del trabajo y la justificación de su elección.
 
 \section{Preprocesado: FastQC, MultiQC y seq\_crumbs}
-FastQC (\url{http://www.bioinformatics.babraham.ac.uk/projects/fastqc/}) es una herramienta de control de calidad para datos de secuenciación, de código abierto e implementada en Java. Permite un fichero de entrada en distintos formatos (fastq, SAM o BAM) y produce un fichero de salida en formato HTML con gráficos y tablas que permiten evaluar los datos. Proporciona mucha información sobre una única muestra: estadísticas numéricas (codificación de calidad según la plataforma utilizada, número total de secuencias...), \textit{score} de calidad, contenido en GC, distribución de longitud de secuencias, etc. Con esta herramienta se puede detectar rápidamente cualquier problema que exista antes de realizar análisis posteriores.
+FastQC (\url{http://www.bioinformatics.babraham.ac.uk/projects/fastqc/}) es una herramienta de control de calidad para datos de secuenciación, de código abierto e implementada en Java. Acepta un fichero de entrada en distintos formatos (fastq, SAM o BAM) y produce un fichero de salida en formato HTML con gráficos y tablas que permiten evaluar los datos. Proporciona mucha información sobre una única muestra: estadísticas numéricas (codificación de calidad según la plataforma utilizada, número total de secuencias...), \textit{score} de calidad, contenido en GC, distribución de longitud de secuencias, etc. Esta herramienta permite detectar rápidamente cualquier problema que exista antes de realizar análisis posteriores.
 
-MultiQC (\url{http://multiqc.info/}) es una herramienta de código abierto, implementada en Python y que da soporte a muchas herramientas bioinformáticas, entre ellas FastQC. Produce un reporte HTML muy parecido al mencionado anteriormente pero permite el análisis de múltiples muestras a la vez. La visualización de las muestras en conjunto permite realizar comparaciones y también recopila estadísticas numéricas de cada muestra para ver cómo se comportan los datos.
+MultiQC (\url{http://multiqc.info/}) es una herramienta de código abierto, implementada en Python y que da soporte a muchas herramientas bioinformáticas, entre ellas FastQC. Produce un reporte HTML muy parecido al anterior pero recoge la visualización de múltiples muestras en conjunto, permitiendo realizar comparaciones. También recopila estadísticas numéricas de cada muestra para ver cómo se comportan los datos.
 
-seq\_crumbs (\url{https://bioinf.comav.upv.es/seq\_crumbs/}) es un software de código abierto, implementado en Python, que utiliza BioPython e incluye utilidades para procesar secuencias. Toma un fichero de secuencias como entrada y crea un nuevo fichero de salida con las secuencias procesadas. Dentro de sus muchas funciones, caben destacar: filtrado de secuencias por calidad media, filtrado por longitud según un umbral máximo y mínimo, eliminación de regiones de baja calidad en los extremos (\textit{trimming}), etc.
+seq\_crumbs (\url{https://bioinf.comav.upv.es/seq\_crumbs/}) es un software de código abierto, implementado en Python, que incluye utilidades para procesar secuencias. Toma un fichero de secuencias como entrada y crea un nuevo fichero de salida con las secuencias procesadas. Dentro de sus muchas funciones, caben destacar: filtrado de secuencias por calidad media, filtrado por longitud según un umbral máximo y mínimo, eliminación de regiones con baja calidad en los extremos (\textit{trimming}), etc.
 %conversión de formatos, etc.
 
-Se utilizan FastQC y MultiQC por la gran cantidad de información que producen y sus vistosos gráficos. Por otro lado, se elige seq\_scrumbs porque incluye un \textit{script} específico para filtrar por calidad media bastante rápido y fácil de usar. Además, todas ellas se han seleccionado por ser de código abierto y estar disponibles para la comunidad, tanto para su uso como para su adaptación, si fuera necesario.
+Se utilizan FastQC y MultiQC por la gran cantidad de información que producen y sus vistosos gráficos. Por otro lado, se elige seq\_scrumbs porque incluye un \textit{script} específico para filtrar por calidad media bastante rápido y fácil de usar. Además, todas ellas se han seleccionado por ser de código abierto y estar disponibles para la comunidad tanto para su uso como para su adaptación, si fuera necesario.
 
 \section{Clasificación taxonómica: qiime}
 Qiime (\url{http://qiime.org/index.html}) \cite{Caporaso2010} son la siglas en inglés de \textit{Quantitative Insights Into Microbial Ecology}. Es un \textit{pipeline} bioinformático de código abierto para realizar análisis de microbiomas a partir de datos de secuenciación. Fue construido utilizando el lenguaje de programación Python con una implementación modular en forma de \textit{scripts} para poder usar cualquier punto dentro de su flujo de trabajo (figura \ref{qiime}) de manera independiente.
@@ -40,12 +38,10 @@ OTU (del inglés \textit{Operational Taxonomic Unit}) es una unidad taxonómica op
 
 En este proyecto se selecciona \textit{open-reference} como estrategia de selección para que todas las lecturas queden agrupadas incluso aunque no se encuentren en la base de datos, ya que nos interesa obtener toda la información posible de los datos. Al final del proceso, se obtiene una tabla cuya primera columna es el identificador de OTU y la segunda columna son los conteos, que pueden generarse en valor absoluto o relativo.
 
-\paragraph [Uclust]{\textit{Uclust (\url{http://drive5.com/usearch/manual/uclust_algo.html})}}
-Es el método de agrupación utilizado en estos datos. Es un algoritmo diseñado para agrupar secuencias de nucleótidos o aminoácidos en base a su similitud \cite{Edgar2010}. Cada grupo o \textit{cluster} está definido por una secuencia representativa conocida como ``centroide". Sigue dos criterios de agrupamiento simples, con respecto a un umbral de similitud (T) dado: (1) todas las secuencias dentro de un \textit{cluster} tienen similitud $>$= T con la secuencia centroide y (2) todos los centroides tienen similitud $<$ T entre ellos. Hay que tener en cuenta que una secuencia puede coincidir en similitud con dos centroides diferentes. Idealmente, se asignará al centroide más cercano, pero puede haber dos o más centroides a la misma distancia, en cuyo caso la asignación de \textit{cluster} es ambigua y se debe tomar un criterio de elección arbitrario. La similitud se calcula utilizando alineamiento global. Además, se trata de un algoritmo voraz (también conocido como \textit{greedy}) que es aquél que elige la opción óptima en cada paso local esperando llegar a una solución óptima global, por lo que es importante el orden en que van entrando las secuencias. Si la secuencia entrante coincide con un centroide existente, se asigna a ese grupo y si no coincide, se convierte en el centroide de un nuevo grupo. Esto significa que las secuencias deben estar ordenadas para que los centroides más adecuados tienden a aparecer más temprano. Dado que las lecturas más abundantes tienen más probabilidades de ser secuencias de amplicones correctas, y por tanto son más probables de ser verdaderas secuencias biológicas, considera las secuencias de entrada en orden de disminución de la abundancia.
-
 \paragraph[Greengenes]{\textit{Greengenes (\url{http://greengenes.secondgenome.com})}}
 Es la base de datos que se elige como referencia en este caso. Contiene taxonomía de 16S de calidad controlada, basada en una filogenia \textit{de novo} que proporciona conjuntos de OTUs estándar. Está bajo la licencia Creative Commons BY-SA 3.0. Incluye los siguientes niveles de taxonomía: 
 \begin{itemize}
+\addtolength{\itemsep}{-3mm}  % separacion entre items
 \item Nivel 1 = Reino (por ejemplo, \textit{Bacteria}), 
 \item Nivel 2 = Filo (por ejemplo, \textit{Firmicutes}), 
 \item Nivel 3 = Clase (por ejemplo, \textit{Bacilli}), 
@@ -58,7 +54,10 @@ Un ejemplo del formato sería:
 
 \begin{center} \textbf{\textit{k\_\_Bacteria; p\_\_Firmicutes; c\_\_Bacilli; o\_\_Lactobacillales; f\_\_Streptococcaceae; g\_\_Streptococcus; s\_\_pneumoniae}} \end{center}
 
-El motivo por el que se selecciona el método \textit{uclust} y la base de datos \textit{greengenes} es porque se pretende reproducir lo que los autores de los datos obtienen originalmente y ellos emplean estas opciones. Se obtuvieron resultados muy similares, aunque se haya utilizado una base de datos más actualizada, con lo que se comprueba que el método es robusto. Tanto los métodos como las bases de datos actuales están bastante optimizados y decantarse por uno u otro implica obtener diferencias, aunque son poco significativas.
+\paragraph [Uclust]{\textit{Uclust (\url{http://drive5.com/usearch/manual/uclust_algo.html})}}
+Es el método de agrupación utilizado en estos datos. Es un algoritmo diseñado para agrupar secuencias de nucleótidos o aminoácidos en base a su similitud \cite{Edgar2010}. Cada grupo o \textit{cluster} está definido por una secuencia representativa conocida como ``centroide". Sigue dos criterios de agrupamiento simples, con respecto a un umbral de similitud (T) dado: (1) todas las secuencias dentro de un \textit{cluster} tienen similitud $>$= T con la secuencia centroide y (2) todos los centroides tienen similitud $<$ T entre ellos. Hay que tener en cuenta que una secuencia puede coincidir en similitud con dos centroides diferentes. Idealmente, se asignará al centroide más cercano, pero puede haber dos o más centroides a la misma distancia, en cuyo caso la asignación de \textit{cluster} es ambigua y se debe tomar un criterio de elección arbitrario. La similitud se calcula utilizando alineamiento global. Además, se trata de un algoritmo voraz (también conocido como \textit{greedy}) que es aquél que elige la opción óptima en cada paso local esperando llegar a una solución óptima global, por lo que es importante el orden en que van entrando las secuencias. Si la secuencia entrante coincide con un centroide existente, se asigna a ese grupo y si no coincide, se convierte en el centroide de un nuevo grupo. Esto significa que las secuencias deben estar ordenadas para que los centroides más adecuados tienden a aparecer más temprano. Dado que las lecturas más abundantes tienen más probabilidades de ser secuencias de amplicones correctas, y por tanto son más probables de ser verdaderas secuencias biológicas, considera las secuencias de entrada en orden de disminución de la abundancia.
+
+El motivo por el que se selecciona el método \textit{uclust} y la base de datos \textit{greengenes} es porque se pretende reproducir lo que los autores de los datos obtienen originalmente y ellos emplean estas opciones. Tanto los métodos como las bases de datos actuales están bastante optimizados y decantarse por uno u otro implica obtener diferencias, aunque son poco significativas.
 
 \subsection [Asignación taxonómica]{\textbf{Asignación taxonómica}}
 Una vez creada la tabla OTU, qiime permite asignar una taxonomía a cada secuencia representativa. Actualmente los métodos implementados son BLAST, clasificador RDP, RTAX, mothur y uclust. Después, se realiza un resumen de la representación de los grupos taxonómicos dentro de cada muestra según un nivel elegido por el usuario. Ese nivel depende del formato que se devuelve desde el paso de la asignación de taxonomía (nivel 1 a 7).  La salida de este proceso es una tabla donde la primera columna es la taxonomía y en la segunda columna se mantienen los conteos en valor absoluto o relativo.
@@ -66,11 +65,11 @@ Una vez creada la tabla OTU, qiime permite asignar una taxonomía a cada secuenci
 
 
 \section{Análisis de variabilidad: complexCruncher} 
-Es un software de código abierto implementado en Python que sirve para el estudio de la variabilidad en series temporales \cite{ccruncher2017}. Acepta como \textit{input} ficheros excel (en formato xlsx) o ficheros de texto, y genera como \textit{output} una serie de gráficos (eps, svg, png, pdf o ps) y tablas (tex o xlsx). Se puede utilizar en modo automático, que analiza en paralelo todos los conjuntos de datos de entradas, o interactivo, que genera los resultados que el usuario pide. Una de las características clave y diferenciadora de este software es su capacidad de hacer los cálculos en paralelo soportando varias arquitecturas distintas (Linux, Mac o Windows). En los siguientes apartados se especifica la forma de generar cada resultado.
+Es un software de código abierto implementado en Python que sirve para el estudio de la variabilidad en series temporales \cite{ccruncher2017}. Acepta como \textit{input} ficheros excel (en formato xlsx) o ficheros de texto, y genera como \textit{output} una serie de gráficos (eps, svg, png, pdf o ps) y tablas (tex o xlsx). Se puede utilizar en modo automático, que analiza en paralelo todos los conjuntos de datos de entradas, o interactivo, que genera los resultados que el usuario pide. En los siguientes apartados se especifica la forma de generar cada resultado.
 
 
 \subsection[Regresión lineal y exponencial]{\textbf{Regresión lineal y exponencial}}
-Primero se comprueba si la desviación estándar frente a la media de los datos se ajusta a una recta de regresión. La idea es que los valores de la recta estén lo más cerca posible de los valores observados pero siempre quedan distancias entre los puntos y la recta, que son los denominados errores residuales. Para realizar el ajuste, se suman todos los cuadrados de los errores residuales para obtener un solo error que se conoce como suma de los errores al cuadrado (SSE -- siglas en inglés de ``Sum of Squares Error'') y se elige la recta con el valor SSE más pequeño.
+Primero se comprueba si se ajusta a una recta de regresión la desviación estándar de los datos frente a su media. La idea es que los valores observados queden lo más cerca posible de la recta pero siempre quedan distancias, que son los denominados errores residuales. Para realizar el ajuste, se suman todos los cuadrados de los errores residuales para obtener un solo error que se conoce como suma de los errores al cuadrado (SSE -- del inglés ``Sum of Squares Error'') y se elige la recta con el valor SSE más pequeño.
 
 En ocasiones los datos no se ajustan a una recta sino a una curva exponencial de la forma $y = A\cdot r^x$. En estos casos, se convierte la curva exponencial en recta por medio de logaritmos y se aplica el ajuste visto anteriormente. Aplicando propiedades de logaritmos quedaría de la forma:
 \begin{equation}
@@ -85,20 +84,19 @@ Cuando se ajusta la ley de potencia de desviación estándar frente a la media, ha
 
 La idea básica del \textit{bootstrap} es que la inferencia sobre una población de datos muestreados puede ser modelada mediante un nuevo muestreo de los datos y realizando la inferencia a partir de datos remuestreados. Para adaptar esta idea general al problema aquí descrito, se realizan múltiples replicaciones donde se remuestrea la matriz de datos $x$ utilizando su matriz de errores. Es decir, se calcula cada vez una nueva matriz de datos $x$ sobre la base de $x^*_i = x_i + v_i$, donde $v_i$ es una variable aleatoria gaussiana con media $\mu_i=0$ y desviación estándar $\sigma_i=\mathrm{SEM}_i$. En cada repetición, se realiza un ajuste completo de la ley de potencia no ponderada. Los parámetros de la x-ponderación se estiman promediando a través de todos los ajustes de repetición realizados, y sus errores se determinan mediante el cálculo de la desviación estándar para todos los ajustes.
 
-
 \subsection[Estandarización]{\textbf{Estandarización}}
 Sirve para visualizar varios estudios en un diagrama compartido con unidades de desviación estándar de los parámetros Taylor en sus ejes. Para ello, se estandarizan $V$ y $\beta$ utilizando el grupo de sujetos sanos de cada estudio individualmente.
 
 %Para mostrar varios estudios bajo ejes comunes, se estandarizan los parámetros de Taylor utilizando el grupo de sujetos sanos de cada estudio individualmente. Con este enfoque, todos los estudios se pueden visualizar en un diagrama compartido con unidades de desviación estándar de los parámetros Taylor en sus ejes.
 
 Para el parámetro $V$, la estimación de la media ($\widehat{V}$) del grupo de sanos, compuesta por $h$ individuos, es:
-
+\vspace*{-1.5mm}
 \begin{equation}
 \widehat{V} = \frac{1}{W_1}\sum_{i=1}^h V_i \omega_i=\sum_{i=1}^h V_i \omega_i
 \end{equation}
 
 con $W_1=\sum_i^h \omega_i=1$, donde $\omega_i$ son los pesos normalizados calculados como:
-
+\vspace*{-1.5mm}
 \begin{equation}
 \omega_i = \frac{\frac{1}{\sigma^2_{V_i}}}{\sum_i^h\frac{1}{\sigma^2_{V_i}}}
 \end{equation}
@@ -129,11 +127,11 @@ donde $D$ es el número total de saltos de rango dados por el elemento estudiado,
 
 Finalmente, bajo las matrices de rango, hay un gráfico con dos medidas relevantes para la variabilidad del rango a lo largo del tiempo. Por un lado, la variabilidad de rango (RV -- siglas en inglés de \textit{Rank variability}) se calcula como un promedio para todos los taxones del valor absoluto de la resta entre el rango de cada taxón en el tiempo que se calcula y el rango global de cada taxón. Y por otro lado, las diferencias de variabilidad (DV -- del inglés \textit{Differences Variability}) se calculan como un promedio para todos los taxones del valor absoluto de la resta entre el rango de cada taxón en el tiempo que se calcula y el rango que tiene en el tiempo anterior.
 
-
+\vspace*{5mm}
 \section[Estudio de interacciones]{Estudio de interacciones}
 
 \subsection[Coeficiente de correlación de Pearson]{\textbf{Coeficiente de correlación de Pearson}}
-En muchos trabajos se utilizan las correlaciones como medida de interacción entre taxones, de tal manera que si dos géneros aparecen y desaparecen de forma similar a lo largo del tiempo quiere decir que están interaccionando. Existen diversos coeficientes que miden el grado de correlación, adaptados a la naturaleza de los datos, pero el más conocido es el coeficiente de correlación de Pearson y es el que se aplica a los datos de abundancia absoluta de este estudio. Este coeficiente mide el grado de relación lineal entre dos variables cuantitativas ($x$ e $y$) sobre una población y se calcula con la siguiente expresión:
+En muchos trabajos se utilizan las correlaciones como medida de interacción entre taxones, de tal manera que si dos géneros aparecen y desaparecen de forma similar a lo largo del tiempo quiere decir que están interaccionando. Existen diversos coeficientes que miden el grado de correlación, adaptados a la naturaleza de los datos, pero el más conocido es el coeficiente de correlación de Pearson y es el que se aplica a los datos de abundancia absoluta de este estudio. \clearpage Este coeficiente mide el grado de relación lineal entre dos variables cuantitativas ($x$ e $y$) sobre una población y se calcula con la siguiente expresión:
 \begin{equation}
 \rho_{x,y} = \frac{\sigma_{xy}} {\sigma_x \cdot \sigma_y}
 \end{equation}
@@ -144,32 +142,32 @@ El resultado numérico fluctua entre el rango $[-1, +1]$. Una correlación de $+1$
 
 
 \subsection{Método de búsqueda de comportamientos}
-Se pretende agrupar taxones en grupos que reflejen su comportamiento frente a una perturbación (viaje o salmonelosis) para reordenar la matriz de correlaciones. Para ello, se ha diseñado un método sencillo dividiendo las tablas de abundancia relativa en 3 periodos: antes ($a$), durante ($d$) y tras ($r$) el punto en cuestión. Para cada taxón, se calcula la mediana de su abundancia en cada uno de estos periodos ($M_a$, $M_d$, $M_t$). Por último, se calculan los incrementos $\Delta M_1 = M_a - M_d$ y $\Delta M_2 = M_t - M_d$. Si $\Delta M_1$ es positivo, quiere decir que la abundancia ha disminuído con la perturbación y si el incremento es negativo, quiere decir que ha aumentado. En $\Delta M_2$ se da el caso contrario, valores positivos indican disminución de abundancia y valores negativos indican aumento. Además, se escoge un valor de $0.01$ para que el incremento se considere significativamente grande como para que haya cambio en la abundancia. A continuación, en la tabla \ref{grupos_comportamiento}, se especifican los 7 grupos que se han considerado:
+Se pretende agrupar taxones en grupos que reflejen su comportamiento frente a una perturbación (viaje o salmonelosis) para reordenar la matriz de correlaciones. Para ello, se ha diseñado un método sencillo dividiendo las tablas de abundancia relativa en 3 periodos: antes ($a$), durante ($d$) y tras ($r$) el punto en cuestión. Para cada taxón, se calcula la mediana de su abundancia en cada uno de estos periodos ($M_a$, $M_d$, $M_t$). Por último, se calculan los incrementos $\Delta M_1 = M_a - M_d$ y $\Delta M_2 = M_t - M_d$. Si $\Delta M_1$ es positivo, quiere decir que la abundancia ha disminuído con la perturbación y si el incremento es negativo, quiere decir que ha aumentado. En $\Delta M_2$ se da el caso contrario, valores positivos indican disminución de abundancia y valores negativos indican aumento. Además, se escoge un valor de $0.01$ para que el incremento se considere significativamente grande como para que haya cambio en la abundancia. En la tabla \ref{grupos_comportamiento}, se especifican los 7 grupos que se han considerado.
 
 \begin{table}[h]
 \centering
 \resizebox{15cm}{!} {
-\begin{tabular}{| p{3cm}| p{3cm} | p{3cm} | p{6cm} |}
+\begin{tabular}{| p{3cm}| p{4cm} | p{3cm} | p{6cm} |}
 \hline
 Grupo & Valores & Comportamiento & Descripción\\
 \hline \hline
-\textbf{\textcolor{green}{Grupo 1}} & $\Delta M_1 < 0.01$ y \newline $\Delta M_2 > 0.01$ & \begin{minipage}{2.5cm} \includegraphics[width=.9\textwidth]{Figuras/g1.png} \end{minipage} & Aumenta tras la perturbación.\\ \hline %\cline{1-3}
-\textbf{\textcolor{red}{Grupo 2}} & $\Delta M_1 > 0.01$ y \newline $\Delta M_2 > 0.01$ & \begin{minipage}{2.5cm} \includegraphics[width=.9\textwidth]{Figuras/g2.png} \end{minipage} & Disminuye durante la perturbación y recupera el estado inicial.\\ \hline
-\textbf{\textcolor{orange}{Grupo 3}} & $\Delta M_1 > 0.01$ y \newline $\Delta M_2 < 0.01$ & \begin{minipage}{2.5cm} \includegraphics[width=.9\textwidth]{Figuras/g3.png} \end{minipage} & Disminuye con la perturbación.\\ \hline
-\textbf{\textcolor{pink}{Grupo 4}} & $\Delta M_1 < -0.01$ y \newline $\Delta M_2 > -0.01$ & \begin{minipage}{2.5cm} \includegraphics[width=.9\textwidth]{Figuras/g4.png} \end{minipage} & Aumenta con la perturbación.\\ \hline
-\textbf{\textcolor{Plum}{Grupo 5}} & $\Delta M_1 < - 0.01$ y \newline $\Delta M_2 > -0.01$ & \begin{minipage}{2.5cm} \includegraphics[width=.9\textwidth]{Figuras/g5.png} \end{minipage} & Aumenta durante la perturbación y recupera el estado inicial.\\ \hline
-\textbf{\textcolor{SkyBlue}{Grupo 6}} & $\Delta M_1 > -0.01$ y \newline $\Delta M_2 < -0.01$ & \begin{minipage}{2.5cm} \includegraphics[width=.9\textwidth]{Figuras/g6.png} \end{minipage} & Disminuye tras la perturbación.\\ \hline
-\textbf{Grupo 7} & $-0.01 < \Delta M_1 < 0.01$ y $-0.01 < \Delta M_2 < 0.01$ & & Sin variación o con variación independiente de la perturbación.\\ \hline
+\textbf{\textcolor{green}{Grupo 1}} & $\Delta M_1 < 0.01$ y \newline $\Delta M_2 > 0.01$ \vspace*{3mm} & \begin{minipage}{2.5cm} \vspace*{1mm} \includegraphics[width=.9\textwidth]{Figuras/g1.png} \end{minipage} & Aumenta tras la perturbación.\\ \hline %\cline{1-3}
+\textbf{\textcolor{red}{Grupo 2}} & $\Delta M_1 > 0.01$ y \newline $\Delta M_2 > 0.01$ \vspace*{3mm} & \begin{minipage}{2.5cm} \vspace*{2mm} \includegraphics[width=.9\textwidth]{Figuras/g2.png} \end{minipage} & Disminuye durante la perturbación y recupera el estado inicial.\\ \hline
+\textbf{\textcolor{orange}{Grupo 3}} & $\Delta M_1 > 0.01$ y \newline $\Delta M_2 < 0.01$ \vspace*{3mm} & \begin{minipage}{2.5cm} \vspace*{1mm}\includegraphics[width=.9\textwidth]{Figuras/g3.png} \end{minipage} & Disminuye con la perturbación.\\ \hline
+\textbf{\textcolor{pink}{Grupo 4}} & $\Delta M_1 < -0.01$ y \newline $\Delta M_2 > -0.01$ \vspace*{3mm} & \begin{minipage}{2.5cm} \vspace*{2mm} \includegraphics[width=.9\textwidth]{Figuras/g4.png} \end{minipage} & Aumenta con la perturbación.\\ \hline
+\textbf{\textcolor{Plum}{Grupo 5}} & $\Delta M_1 < - 0.01$ y \newline $\Delta M_2 > -0.01$ \vspace*{3mm} & \begin{minipage}{2.5cm} \vspace*{2mm} \includegraphics[width=.9\textwidth]{Figuras/g5.png} \end{minipage} & Aumenta durante la perturbación y recupera el estado inicial.\\ \hline
+\textbf{\textcolor{SkyBlue}{Grupo 6}} & $\Delta M_1 > -0.01$ y \newline $\Delta M_2 < -0.01$ \vspace*{3mm} & \begin{minipage}{2.5cm} \vspace*{1.5mm} \includegraphics[width=.9\textwidth]{Figuras/g6.png} \end{minipage} & Disminuye tras la perturbación.\\ \hline
+\textbf{Grupo 7} & $-0.01 < \Delta M_1 < 0.01$ y \newline $-0.01 < \Delta M_2 < 0.01$ \vspace*{3mm} & \begin{minipage}{2.5cm} \vspace*{3mm} \includegraphics[width=.9\textwidth]{Figuras/g7.png} \end{minipage} & Sin variación o con variación independiente de la perturbación.\\ \hline
 \end{tabular}
 }
-\caption[Tabla de grupos de comportamiento.]{Tabla de grupos de comportamiento de los microorganismos encontrados tras una perturbación. La primera columna recoge los nombres de los grupos y su color identificativo, la segunda columna incluye los valores de incremento de la mediana que debe tener cada taxón para pertenecer al grupo y la última columna describe el comportamiento del grupo.}
+\caption[Tabla de grupos de comportamiento.]{Tabla de grupos de comportamiento de los microorganismos encontrados tras una perturbación. La primera columna recoge los nombres de los grupos y su color identificativo, la segunda columna incluye los valores de incremento de la mediana que debe tener cada taxón para pertenecer al grupo, la tercera columna describe el comportamiento del grupo y la última especifica la descripción del comportamiento.}
 \label{grupos_comportamiento}
 \end{table}
 
 
 \subsection{Aproximación para obtener interacciones: LIMITS} 
 Trabajos más actuales como el de Fisher \textit{et al.} \cite{Fisher2014} han cuestionado que las correlaciones midan interacciones reales y, además, han desarrollado un nuevo método que se ha aplicado a los datos para comparar frente a correlaciones. El algoritmo se denomina LIMITS (siglas de \textit{Learning Interactions from MIcrobial Time Series}) y utiliza una regresión lineal con agregación \textit{bootstrap} para inferir el modelo Lotka-Volterra de tiempo discreto (dLV) en la dinámica de los microorganismos. 
-
+\newpage
 El modelo dLV, también conocido como modelo de Ricker, es un modelo clásico de población discreta que relaciona la abundancia de una especie $i$ a tiempo $t+1$ ($x_i(t+1)$) con la abundancia de todas las especies del ecosistema en el tiempo $t$ ($\vec{x}=\left\lbrace x_1(t),...,x_N(t)\right\rbrace$). Las interacciones  se calculan a través del coeficiente de interacción, $c_{ij}$, que describe la influencia que la especie $j$ tiene sobre la abundancia de la especie $i$. La dinámica se modela con la ecuación:
 \begin{equation}
 x_i(t+1) = \eta_i(t) \cdot x_i(t) \cdot \exp\left(\sum_{j}c_{ij}(x_{j}(t) - <x_j>)\right)

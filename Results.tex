@@ -359,18 +359,3 @@ En la figura \ref{corrplot_StoolB} se muestra el intestino B como último caso. F
     \caption[Correlaciones intestino B]{Matriz de correlaciones de los 15 taxones más abundantes correspondientes a la muestra intestino B. En azul se representan las correlaciones positivas y en rojo las negativas. El área de cada circulo corresponde al valor de correlación.}
     \label{corrplot_StoolB}
 \end{figure}
-
-\clearpage
-\section [Perspectivas de futuro] {\textbf{Perspectivas de futuro}}
-Los trabajos hasta la fecha han supuesto un enorme avance y además se ha logrado en un periodo de tiempo relativamente corto. Como ya se ha comentado, tanto las tecnologías de secuenciación como los sistemas de clasificación no son perfectos todavía e introducen errores en los resultados. Además, se ha demostrado que los intentos de explicar las relaciones entre microorganismos mediante correlaciones no muestran las verdaderas interacciones \cite{Fisher2014}. En ese mismo artículo, los autores proponen una aproximación capaz de superar todos esos obstáculos a la que han llamado LIMITS (detallada en materiales y métodos). Para comprobar su potencial y comparar los resultados expuestos en apartados anteriores, se aplicó LIMITS a los datos del estudio. En la figura \ref{LIMITS_salivaA} se puede observar un ejemplo que compara la matriz de correlaciones para los 15 géneros más abundantes en saliva A con la matriz de interacciones propuesta por LIMITS para la misma muestra. Se puede observar que hay muchas más correlaciones que interacciones y, además, no se corresponden en la mayoría de los casos. Los elementos de la diagonal obtenidos en la matriz de interacción son todos negativos. La biología subyacente a este resultado debe significar que cada una de estas especies llegaría finalmente a la capacidad de carga incluso en ausencia de otras especies. Otra diferencia importante es que la primera matriz presenta simetría, mientras que la segunda es asimétrica (lo que se ajusta mejor a la realidad debido a que un género puede interaccionar con otro pero éste no necesariamente debe interaccionar con el primero). LIMITS es una buena aproximación, pero hay que asumir que está ocurriendo el modelo en el que se basa y solamente ofrece dos tipos de interacción (competición o cooperación). Por tanto, ofrece una de las posibles soluciones aunque puede que no sea la correcta ni la única, ya que el mundo de las interacciones es bastante más complejo.
-
-\begin{figure}[!h]
-    \centering    
-    \subfigure{
-    \includegraphics[width=3in]{./Figuras/corrplot_salivaA_formatLIMITS.png}}
-    \subfigure{
-    \includegraphics[width=2.6in]{./Figuras/SalivaA_15otus_alltimes.jpg}}
-    \caption{Correlación Pearson vs. LIMITS en saliva A}
-    \label{LIMITS_salivaA}
-\end{figure}
-
