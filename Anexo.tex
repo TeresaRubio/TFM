@@ -1,26 +1,26 @@
 \newenvironment{description2}{ \begin{description} \setlength{\itemsep}{0pt} \setlength{\parskip}{0pt}}{ \end{description} } 
 
+{\setlength{\parindent}{0pt}
+Software utilizado: fastQC (0.11.5), multiQC (0.9), seq\_crumbs (0.1.9), qiime (1.9.1).
 
-\noindent
-Software utilizado: fastQC (0.11.5), multiQC (0.9), seq\_crumbs (0.1.9), qiime (1.9.1)\\
-
-\noindent
 Documentación:
+\vspace*{-5mm}
 \begin{itemize}
+    	\addtolength{\itemsep}{-3mm}  % separacion entre items
 \item \url{http://www.bioinformatics.babraham.ac.uk/projects/fastqc}
 \item \url{http://multiqc.info}
 \item \url{https://bioinf.comav.upv.es/seq_crumbs}
 \item \url{http://qiime.org}
 \end{itemize}
 
-\section*{1. Descargar los datos en formato .fastq desde ENA (EBI)}
+\section*{1. Descargar los datos en formato fastq desde ENA (EBI)}
 En cada punto del \textit{pipeline} se crea un directorio para guardar los ficheros de salida de cada apartado. Como se genera una gran cantidad de datos, hay directorios que pueden ser borrados por el usuario si no son necesarios.
 \begin{listing}[style=consola, numbers=none]
 $ mkdir 01_Data_fastq
 $ cd 01_Data_fastq
 \end{listing}
 
-Los datos fueron depositados en \textit{European Bioinformatics Institute (EBI) European Nucleotide Archive (ENA)} con el código de acceso ERP006059. Son 820 archivos con formato fastq. Se descargan los datos via FTP:
+Los datos se encuentran depositados en \textit{European Bioinformatics Institute (EBI) European Nucleotide Archive (ENA)} con el código de acceso ERP006059. Son 820 archivos con formato fastq. Se descargan los datos via FTP:
 \begin{listing}[style=consola, numbers=none]
 $ wget ftp://ftp.sra.ebi.ac.uk/vol1/ERA318/ERA318858/fastq/seqs_Saliva* # Todas las muestras de saliva
 $ wget ftp://ftp.sra.ebi.ac.uk/vol1/ERA318/ERA318858/fastq/seqs_Stool* # Todas las muestras de intestino
@@ -32,60 +32,64 @@ Descomprimir los datos:
 $ gunzip *.gz
 \end{listing}
 
-También se descarga un fichero con los \textit{metadatos} (\url{http://www.biomedcentral.com/content/supplementary/gb-2014-15-7-r89-S18.csv}), que serán necesarios para identificar las muestras que corresponden a cada individuo y a cada día.
+También se descarga un fichero con los metadatos (\url{http://www.biomedcentral.com/content/supplementary/gb-2014-15-7-r89-S18.csv}), que serán necesarios para identificar las muestras que corresponden a cada individuo y a cada día.
 
 
 \subsection*{ 1.1 Comprobar calidad de los datos con fastQC y multiQC}
-FastQC es un software que permite hacer un control de calidad de forma sencilla. Con la opción \* se detectan todos los archivos con formato ".fastq" del directorio actual.
+FastQC es un software que permite hacer un control de calidad de forma sencilla. Con la opción ``*'' se detectan todos los archivos con formato ``.fastq" del directorio actual.
 \begin{listing}[style=consola, numbers=none]
-$ fastqc * # Los datos tienen la codificacion de calidad Sanger / Illumina 1.9
+$ fastqc * #Los datos tienen la codificacion de calidad Sanger/Illumina 1.9
 \end{listing}
-Como hay 820 archivos, se utiliza multiQC para hacer un resumen de los datos analizados por fastQC. Con la opción . se detectan los archivos necesarios:
+Como hay 820 archivos, se utiliza multiQC para hacer un resumen de los datos analizados por fastQC. Con la opción ``.'' se detectan los archivos necesarios:
 \begin{listing}[style=consola, numbers=none]
 $ multiqc .
 \end{listing}
 
 \section*{ 2. Filtro de calidad utilizando seq\_crumbs 0.1.9}
-Este software ha sido desarrollado en Valencia e incorpora utilidades para procesar secuencias.
+Software desarrollado en Valencia que incorpora utilidades para procesar secuencias.
 \begin{listing}[style=consola, numbers=none]
 $ cd ..
 $ mkdir 02_Quality_filter
 $ cd 02_Quality_filter
 \end{listing}
+
 Como se trabaja con 820 ficheros, hay que lanzar varios trabajos a la vez. En este grupo de investigación existen cuatro servidores llamados SOM (1-4) y utilizan un sistema de colas para no colapsar las máquinas por todos los usuarios. 
 Modo de uso:
 \begin{center}
-  clusterlauncher -N ejemplo -n 1 -s som1 /bin/sleep 240 (lanza 1 proceso secuencial al sistema de colas llamado "ejemplo" para ejecutarlo en som1)
+  clusterlauncher -N ejemplo -n 1 -s som1 /bin/sleep 240 (lanza 1 proceso secuencial al sistema de colas llamado ``ejemplo'' para ejecutarlo en som1)
 \end{center}
 Opciones:
+\vspace*{-5mm}
 \begin{description2}
     \item  -N : nombre del trabajo.
     \item  -n : número de procesos paralelos.
     \item  -s : servidor/es donde lanzar el trabajo.
 \end{description2}
 
-  
 Para filtrar por calidad se utiliza el \textit{script filter\_by\_quality} de seq\_crumbs:
+\vspace*{-5mm}
 \begin{description2}
     \item  -q, --threshold : umbral de calidad.
     \item  -o, --outfile : nombre del fichero de salida.
 \end{description2}
+
 \begin{listing}[style=consola, numbers=none]
 $ for i in ../01_Data_fastq/seqs_S*.fastq; 
 do clusterlauncher -N ${i:22:15} -n 1 -s som1 filter_by_quality $i -q 30 -o q30_${i:22};
 done
 \end{listing}
 
-\section*{ 3. De .fastq a .fasta con QIIME}
+\section*{ 3. De .fastq a .fasta con qiime}
 \begin{listing}[style=consola, numbers=none]
 $ cd ..
 $ mkdir 03_Data_fasta
 $ cd 03_Data_fasta
 \end{listing}
 
-QIIME utiliza el formato fasta como entrada, así que incorpora un \textit{script} para cambiar de formatos. Éste produce 2 ficheros: uno con secuencias (.fna) y otro con calidades (.qual).
+Qiime utiliza el formato fasta como entrada, así que incorpora un \textit{script} para cambiar de formatos. Éste produce 2 ficheros: uno con secuencias (.fna) y otro con calidades (.qual).
 
 Para pasar a formato fasta se utiliza \textit{convert\_fastaqual\_fastq.py}:
+\vspace*{-5mm}
 \begin{description2}
     \item  -c, --conversion\_type : tipo de conversión (\textit{fastaqual\_to\_fastq} o \textit{fastq\_to\_fastaqual})
     \item  -f, --fasta\_file\_path : fichero de entrada (fasta o fastq)
@@ -99,7 +103,7 @@ do clusterlauncher -N ${i:21} -n 1 -s som1 convert_fastaqual_fastq.py -c fastq_t
 done
 \end{listing}
 
-Nótese que se utiliza la opción -a porque los datos de partida tienen la codificacion de calidad Sanger / Illumina 1.9.
+Nótese que se utiliza la opción ``-a'' porque los datos de partida tienen la codificacion de calidad Sanger/Illumina 1.9.
 
 \section*{ 4. Eliminar quimeras}
 \begin{listing}[style=consola, numbers=none]
@@ -108,10 +112,10 @@ $ mkdir 04_Chimeras
 $ cd 04_Chimeras
 \end{listing}
 
-Las quimeras son artefactos producidos durante el proceso de PCR. Se trata de secuencias de ADN que contienen mezclas de otras secuencias. QIIME permite eliminarlas mediante dos pasos: primero identificar y luego limpiar las quimeras.
-
+Las quimeras son artefactos producidos durante el proceso de PCR. Se trata de secuencias de ADN que contienen mezclas de otras secuencias. Qiime permite eliminarlas mediante dos pasos: primero identificar y luego limpiar las quimeras.
 
 1) Identificar quimeras con \textit{identify\_chimeric\_seqs.py}:
+\vspace*{-5mm}
 \begin{description2}
     \item  -i, --input\_fasta\_fp : fichero de entrada en formato fasta.
     \item  -m, --chimera\_detection\_method : método de detección de quimeras (\textit{blast\_fragments}, \textit{ChimeraSlayer} o \textit{usearch61}).
@@ -122,12 +126,12 @@ Las quimeras son artefactos producidos durante el proceso de PCR. Se trata de se
 \begin{listing}[style=consola, numbers=none]
 $ for i in ../03_Data_fasta/q30_*.fna;
 do
-clusterlauncher -N ${i:17} -n 1 identify_chimeric_seqs.py -i $i -m usearch61 -r 
-/software/databases/gg_13_8_otus/rep_set/97_otus.fasta -o "chimeras_"${i:17};
+clusterlauncher -N ${i:17} -n 1 identify_chimeric_seqs.py -i $i -m usearch61 -r /software/databases/gg_13_8_otus/rep_set/97_otus.fasta -o chimeras_${i:17};
 done
 \end{listing}
 
 2) Limpiar secuencias quimera con \textit{filter\_fasta.py}:
+\vspace*{-5mm}
 \begin{description2}
     \item  -f, --input\_fasta\_fp : fichero de entrada en formato fasta.
     \item  -o, --output\_fasta\_fp : fichero de salida en formato fasta.
@@ -142,10 +146,10 @@ clusterlauncher -N non_chimeric_${i:17} -n 1 filter_fasta.py -f $i -o non_chimer
 done
 \end{listing}
 
-NOTA: es muy importante aquí usar -n porque le dice al \textit{script} que descarte todas las secuencias que le hemos pasado a través de -s, es decir, que elimine las quimeras. Esto se hace así porque el \textit{script identify\_chimeric\_seqs.py} ofrece una lista de las secuencias quiméricas y no de las secuencias no quiméricas.
+NOTA: es muy importante en este paso usar ``-n'' porque le dice al \textit{script} que descarte todas las secuencias que le hemos pasado a través de la opción ``-s'', es decir, que elimine las quimeras. Esto se hace así porque el \textit{script identify\_chimeric\_seqs.py} ofrece una lista de las secuencias quiméricas y no de las secuencias no quiméricas.
 
 \subsection*{ 4.1 Eliminar ficheros con bajo número de lecturas}
-Se hizo un conteo del número de \textit{reads} por fichero tras todo el preprocesado y se guardó en un fichero adicional:
+Se hace un conteo del número de \textit{reads} por fichero tras todo el preprocesado y se guarda en un fichero adicional:
 \begin{listing}[style=consola, numbers=none]
 $ for i in q30_*.fasta; do r=$(awk '{s++}END{print s/2}' $i) ; echo $r $i | column -t; done > numero_reads.txt
 \end{listing}
@@ -180,7 +184,7 @@ Se muestran las 25 primeras líneas del fichero ordenado:
 \end{lstlisting}
 
 
-Se eliminaron manualmente los 20 ficheros que tenían menos de 10000 lecturas.
+Se eliminan manualmente los 20 ficheros que contienen menos de 10000 lecturas.
 
 \section*{ 5. Seleccionar OTUs}
 \begin{listing}[style=consola, numbers=none]
@@ -192,18 +196,19 @@ $ cd 05_OTUs
 OTU son las siglas en inglés de \textit{Operational Taxonomic Unit}. Es una unidad de clasificación para individualizar los taxones del estudio.
 
 Para seleccionar OTUs se utiliza \textit{pick\_open\_reference\_otus.py}:
+\vspace*{-5mm}
 \begin{description2}
     \item  -i, --input\_fps : fichero de secuencias de entrada.
     \item  -o, --output\_dir : directorio de salida.
-    \item  -p : parámetos para introducir en los distintos pasos del script. 
+    \item  -p : parámetos para introducir en los distintos pasos del \textit{script}. 
 \end{description2}
 
-En este caso se utiliza como parámetros un fichero auxiliar llamado "uc\_fast\_params.txt" con el siguiente contenido:
+En este caso se utiliza un fichero auxiliar llamado ``uc\_fast\_params.txt'' con los parámetros que tiene el siguiente contenido:
 \begin{lstlisting}[style=Python]
 pick_otus:enable_rev_strand_match True
 \end{lstlisting}
 
-Esta instrucción sirve para que tenga en cuenta ambos sentidos de lectura de la secuencia cuando haga el "pick otus".
+Esta instrucción sirve para que tenga en cuenta ambos sentidos de lectura de cada secuencia cuando haga el ``pick otus''.
 
 \begin{listing}[style=consola, numbers=none]
 $ for i in ../04_Chimeras/non_chimeric_*.fna;
@@ -220,12 +225,13 @@ $ cd 06_Summarize_taxa
 \end{listing}
 
 El \textit{script summarize\_taxa.py} proporciona información resumida de la representación de los grupos taxonómicos dentro de cada muestra:
+\vspace*{-5mm}
 \begin{description2}
     \item  -i, --otu\_table\_fp : fichero de entrada (tabla OTU que contiene información taxonómica).
     \item  -o, --output\_dir : directorio de salida.
-    \item  -L, --level : nivel taxonómico para el que se proporciona la información resumida. [Niveles: 1(Reino),2(Fílum),3(Clase),4(Orden),5(Familia),6(Género),7(Especie)]
+    \item  -L, --level : nivel taxonómico para el que se proporciona la información resumida. [Niveles: 1 (Reino), 2 (Fílum), 3 (Clase), 4 (Orden), 5 (Familia), 6 (Género), 7 (Especie)]
     \item  --suppress\_biom\_table\_output : la tabla de taxones con formato BIOM no se creará en el directorio de salida.
-    \item  -a, --absolute\_abundance : para obtener como resultado una tabla con la abundancia absoluta de cada grupo taxonómico. Por defecto (si no se pone -a), este \textit{script} utiliza abundancia relativa.
+    \item  -a, --absolute\_abundance : para obtener como resultado una tabla con la abundancia absoluta de cada grupo taxonómico. Por defecto (si no se pone ``-a''), este \textit{script} utiliza abundancia relativa.
 \end{description2}
 
 \begin{listing}[style=consola, numbers=none]
@@ -235,7 +241,7 @@ clusterlauncher -N ${i:11:38} -n 1 summarize_taxa.py -i $i -o absolute_L6_${i:11
 done
 \end{listing}
 
-
+\vspace*{-5mm}
 \section*{ 7. Datos para complexCruncher}
 Agrupar las tablas de abundancia en 3 directorios según el tipo de muestra: donante A saliva, donante A intestino y donante B intestino. Para muestras de saliva es fácil porque se distinguen los ficheros por su nombre:
 \begin{listing}[style=consola, numbers=none]
@@ -246,33 +252,33 @@ $ for i in *q30_Saliva*; do
 done
 \end{listing}
 
-Para muestras de intestino hay que separar entre sujeto A y B. Para ello he creado un fichero auxiliar que contienen los nombres de las tablas de abundancia del sujeto B. Ese fichero lo he obtenido a partir de los metadatos simplemente ordenando la tabla por la columna 18 "Description" y guardando los elementos de la primera columna que fueran "DonorB Stool". Es necesario que el fichero auxiliar se encuentre en el directorio actual de trabajo.
+Para muestras de intestino hay que separar entre sujeto A y B. Para ello se crea un fichero auxiliar que contiene los nombres de las tablas de abundancia del sujeto B. Ese fichero se obtiene a partir de los metadatos simplemente ordenando la tabla por la columna 18 ``Description'' y guardando los elementos de la primera columna que tengan la descripción ``DonorB Stool''. Es necesario que el fichero auxiliar se encuentre en el directorio actual de trabajo.
 
 \begin{listing}[style=consola, numbers=none]
 $ mkdir Stool_DonorB
 $ for i in *q30_Stool*;
 do 
-	for line in $(cat Stool_DonorB.txt); 
-		do if [ $line = ${i:34:-10} ];
-			then mv $i/otu_table_mc2_w_tax_L6.txt Stool_DonorB/$i; 
-			rm -r $i;
-			fi;
+    for line in $(cat Stool_DonorB.txt); 
+        do if [ $line = ${i:34:-10} ]; then
+	    mv $i/otu_table_mc2_w_tax_L6.txt Stool_DonorB/$i; 
+            rm -r $i;
+            fi;
 done;
 done
 \end{listing}
 
-El resto de tablas que quedan son de intestino de Sujeto A. Así que los muevo a su carpeta con la misma estrategia utilizada en saliva:
+El resto de tablas que quedan son de intestino de Sujeto A. Así que se mueven a su carpeta con la misma estrategia utilizada en saliva:
 \begin{listing}[style=consola, numbers=none]
 $ mkdir Stool_DonorA
 $ for i in *q30_Stool*; do 
-  mv $i/otu_table_mc2_w_tax_L6.txt Stool_DonorA/$i; 
-  rm -r $i;
+    mv $i/otu_table_mc2_w_tax_L6.txt Stool_DonorA/$i; 
+    rm -r $i;
 done
 \end{listing}
 
 En este punto se tienen 3 directorios con mútliples ficheros, cada uno de ellos es una tabla de abundancia para cada día. La idea es juntar todos esas tablas pequeñas en una tabla grande con entradas únicas que resuma todas las abundancias a lo largo del año.
 
-Además, para pasos posteriores se necesita subdividir esa tabla grande final en subtablas que abarcan distintos intervalos de tiempo. Todo ello lo hace un \textit{script} implementado en python. Se muestra como ejemplo el \textit{script} de saliva A (los \textit{scripts} para intestino A e intestino B pueden encontrarse en el material suplementario con los nombres "merge\&split\_stoolA.py" y "merge\&split\_stoolB.py", respectivamente):
+Además, para pasos posteriores se necesita subdividir esa tabla grande final en subtablas que abarcan distintos intervalos de tiempo. Todo ello lo hace un \textit{script} implementado en python. Se muestra como ejemplo el \textit{script} de saliva A (los \textit{scripts} para intestino A e intestino B pueden encontrarse en el material suplementario con los nombres ``merge\&split\_stoolA.py'' y ``merge\&split\_stoolB.py'', respectivamente):
 
 \begin{lstlisting}[style=Python]
 import glob
@@ -368,3 +374,4 @@ $ cd ..
 $ cd Stool_DonorB
 $ python merge&split_stoolB.py
 \end{listing}
+}
