@@ -13,11 +13,11 @@ No se tomaron muestras de saliva del sujeto B. Como puede observarse en los grup
 
 También se recabaron metadatos sobre el estilo de vida de los sujetos mediante una aplicación iOS que utiliza una base de datos SQL donde anotaban diariamente 13 categorías: alimentación, movimientos intestinales, notas, dieta, ejercicio, aptitud física, cambio de ubicación, medicación, estado de ánimo, higiene bucal, sueño, micción y consumo de vitaminas. Además, se produjeron dos escenarios de cambio en el ambiente de la microbiota debido a que el individuo A realizó un viaje entre los días 71-122 desde América (residencia habitual) al sureste de Asia donde presentó episodios de diarrea por el cambio de dieta/entorno (entre los días 80-85 y 104-113) y el individuo B sufrió salmonelosis durante los días 151-159 pero no tomó antibióticos durante la infección.
 \clearpage
-Respecto a la identificación de microorganismos, se decantaron por secuenciar la región V4 del ARN ribosomal 16S con la plataforma Illumina GAIIx. El ADN fue amplificado utilizando \textit{barcoding} y secuenciando lecturas \textit{paired end} de 100 pb (materiales y métodos). El primer obstáculo con los datos se produjo aquí, ya que en el repositorio no se encontraron dos archivos por muestra como suele ocurrir cuando se trabaja con \textit{paired end}. En su lugar, fueron hayados 820 archivos únicos (uno por día) con \textit{reads} de longitud $<$= 100 pb. Se desconoce el procedimiento llevado a cabo por los autores, aunque se hipotetiza (1) que utilizaron \textit{single end} pero han cometido una errata al describir la forma de secuenciación, o (2) que utilizaron \textit{paired end} pero posteriormente los solaparon creando lecturas \textit{single} de 100 pb con mejor calidad o incluso que solo hayan utilizado uno de los dos pares (5' o 3'). Para este trabajo eran necesarias secuencias no apareadas (únicas) para posteriores análisis, así que se dio por hecho que las secuencias de los ficheros descargados del repositorio eran \textit{single}, ya que 100 pb son suficientes para una resolución biológicamente significativa si se eligen juiciosamente los cebadores \cite{Liu2007}.
+Respecto a la identificación de microorganismos, se decantaron por secuenciar la región V4 del ARN ribosomal 16S con la plataforma Illumina GAIIx. El ADN fue amplificado utilizando \textit{barcoding} y secuenciando lecturas \textit{paired end} de 100 pb (materiales y métodos). El primer obstáculo con los datos se produjo aquí, ya que en el repositorio no se encontraron dos archivos por muestra como suele ocurrir cuando se trabaja con \textit{paired end}. En su lugar, fueron hayados 820 archivos únicos (uno por día) con \textit{reads} de longitud $\le$ 100 pb. Se desconoce el procedimiento llevado a cabo por los autores a pesar de escribirles para aclarar este y otros aspectos, pero no se llegó a recibir respuesta. Por tanto, se hipotetiza (1) que utilizaron \textit{single end} pero han cometido una errata al describir la forma de secuenciación, o (2) que utilizaron \textit{paired end} pero posteriormente los solaparon creando lecturas \textit{single} de 100 pb con mejor calidad o incluso que solo hayan utilizado uno de los dos pares (5' o 3'). Para este trabajo eran necesarias secuencias no apareadas (únicas) para posteriores análisis, así que se dio por hecho que las secuencias de los ficheros descargados del repositorio eran \textit{single}, ya que 100 pb son suficientes para una resolución biológicamente significativa si se eligen juiciosamente los cebadores \cite{Liu2007}.
 
 Se encontraron otras incidencias en los datos como la falta de metadatos para la muestra ``Stool69.1260101.fastq'' y la existencia de dos muestras para el mismo día (concretamente los días 79, 127, 128, 231, 238, 275, 277, 284 en saliva del sujeto A; los días 7, 44, 74, 79, 82, 84, 106, 120, 162, 277 en intestino del sujeto A y el día 177 en intestino del sujeto B).
 
-Para hacerse una idea de la calidad de los datos, se utilizó FastQC generando un informe para cada uno de los 820 ficheros. Como era muy tedioso ir inspeccionando uno por uno, se utilizó MultiQC para obtener un fichero resumen de todos ellos. El resultado obtenido se recoge en la figura \ref{multiQC_pre}. El primer gráfico muestra la calidad medida con \textit{phred score (q)} a lo largo de las bases en las 820 muestras. En general, la calidad fue buena pues casi todas las bases (a excepción de dos) presentaron valores superiores a 20. La calidad tendía a bajar un poco en los extremos de las secuencias, fenómeno que suele producirse en secuenciación frecuentemente. El segundo \textit{plot} muestra la calidad en base al número de secuencias. Se forma algo parecido a una campana de Gauss, mostrando que la mayoría de las secuencias tenían calidad q=35 y había muy pocas de ``mala calidad'' (q$<$30) en el extremo izquierdo de la campana.
+Para hacerse una idea de la calidad de los datos, se utilizó FastQC generando un informe para cada uno de los 820 ficheros. Como era muy tedioso ir inspeccionando uno por uno, se utilizó MultiQC para obtener un fichero resumen de todos ellos. El resultado obtenido se recoge en la figura \ref{multiQC_pre}. El primer gráfico muestra la calidad medida con \textit{phred score (q)} a lo largo de las bases en las 820 muestras. En general, la calidad fue buena pues casi todas las bases (a excepción de dos) presentaron valores superiores a 20. La calidad tendía a bajar un poco en los extremos de las secuencias, fenómeno que suele producirse en secuenciación frecuentemente. Este comportamiento de la calidad remarcaba que las lecturas fueran \textit{single}. Si fueran secuencias solapadas, la figura sería más o menos simétrica respecto a la posición 50, estando las peores calidades entorno a esta posición, pero no se apreciaría un extremo con calidades claramente mejores que el otro, como se aprecia en la figura. El segundo \textit{plot} muestra la calidad en base al número de secuencias. Se forma algo parecido a una campana de Gauss, mostrando que la mayoría de las secuencias tenían calidad q=35 y había muy pocas de ``mala calidad'' (q$<$30) en el extremo izquierdo de la campana.
 
 \begin{figure}[!h]
  \centering
@@ -32,11 +32,11 @@ Para hacerse una idea de la calidad de los datos, se utilizó FastQC generando un
 \clearpage
 
 \section [Preprocesado] {\textbf{Preprocesado}}
-Antes de realizar cualquier análisis era necesario un preprocesado. Del secuenciador se obtuvo el fragmento de ADN mencionado en el apartado 1.1.2 -- \textit{barcoding} (figura \ref{barcoding}). A esto se le denomina ``multiplex'' y a la acción de procesarlo se le denomina ``demultiplexar''. Además, ya se ha mencionado que la plataforma de secuenciación no es perfecta y en ocasiones se obtienen calidades no deseadas.
+Antes de realizar cualquier análisis era necesario un preprocesado. Del secuenciador se obtuvo el fragmento de ADN mencionado en el apartado \ref{barc} (figura \ref{barcoding}). A esto se le denomina ``multiplex'' y a la acción de procesarlo se le denomina ``demultiplexar''. Además, ya se ha mencionado que la plataforma de secuenciación no es perfecta y en ocasiones se obtienen calidades no deseadas.
 
-En este caso, no fue necesario realizar un demultiplexado porque los autores ya habían realizado este paso previamente y los datos del repositorio ya estaban libres de adaptadores. Se comprobó buscando la secuencia del cebador de PCR directo (GTGCCAGCMGCCGCGGTAA) y el cebador reverso (GGACTACHVGGGTWTCTAAT) en las \textit{reads} pero no fueron hayadas (ni tampoco las secuencias reversa, complementaria y reversa-complementaria a los cebadores). Por ello, se dedujo que ya fueron eliminados.
+En este caso, no fue necesario realizar un demultiplexado porque los autores ya habían realizado este paso previamente y los datos del repositorio ya estaban libres de adaptadores. Se comprobó buscando la secuencia del cebador de PCR directo (GTG\-CCA\-GCM\-GCC\-GCG\-GTAA) y el cebador reverso (GGA\-CTA\-CHV\-GGG\-TWT\-CTA\-AT) en las \textit{reads} pero no fueron hayadas (ni tampoco las secuencias reversa, complementaria y reversa-complementaria a los cebadores). Por ello, se dedujo que ya fueron eliminados.
 
-En general, las calidades de secuenciación eran buenas como se vio en el apartado anterior, pero aún podían eliminarse algunas secuencias que tenían peor calidad. El valor $q$ al cual filtrar fue de elección arbitraria, siempre hay que llegar a un compromiso entre quedarse con lecturas de buena calidad pero sin perder demasiada información. En este caso, con un valor $q = 30$ se perdieron pocas lecturas y se obtuvo una buena calidad: habían 211.731.053 \textit{reads} de partida y tras el filtrado quedaron 208.266.760 \textit{reads}, así que se eliminó el 1,636\% de las lecturas al filtrar. Las secuencias fueron filtradas con seq\_crumbs (materiales y métodos) para eliminar todas aquellas con calidad media $q<30$. Los resultados pueden observarse en la figura \ref{multiQC_post}. Como se filtró por calidad media, no se observa ningún cambio en la primera gráfica de calidad a lo largo de las bases. Sin embargo, en el segundo gráfico se comprueba que el programa ha eliminado todas las \textit{reads} inferiores a 30, perdiendo esa cola izquierda de la campana que rozaba la franja sombreada en naranja. 
+En general, las calidades de secuenciación eran buenas como se vio en el apartado anterior, pero aún podían eliminarse algunas secuencias que tenían peor calidad. El valor $q$ al cual filtrar fue de elección arbitraria, siempre hay que llegar a un compromiso entre quedarse con lecturas de buena calidad pero sin perder demasiada información. En este caso, con un valor $q = 30$ se perdieron pocas lecturas y se obtuvo una buena calidad: habían $211,7\cdot 10^6$ \textit{reads} de partida y tras el filtrado quedaron $208,3 \cdot 10^6$ \textit{reads}, así que se eliminó el 1,64\% de las lecturas al filtrar. Las secuencias fueron filtradas con seq\_crumbs (materiales y métodos) para eliminar todas aquellas con calidad media $q<30$. Los resultados pueden observarse en la figura \ref{multiQC_post}. Como se filtró por calidad media, no se observa ningún cambio en la primera gráfica de calidad a lo largo de las bases. Sin embargo, en el segundo gráfico se comprueba que el programa ha eliminado todas las \textit{reads} inferiores a 30, perdiendo esa cola izquierda de la campana de Gauss que rozaba la franja sombreada en naranja. 
 
 \begin{figure}[!h]
  \centering
@@ -48,10 +48,19 @@ En general, las calidades de secuenciación eran buenas como se vio en el apartad
  \label{multiQC_post}
 \end{figure}
 
-Otros elementos que afectaban a la calidad fueron las quimeras, que son combinaciones de dos o más secuencias producidas durante el proceso de PCR como un artefacto. Para eliminarlas se utilizó qiime v1.9.1 (materiales y métodos). Tras el filtro de calidad, se convirtieron los ficheros fastq en fasta que es el formato de entrada que acepta qiime. A continuación, se eliminaron quimeras con los \textit{scripts} \textit{identify\_chimeric\_seqs.py} y \textit{filter\_fasta.py} como se detalla en el Anexo I. Después de filtrar por calidad quedaban 208.266.760 \textit{reads} y tras este paso se obtuvieron 206.928.490 \textit{reads}, por lo que el 0,64\% de las secuencias eran quimeras.
+Otros elementos que afectaban a la calidad fueron las quimeras, que son combinaciones de dos o más secuencias producidas durante el proceso de PCR como un artefacto. Para eliminarlas se utilizó qiime v1.9.1 (materiales y métodos). Tras el filtro de calidad, se convirtieron los ficheros fastq en fasta que es el formato de entrada que acepta qiime. A continuación, se eliminaron quimeras con los \textit{scripts} \textit{identify\_chimeric\_seqs.py} y \textit{filter\_fasta.py} como se detalla en el Anexo I. Después de filtrar por calidad quedaban $208,3 \cdot 10^6$ \textit{reads} y tras este paso se obtuvieron $206,9 \cdot 10^6$ \textit{reads}, por lo que el 0,64\% de las secuencias eran quimeras.
 
-El número de lecturas que se generaban cada día también es un factor importante. Si en un fichero aparecen tan solo 2 o 3 \textit{reads} es un indicativo de que algo no funcionó bien en la secuenciación ese día. Por tanto, se realizó un paso más de preprocesado de los datos, eliminando aquellos ficheros que contenían un número de \textit{reads} inferior a 10.000. Este valor también fue arbitrario en base al compromiso cantidad-calidad de información, esto es, si elimino muchas secuencias me quedaré sin información pero si incluyo los ficheros con pocas \textit{reads} estaré introduciendo errores a mi análisis. Los días eliminados del estudio aparecen detallados en la tabla \ref{muestras_eliminadas}. De 208.266.760 \textit{reads} que llegaron sin quimeras, fueron reducidas a 208.231.302 \textit{reads} totales con las que se realizó todo el análisis.
+\clearpage
+El número de lecturas que se generaban cada día también es un factor importante. Si en un fichero aparecen tan solo 2 o 3 \textit{reads} es un indicativo de que algo no funcionó bien en la secuenciación ese día. Por tanto, se realizó un paso más de preprocesado de los datos, eliminando aquellos ficheros que contenían un número de \textit{reads} inferior a 10.000. Este valor también fue arbitrario en base al compromiso cantidad-calidad de información: si se eliminan muchas secuencias, no hay suficiente información pero si se incluyen los ficheros con pocas \textit{reads}, se introducen errores en el análisis. Los días eliminados del estudio aparecen detallados en la tabla \ref{muestras_eliminadas}. De $206,9 \cdot 10^6$ \textit{reads} que llegaron sin quimeras, se eliminaron el 0,02\%, con las que se realizó todo el análisis.
 
+Las cifras globales son:
+\vspace*{-3mm}
+\begin{itemize}
+    	\addtolength{\itemsep}{-3mm}  % separacion entre items
+\item Número de \textit{reads} iniciales: $211,7\cdot 10^6$ \textit{reads}
+\item Número reads al final de todo el filtrado: $206,9 \cdot 10^6$ \textit{reads} 
+\item Porcentaje global de reducción: 2,28\%
+\end{itemize}
 En el Anexo I se detalla todo el preprocesado de los datos con los \textit{scripts} utilizados y sus opciones.
 
 \begin{table}[h]
@@ -75,13 +84,13 @@ Stool453.1260253 & 1006 & Sujeto B\\ \hline
 Stool92.1259811 & 1423 & Sujeto A\\ \hline
 Stool452.1259809 & 1738 & Sujeto B\\ \hline
 Stool384.1259728 & 2501 & Sujeto B\\ \hline
-Stool340.1260381 & 2746 & Sujeto A\\ \hline
-Stool4.1260013 & 3553 & Sujeto A\\ \hline
-Stool343.1259705 & 4004 & Sujeto A\\ \hline
-Stool454.1260333 & 4491 & Sujeto B\\ \hline
+Stool340.1260381 & 2772 & Sujeto A\\ \hline
+Stool4.1260013 & 3554 & Sujeto A\\ \hline
+Stool343.1259705 & 4026 & Sujeto A\\ \hline
+Stool454.1260333 & 4493 & Sujeto B\\ \hline
 Stool382.1260123 & 6395 & Sujeto B\\ \hline
-Stool345.1259808 & 7420 & Sujeto A\\ \hline
-TOTAL & 35458 &\\ \hline
+Stool345.1259808 & 7462 & Sujeto A\\ \hline
+TOTAL & 35551 &\\ \hline
 \end{tabular}
 }
 \caption[Tabla de ficheros eliminados.]{Esta tabla recoge los 20 ficheros eliminados del estudio por tener un número bajo de lecturas, ordenados de menor a mayor. La primera columna muestra el nombre de la muestra, la segunda el número de lecturas que contiene el fichero y la tercera el donante al cual pertenece dicha muestra.}
@@ -92,11 +101,11 @@ TOTAL & 35458 &\\ \hline
 \section [Clasificación taxonómica] {\textbf{Clasificación taxonómica}}
 Para este paso se utilizó también qiime v1.9.1. La selección de OTUs se llevó a cabo con la estrategia \textit{open-reference} al 97\% de similitud, con la base de datos Greengenes y con el método UCLUST. Por último, se asignó la taxonomía resumiendo los taxones a nivel de género (L6). Cabe destacar que un gran número de géneros no pudieron ser clasificados y se quedaron a nivel de familia, orden o incluso clase. En estos casos, la nomenclatura adoptada por qiime fue ``others'' o ``g\_\_''. Por ejemplo: `` \textbf{\textit{k\_\_Bacteria; p\_\_Firmicutes; c\_\_Bacilli; o\_\_Lactobacillales; f\_\_Streptococcaceae; Others}}'' o `` \textbf{\textit{k\_\_Bacteria; p\_\_Firmicutes; c\_\_Bacilli; o\_\_Lactobacillales; f\_\_Streptococcaceae; g\_\_}}''.
 
-\clearpage
+
 También se obtuvo el grupo ``Unassigned'' donde se guardaron todas aquellas secuencias que el programa no fue capaz de clasificar taxonómicamente a ningún nivel. Presentaba la siguiente nomenclatura: ``\textbf{\textit{Unassigned;Other;Other;Other;Other;Other}}''
 
 
-Este procedimiento se inició de un gran número de ficheros que contenían secuencias de ADN tomadas a lo largo de un año y se produjo una gran tabla que resume la abundancia absoluta de OTUs (filas) que había cada uno de los días de ese año (columnas). Se generó una tabla de abundancia por cada muestra y sujeto con las siguientes dimensiones:
+Este procedimiento se inició de un gran número de ficheros que contenían secuencias de ADN tomadas a lo largo de un año y se creó una gran tabla en formato xlsx (fichero Excel) que resume la abundancia absoluta de OTUs (filas) que había cada uno de los días de ese año (columnas). Se generó una tabla de abundancia por cada muestra y sujeto con las siguientes dimensiones:
 
 \begin{itemize}
 \addtolength{\itemsep}{-3mm} 
@@ -105,7 +114,7 @@ Este procedimiento se inició de un gran número de ficheros que contenían secuenc
 	\item Heces del donante B: 402 (OTUs) x 186 (días).
 \end{itemize}
 
-Todo este proceso también queda detallado en el \textit{pipeline} del Anexo I, en el que pueden encontrarse todos los \textit{scripts} de qiime utilizados con la explicación de cada opción. Es reproducible e incluye además un \textit{script} de creación propia implementado en Python, que formatea los ficheros de salida de qiime (un .txt por día) en el fichero de entrada de la siguiente herramienta de análisis, complexCruncher (que acepta de entrada un excel por individuo con una tabla donde aparezcan todos días como columnas adyacentes).
+Todo este proceso también queda detallado en el \textit{pipeline} del Anexo I, en el que pueden encontrarse todos los \textit{scripts} de qiime utilizados con la explicación de cada opción. Es reproducible e incluye además un \textit{script} de creación propia implementado en Python, que formatea los ficheros de salida de qiime (un .txt por día) en el fichero de entrada de la siguiente herramienta de análisis, complexCruncher (que acepta de entrada un excel por individuo con una tabla donde aparezcan todos días como columnas adyacentes). Las tablas finales pueden encontrarse en el material suplementario y en la siguiente dirección: \url{https://github.com/TeresaRubio/TFM/tree/a/Tablas}.
 
 
 
@@ -116,26 +125,27 @@ Para extraer las propiedades globales del sistema, se utilizó el software comple
 \subsection{Abundancia de taxones}
 Una vez que se generaron las tablas de abundancia absoluta del apartado anterior, se representó mediante un histograma la abundancia total cada día para dar una idea global de los datos. En la muestra de saliva (figura \ref{abun_abs_saliva}) existía, en general, una abundancia alta a excepción de algunos días donde se apreciaba un claro descenso. En el caso de intestino A (figura \ref{abun_abs_stoolA}) se tenían más días de muestra, lo que dificultaba un poco su visualización, pero se aprecia que hubieron muchos días con abundancias muy bajas. Por último, la muestra de intestino B (figura \ref{abun_abs_stoolB}) presentaba abundancias elevadas durante los primeros días pero a partir de aproximadamente el día 20, casi todas las abundancias fueron inferiores. Puede apreciarse que en ninguno de los tres casos se conservaron abundancias inferiores a 10.000 por el filtro realizado durante el preprocesado.
 
-\clearpage
 Se tuvo en cuenta que los conteos absolutos estaban llenos de errores sistemáticos debidos tanto al proceso de secuenciación como a la asignación taxonómica. Los cambios en abundancia estarían enmascarados por esos errores, así que se trabajó con abundancia relativa de los taxones para ver la variabilidad temporal. ComplexCruncher realizó internamente el cambio de abundancia absoluta a abundancia relativa y elaboró todos los cálculos posteriores con estos valores.
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=5.5in]{./Figuras/HostLifeStyle_Saliva_SalivaA_AbsFreqPlot.png}
+    \includegraphics[width=5.4in]{./Figuras/HostLifeStyle_Saliva_SalivaA_AbsFreqPlot.png}
     \caption[Abundancia absoluta saliva A]{Histograma de la muestra saliva A que representa la abundancia total de los géneros en frecuencia absoluta a lo largo del tiempo (285 días). Los colores altos indican altas abundancias y los colores frios, bajas abundancias.}
     \label{abun_abs_saliva}
 \end{figure}
 
+\vspace*{-4mm}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=5in]{./Figuras/HostLifeStyle_Stool_StoolA_AbsFreqPlot.png}
+    \includegraphics[width=5.4in]{./Figuras/HostLifeStyle_Stool_StoolA_AbsFreqPlot.png}
     \caption[Abundancia absoluta intestino A]{Histograma de la muestra intestino A que representa la abundancia total de los géneros en frecuencia absoluta a lo largo del tiempo (329 días). Los colores altos indican altas abundancias y los colores frios, bajas abundancias.}
     \label{abun_abs_stoolA}
 \end{figure}
 
+\vspace*{-4mm}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=5in]{./Figuras/HostLifeStyle_Stool_StoolB_AbsFreqPlot.png}
+    \includegraphics[width=5.4in]{./Figuras/HostLifeStyle_Stool_StoolB_AbsFreqPlot.png}
     \caption[Abundancia absoluta intestino B]{Histograma de la muestra intestino B que representa la abundancia total de los géneros en frecuencia absoluta a lo largo del tiempo (186 días). Los colores altos indican altas abundancias y los colores frios, bajas abundancias.}
     \label{abun_abs_stoolB}
 \end{figure}
@@ -143,7 +153,7 @@ Se tuvo en cuenta que los conteos absolutos estaban llenos de errores sistemátic
 
 \newpage
 \subsection{Ley de potencias}
-Con las tablas de abundancia relativa, complexCruncher comprobó si los datos se ajustaban a un modelo lineal, no lineal o mixto (materiales y métodos). En este estudio se encontró que las fluctuaciones de abundancia relativa en los taxones seguían la ley de potencias de Taylor en todos los casos, como muestra la figura \ref{taylor}. Se representa el ajuste exponencial de los datos representado en escala logarítmica para facilitar la visualización. El ajuste fue robusto porque todos los casos presentaban un coeficiente de determinación alto (R$^{2}>$ 0.9). Dentro de la ecuación, $V$ correspondía a la ordenada en el origen y $\beta$ a la pendiente. Estos dos parámetros estaban relacionados con la estabilidad del sistema, es decir, describían la variabilidad temporal del microbioma. En metagenómica existen, en general, dos tipos de propiedades estadísticas: $\beta$ = 0.5 (distribución de Poisson) y $\beta$ = 1 (distribución exponencial). En estos resultados se alcanzó siempre una $\beta <$ 1, lo cual indicaba que los taxones dominantes eran menos susceptibles a las perturbaciones que el resto. Por otro lado, $V$ representaba la máxima amplitud de las fluctuaciones, esto es, la variación máxima teórica correspondiente a un género hipotético de abundancia relativa 1. Si $V$ es pequeña, la variabilidad de abundancia a lo largo del tiempo sería pequeña y si $V$ es grande, la variabilidad sería grande. Puede observarse que la variabilidad fue menor en saliva que en intestino.
+Con las tablas de abundancia relativa, complexCruncher comprobó si los datos se ajustaban a un modelo lineal, no lineal o mixto (materiales y métodos). En este estudio se encontró que las fluctuaciones de abundancia relativa en los taxones seguían la ley de potencias de Taylor en todos los casos, como muestra la figura \ref{taylor}. Se representa el ajuste exponencial de los datos representado en escala logarítmica para facilitar la visualización. El ajuste fue robusto porque todos los casos presentaban un coeficiente de determinación alto (R$^{2}>$ 0.9). Dentro de la ecuación, $V$ correspondía a la ordenada en el origen y $\beta$ a la pendiente. Estos dos parámetros estaban relacionados con la estabilidad del sistema, es decir, describían la variabilidad temporal del microbioma. En metagenómica existen, en general, dos tipos de propiedades estadísticas: $\beta$ = 0.5 (distribución de Poisson) y $\beta$ = 1 (distribución exponencial). En estos resultados se alcanzó siempre una $\beta <$ 1, lo cual indicaba que los taxones dominantes eran menos susceptibles a las perturbaciones que el resto. Por otro lado, $V$ representaba la máxima amplitud de las fluctuaciones, esto es, la variación máxima teórica correspondiente a un género hipotético de abundancia relativa 1. También puede interpretarse como la variabilidad en el origen de $\beta$, es decir, cuando $\beta=0$. Si $V$ es pequeña, la variabilidad de abundancia a lo largo del tiempo sería pequeña y si $V$ es grande, la variabilidad sería grande. Puede observarse que la variabilidad fue menor en saliva que en intestino.
 
 
 \begin{figure}[h]
@@ -157,7 +167,9 @@ Con las tablas de abundancia relativa, complexCruncher comprobó si los datos se 
 \end{figure}
 
 
-Los parámetros de Taylor, $V$ y $\beta$, se relacionan con el estado de salud del hospedador \cite{Marti2017}. En general, se considera un estado sano del hospedador cuando el microbioma es estable a lo largo del tiempo y un estado de enfermedad cuando presenta variabilidad temporal. Existen excepciones como por ejemplo en niños, donde el microbioma está en continuo cambio hasta que se desarrolla por completo y entonces aquí el concepto se invierte, se considera sano un microbioma variable y enfermo un microbioma estable. Ya se han comprobado los valores de $V$ y $\beta$ generales de los sujetos de este estudio pero también fueron analizados aprovechando las perturbaciones que causaban el viaje y la infección en los individuos. Un hecho empírico fue que los sujetos estaban enfermos durante el viaje y la infección, por lo que presentaron una mayor variabilidad temporal del durante las perturbaciones pero, ¿cómo se encontraba una vez pasado estos sucesos? Nuestra hipótesis fue que se recupera la variabilidad inicial tras la perturbación. Para demostrarlo se realizó el cálculo de $V$ y $\beta$ en todos estos casos con ComplexCruncher, ya que permitía introducir un fichero excel por individuo con varias hojas: la primera hoja incluía el periodo anual completo, la segunda hoja el periodo previo a la perturbación, la tercera el periodo de la perturbación y la cuarta el periodo tras la perturbación. El programa distinguió entre periodos sanos y de perturbación porque fueron previamente indicados. Este paso de división en periodos temporales se realizó aprovechando el mismo \textit{script} en Python que formateaba los datos para pasar de qiime a complexCruncher. El \textit{script} generó las subtablas y produjo 3 ficheros excel para introducir a complexCruncher:
+Los parámetros de Taylor, $V$ y $\beta$, se relacionan con el estado de salud del hospedador \cite{Marti2017}. En general, se considera un estado sano del hospedador cuando el microbioma es estable a lo largo del tiempo y un estado de enfermedad cuando presenta variabilidad temporal. Existen excepciones como por ejemplo en niños, donde el microbioma está en continuo cambio hasta que se desarrolla por completo y entonces aquí el concepto se invierte, se considera sano un microbioma variable y enfermo un microbioma estable. Ya se han comprobado los valores de $V$ y $\beta$ generales de los sujetos de este estudio pero también fueron analizados aprovechando las perturbaciones que causaban el viaje y la infección en los individuos. Un hecho empírico fue que los sujetos estaban enfermos durante el viaje y la infección, por lo que presentaron una mayor variabilidad temporal del durante las perturbaciones pero, ¿cómo se encontraba una vez pasado estos sucesos? Nuestra hipótesis fue que se recupera la variabilidad inicial tras la perturbación. Para demostrarlo se realizó el cálculo de $V$ y $\beta$ en todos estos casos con complexCruncher, ya que permitía introducir un fichero excel por individuo con varias hojas: la primera hoja incluía el periodo anual completo, la segunda hoja el periodo previo a la perturbación, la tercera el periodo de la perturbación y la cuarta el periodo tras la perturbación. El programa distinguió entre periodos sanos y de perturbación porque fueron previamente indicados. Este paso de división en periodos temporales se realizó aprovechando el mismo \textit{script} en Python que formateaba los datos para pasar de qiime a complexCruncher. 
+
+El \textit{script} generó las subtablas y produjo 3 ficheros excel para introducir a complexCruncher:
 
 \begin{table}[!h]
 \centering
@@ -190,17 +202,18 @@ El resultado obtenido para saliva de sujeto A se muestra en la figura \ref{v_bet
 
 El resultado obtenido para intestino fue aún más interesante. En la figura \ref{v_beta_summary} se muestran combinados los valores $V$ y $\beta$ para el sujeto A y B. El circulo turquesa y la estrella verde simbolizan los valores generales que se vieron en la figura \ref{taylor}B y \ref{taylor}C. Analizando el sujeto A, se representa en violeta el periodo anterior al viaje, en amarillo el periodo del viaje y en negro y rojo el periodo tras el viaje. Se aprecia, al igual que en saliva, que los valores aumentaron mucho durante el viaje y se recuperaron a la vuelta alcanzando casi el estado inicial. Respecto al sujeto B, se colorea en azul oscuro y gris el periodo antes de la infección, en turquesa con forma de triángulo el periodo de infección y en fucsia el periodo tras la infección. De nuevo, los valores fueron mayores durante la infección y se recuperaron hacia valores similares al estado inicial (aunque de forma más dispersa que en el donante A). Se corroboró así la hipótesis de que tras una perturbación se recuperaba un estado similar, aunque no igual, al de partida.
 
+\vspace*{-4mm}
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=5.5in]{./Figuras/cplxCrnch_HostLifeStyle_Saliva_xWeighted_Summary.png}
+    \includegraphics[width=5.2in]{./Figuras/cplxCrnch_HostLifeStyle_Saliva_xWeighted_Summary.png}
     \caption[$V$ y $\beta$ en saliva] {Se representan los parámetros de Taylor, $V$ y $\beta$, correspondientes a muestras de saliva en distintos periodos: durante todo el año, antes del viaje, durante el viaje y tras el viaje (dividido en dos subperiodos). Los errores fueron calculados por el método bootstrap.}
     \label{v_beta_saliva}
 \end{figure}
 
-
+\vspace*{-4mm}
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=5.5in]{./Figuras/cplxCrnch_HostLifeStyle_Stool_xWeighted_Summary.png}
+    \includegraphics[width=5.2in]{./Figuras/cplxCrnch_HostLifeStyle_Stool_xWeighted_Summary.png}
     \caption[$V$ y $\beta$ en intestino]{Se representan los parámetros de Taylor, $V$ y $\beta$, correspondientes a muestras de intestino en distintos periodos. Para el sujeto A: durante todo el año, antes del viaje, durante el viaje y tras el viaje (dividido en dos subperiodos). Para el sujeto B: durante todo el año, antes de la infección (dividido en dos subperiodos), durante la infección y tras la infección. Los errores fueron calculados por el método bootstrap.}
     \label{v_beta_stool}
 \end{figure}
@@ -222,9 +235,10 @@ Existe una dinámica en la estabilidad de los taxones. Imaginemos un día puntual 
 
 Una forma de representar este \textit{ranking} de taxones se plasma en la figura \ref{rank_saliva}. Esta matriz recoge en filas los 50 géneros más abundantes ordenados por abundancia y en columnas los días de toma de muestra a lo largo de un año. Nótese que no hay 356 días como corresponde a un año, ya que existen días que tuvieron que ser eliminadas por bajo número de lecturas o incluso algunos días en los que directamente no hubo muestra. Se representaron consecutivamente para facilitar la visualización. El color de cada celda representa el rango, esto es, el orden en ranking de cada taxón, siendo amarillo la representación del primer puesto y violeta oscuro el último puesto. Por ejemplo, en el caso de saliva (figura \ref{rank_saliva}): amarillo correspondía al número 1 y violeta oscuro al número 573 (que fue el último taxón). En general, se encontró que los géneros más abundantes suelen ser los más estables. El género más abundante fue \textit{Streptococcus} y ocupaba la primera posición en abundancia a lo largo de todos los días del año (ningún género lo superó nunca en abundancia). Otro género destacable es \textit{Chryseobacterium}, ya que los primeros días del año fue muy poco abundante y a partir del día 50 aproximadamente, aumentó su abundancia. También se presentaron otros patrones intermitentes, que aparecían y desaparecían en pocos días como, por ejemplo, el caso de \textit{Rummeliibacillus}.
 
-En la parte derecha de la figura se muestra el cálculo de RSI (discutido en materiales y métodos) cuyo valor es 100\% para un elemento que nunca cambia en el ranking con el tiempo y 0\% para un elemento que oscila entre la primera posición y la última de un día a otro. El color en esta columna muestra a su vez una ordenación en base al RSI, es decir, amarillo será el máximo valor de RSI en los 50 taxones y violeta oscuro será el mínimo valor de RSI. Por ejemplo, en el caso de saliva (figura \ref{rank_saliva}): amarillo fue 100 (máximo RSI) y violeta oscuro fue 82.4 (mínimo RSI). En el primer tercio de los 50 taxones, se observaron valores de RSI elevados remarcando que los taxones más abundantes presentaban más estabilidad. Sin embargo, en ocasiones se encontraron RSI elevados en el segundo o tercer tercio de los datos, generando las denominadas ``islas de estabilidad''. Serían géneros que a pesar de no ser los más abundantes, se mantuvieron estables en su rango a lo largo del tiempo. Algunos ejemplos en la muestra de saliva fueron \textit{Parvimonas} y \textit{Eikenella}.
+En la parte derecha de la figura se muestra el cálculo de RSI (discutido en materiales y métodos) cuyo valor es 100\% para un elemento que nunca cambia en el ranking con el tiempo y 0\% para un elemento que oscila continuamente entre la primera posición y la última de un día a otro. El color en esta columna muestra a su vez una ordenación en base al RSI, es decir, amarillo será el máximo valor de RSI en los 50 taxones y violeta oscuro será el mínimo valor de RSI. Por ejemplo, en el caso de saliva (figura \ref{rank_saliva}): amarillo fue 100 (máximo RSI) y violeta oscuro fue 82.4 (mínimo RSI). En el primer tercio de los 50 taxones, se observaron valores de RSI elevados remarcando que los taxones más abundantes presentaban más estabilidad. Sin embargo, en ocasiones se encontraron RSI elevados en el segundo o tercer tercio de los datos, generando las denominadas ``islas de estabilidad''. Serían géneros que a pesar de no ser los más abundantes, se mantuvieron estables en su rango a lo largo del tiempo. Algunos ejemplos en la muestra de saliva fueron \textit{Parvimonas} y \textit{Eikenella}.
 
 Por último, en la parte inferior de la matriz se muestra un gráfico con el estudio de la variabilidad a lo largo del tiempo. Se trata de dos medidas de variabilidad que aportan matices distintos: RV respecto al rango global y DV respecto al rango del día anterior (detallado en materiales y métodos). En la figura \ref{rank_saliva} se muestra que hubo un pequeño aumento en ambas medidas de variabilidad durante los días 40-75, correspondientes a los días que el sujeto estuvo de viaje (nótese que el periodo de viaje comprendía los días 71-122 pero en este gráfico se corresponde al intervalo 40-75 porque se representaron consecutivamente los 285 días donde hubo muestra, obviando aquellos días en los que no hubo).
+
 Especialmente se obtuvieron dos picos máximos de DV en los días 60 y 80 aproximadamente. Este incremento en la variabilidad fue muy pequeño para considerarlo significativo, con lo que se dedujo que el viaje no ocasionó demasiado cambio en la variabilidad del microbioma de saliva.
 
 
@@ -262,18 +276,19 @@ Examinando el gráfico inferior, la variabilidad sufrió aumentos de un día a otro
 
 \clearpage
 \section [Correlaciones] {\textbf{Correlaciones}}
+\vspace*{-3mm}
 Las correlaciones de abundancia en especies microbianas se han utilizado en muchos trabajos para indicar interacción entre ellas. La correlación positiva indicaría una interacción mutualista, y la correlación negativa una interacción competitiva. Trabajar con abundancias relativas produce estimaciones sesgadas porque, como deben sumar a 1, las fracciones no son independientes y tienden a tener una correlación negativa ajena a la verdadera correlación entre las abundancias absolutas subyacentes. Se han desarrollado algoritmos como SparCC \cite{Friedman2012} para mitigar estos problemas.
 
 En este proyecto también se calcularon las correlaciones aplicando el método de Pearson (materiales y métodos) a las abundancias absolutas de todos los géneros. Además, se ha desarrollado un método de agrupación de los microorganismos más abundantes en base a su respuesta al viaje y a la infección (ver materiales y métodos). Esto sirvió para reorganizar la matriz de correlaciones y comprobar las correlaciones que se dan entre estos grupos de comportamiento. En la figura \ref{corrplot_saliva} está el resultado para la muestra de saliva. Los géneros 4, 7 y 14 mostraron correlación negativa en algunas ocasiones. Los grupos presentaban correlaciones positivas entre sus miembros aunque las correlaciones máximas se dieron fuera de grupos (como el género 2 con 10 y 14, o el género 9 con 11). Esto quiere decir que los microorganismos que tuvieron una respuesta parecida al viaje, no fueron los que más correlacionan. En la figura \ref{group2_saliva} se muestra el comportamiento que presentaron los géneros del grupo 2. Se representa la abundancia relativa frente al tiempo de 3 géneros y se pudo comprobar que todos disminuyeron su abundancia los días del viaje (40-75) pero la recuperaron a la vuelta. En concreto, \textit{Prevotella} fue el género que más disminuyó durante el viaje y también el más variable a lo largo del tiempo. Se puede observar cómo los géneros correlacionaron bien en algunos puntos (como \textit{Haemophilus} y \textit{Porphyromonas} los primeros días) aunque, en general, la correlación no fue muy grande dentro del grupo.
 
-Los resultados para intestino del donante A se encuentran en la figura \ref{corrplot_StoolA}. Se encontraron 4 grupos de comportamiento distinto y ninguna anti-correlación, además el grupo 2 (rojo) es el que presentó mejores correlaciones entre sus miembros. Para comprobar el comportamiento dentro de ese grupo, se generó la figura \ref{StoolA_G2} que representa la abundancia a lo largo del tiempo. Los grupos 1 (verde) y 3 (naranja) solo incorporaron un miembro por lo que no se pudo apreciar la correlación interna, mientras que el grupo 5 (violeta) presentó correlación positiva pero no tan alta como el grupo 2. De nuevo, en algunos casos se dieron correlaciones más fuertes entre grupos como es el caso de los géneros 10 y 13 que tuvieron mucha correlación con el grupo 2.
+Los resultados para intestino del donante A se encuentran en la figura \ref{corrplot_StoolA}. Se encontraron 4 grupos de comportamiento distinto y ninguna anti-correlación, además el grupo 2 (rojo) es el que presentó mejores correlaciones entre sus miembros. Los grupos 1 (verde) y 3 (naranja) solo incorporaron un miembro por lo que no se pudo apreciar la correlación interna, mientras que el grupo 5 (violeta) presentó correlación positiva pero no tan alta como el grupo 2. De nuevo, en algunos casos se dieron correlaciones más fuertes entre grupos como es el caso de los géneros 10 y 13 que correlacionan mucho con el grupo 2.
 
 En la figura \ref{corrplot_StoolB} se muestra el intestino B como último caso. Fueron hayados 5 grupos, de los cuales el grupo 2 (rojo) presentaba la mayor correlación interna. También hubo casos de correlación muy fuerte entre grupos distintos como \textit{Oscillospira} con \textit{Phascolarctobacterium}. La proteobacteria del grupo 5 (violeta) presentó correlación negativa con el resto y la máxima anti-correlación se dio entre \textit{Ruminococcus} y el grupo 4 (rosa).
 
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=5in]{./Figuras/corrplot_saliva.png}
+    \includegraphics[width=4.5in]{./Figuras/corrplot_saliva.png}
 {\footnotesize
 	\begin{tabular}{r@{: }l}
 	1 & k\_\_Bacteria;p\_\_Firmicutes;c\_\_Bacilli;o\_\_Lactobacillales;f\_\_Streptococcaceae;g\_\_Streptococcus \\
@@ -308,7 +323,7 @@ En la figura \ref{corrplot_StoolB} se muestra el intestino B como último caso. F
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=5in]{./Figuras/corrplot_StoolA.png}
+    \includegraphics[width=4.5in]{./Figuras/corrplot_StoolA.png}
     {\footnotesize
 	\begin{tabular}{r@{: }l}
 1 & k\_\_Bacteria;p\_\_Bacteroidetes;c\_\_Bacteroidia;o\_\_Bacteroidales;f\_\_Bacteroidaceae;g\_\_Bacteroides\\
@@ -336,7 +351,7 @@ En la figura \ref{corrplot_StoolB} se muestra el intestino B como último caso. F
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=5in]{./Figuras/corrplot_StoolB.png}
+    \includegraphics[width=4.5in]{./Figuras/corrplot_StoolB.png}
     {\footnotesize
     	\begin{tabular}{r@{: }l}
 1 & k\_\_Bacteria;p\_\_Bacteroidetes;c\_\_Bacteroidia;o\_\_Bacteroidales;f\_\_Bacteroidaceae;g\_\_Bacteroides\\

@@ -8,7 +8,7 @@ MultiQC (\url{http://multiqc.info/}) es una herramienta de código abierto, imple
 seq\_crumbs (\url{https://bioinf.comav.upv.es/seq\_crumbs/}) es un software de código abierto, implementado en Python, que incluye utilidades para procesar secuencias. Toma un fichero de secuencias como entrada y crea un nuevo fichero de salida con las secuencias procesadas. Dentro de sus muchas funciones, caben destacar: filtrado de secuencias por calidad media, filtrado por longitud según un umbral máximo y mínimo, eliminación de regiones con baja calidad en los extremos (\textit{trimming}), etc.
 %conversión de formatos, etc.
 
-Se utilizan FastQC y MultiQC por la gran cantidad de información que producen y sus vistosos gráficos. Por otro lado, se elige seq\_scrumbs porque incluye un \textit{script} específico para filtrar por calidad media bastante rápido y fácil de usar. Además, todas ellas se han seleccionado por ser de código abierto y estar disponibles para la comunidad tanto para su uso como para su adaptación, si fuera necesario.
+Se utilizan FastQC y MultiQC por la gran cantidad de información que producen, siendo especialmente útil en comprobar el comportamiento de la calidad de secuenciación. Por otro lado, se elige seq\_scrumbs porque incluye un \textit{script} específico para filtrar por calidad media bastante rápido y fácil de usar. Además, todas ellas se han seleccionado por ser de código abierto y estar disponibles para la comunidad tanto para su uso como para su adaptación, si fuera necesario.
 
 \section{Clasificación taxonómica: qiime}
 Qiime (\url{http://qiime.org/index.html}) \cite{Caporaso2010} son la siglas en inglés de \textit{Quantitative Insights Into Microbial Ecology}. Es un \textit{pipeline} bioinformático de código abierto para realizar análisis de microbiomas a partir de datos de secuenciación. Fue construido utilizando el lenguaje de programación Python con una implementación modular en forma de \textit{scripts} para poder usar cualquier punto dentro de su flujo de trabajo (figura \ref{qiime}) de manera independiente.
@@ -69,7 +69,7 @@ Es un software de código abierto implementado en Python que sirve para el estudi
 
 
 \subsection[Regresión lineal y exponencial]{\textbf{Regresión lineal y exponencial}}
-Primero se comprueba si se ajusta a una recta de regresión la desviación estándar de los datos frente a su media. La idea es que los valores observados queden lo más cerca posible de la recta pero siempre quedan distancias, que son los denominados errores residuales. Para realizar el ajuste, se suman todos los cuadrados de los errores residuales para obtener un solo error que se conoce como suma de los errores al cuadrado (SSE -- del inglés ``Sum of Squares Error'') y se elige la recta con el valor SSE más pequeño.
+Primero se comprueba si se ajusta a una recta de regresión la desviación estándar de los datos frente a su media. La idea es que los valores observados se sitúen lo más cerca posible de la recta de ajuste, minimizando sus distancias a la misma. Esas distancias se denominan errores residuales o, simplemente, residuos. Para realizar el ajuste, se suman todos los cuadrados de los errores residuales para obtener un solo error que se conoce como suma de los errores al cuadrado (SSE -- del inglés ``Sum of Squares Error'') y se elige la recta con el valor SSE más pequeño.
 
 En ocasiones los datos no se ajustan a una recta sino a una curva exponencial de la forma $y = A\cdot r^x$. En estos casos, se convierte la curva exponencial en recta por medio de logaritmos y se aplica el ajuste visto anteriormente. Aplicando propiedades de logaritmos quedaría de la forma:
 \begin{equation}
@@ -147,7 +147,7 @@ Se pretende agrupar taxones en grupos que reflejen su comportamiento frente a un
 \begin{table}[h]
 \centering
 \resizebox{15cm}{!} {
-\begin{tabular}{| p{3cm}| p{4cm} | p{3cm} | p{6cm} |}
+\begin{tabular}{| p{3cm}| p{4cm} | c | p{6cm} |}
 \hline
 Grupo & Valores & Comportamiento & Descripción\\
 \hline \hline
