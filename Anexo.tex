@@ -38,8 +38,10 @@ También se descarga un fichero con los metadatos (\url{http://www.biomedcentral.
 \subsection*{ 1.1 Comprobar calidad de los datos con fastQC y multiQC}
 FastQC es un software que permite hacer un control de calidad de forma sencilla. Con la opción ``*'' se detectan todos los archivos con formato ``.fastq" del directorio actual.
 \begin{listing}[style=consola, numbers=none]
-$ fastqc * #Los datos tienen la codificacion de calidad Sanger/Illumina 1.9
+$ fastqc *
 \end{listing}
+El reporte de fastQC informa que los datos tienen la codificacion de calidad Sanger/Illumina 1.9. Con el avance de las tecnologías de secuenciación, ha ido mejorando enormemente la calidad de las lecturas y cada plataforma tiene su propia codificación de calidad. El software tiene que ir cambiando de forma paralela a la tecnología, para que uno no avance sin el otro. Los programas que se utilizaron en este trabajo tienen en cuenta el tipo de codificación que hay en los datos para saber los valores reales de calidad que se tienen.
+
 Como hay 820 archivos, se utiliza multiQC para hacer un resumen de los datos analizados por fastQC. Con la opción ``.'' se detectan los archivos necesarios:
 \begin{listing}[style=consola, numbers=none]
 $ multiqc .
@@ -58,6 +60,8 @@ Modo de uso:
 \begin{center}
   clusterlauncher -N ejemplo -n 1 -s som1 /bin/sleep 240 (lanza 1 proceso secuencial al sistema de colas llamado ``ejemplo'' para ejecutarlo en som1)
 \end{center}
+
+\vspace*{-5mm}
 Opciones:
 \vspace*{-5mm}
 \begin{description2}
@@ -66,6 +70,7 @@ Opciones:
     \item  -s : servidor/es donde lanzar el trabajo.
 \end{description2}
 
+\vspace*{-5mm}
 Para filtrar por calidad se utiliza el \textit{script filter\_by\_quality} de seq\_crumbs:
 \vspace*{-5mm}
 \begin{description2}
@@ -114,6 +119,7 @@ $ cd 04_Chimeras
 
 Las quimeras son artefactos producidos durante el proceso de PCR. Se trata de secuencias de ADN que contienen mezclas de otras secuencias. Qiime permite eliminarlas mediante dos pasos: primero identificar y luego limpiar las quimeras.
 
+\clearpage
 1) Identificar quimeras con \textit{identify\_chimeric\_seqs.py}:
 \vspace*{-5mm}
 \begin{description2}
@@ -123,6 +129,7 @@ Las quimeras son artefactos producidos durante el proceso de PCR. Se trata de se
     \item  -o, --output\_fp : nombre del directorio de salida.
 \end{description2}
 
+\vspace*{-5mm}
 \begin{listing}[style=consola, numbers=none]
 $ for i in ../03_Data_fasta/q30_*.fna;
 do
@@ -139,6 +146,7 @@ done
     \item  -n, --negate : desecha los identificadores de secuencia pasados en lugar de mantenerlos.
 \end{description2}
 
+\vspace*{-5mm}
 \begin{listing}[style=consola, numbers=none]
 $ for i in ../03_Data_fasta/q30_*.fna;
 do
@@ -241,7 +249,7 @@ clusterlauncher -N ${i:11:38} -n 1 summarize_taxa.py -i $i -o absolute_L6_${i:11
 done
 \end{listing}
 
-\vspace*{-5mm}
+
 \section*{ 7. Datos para complexCruncher}
 Agrupar las tablas de abundancia en 3 directorios según el tipo de muestra: donante A saliva, donante A intestino y donante B intestino. Para muestras de saliva es fácil porque se distinguen los ficheros por su nombre:
 \begin{listing}[style=consola, numbers=none]
@@ -279,6 +287,7 @@ done
 En este punto se tienen 3 directorios con mútliples ficheros, cada uno de ellos es una tabla de abundancia para cada día. La idea es juntar todos esas tablas pequeñas en una tabla grande con entradas únicas que resuma todas las abundancias a lo largo del año.
 
 Además, para pasos posteriores se necesita subdividir esa tabla grande final en subtablas que abarcan distintos intervalos de tiempo. Todo ello lo hace un \textit{script} implementado en Python. Se muestra como ejemplo el \textit{script} de saliva A:
+\vspace*{5mm}
 
 \begin{lstlisting}[style=Python]
 import glob
@@ -361,7 +370,7 @@ writer.save()
 
 Los \textit{scripts} para intestino A e intestino B pueden encontrarse en el material suplementario o en la dirección \url{https://github.com/TeresaRubio/TFM/tree/a/Scripts} con los nombres ``merge\&split\_stoolA.py'' y ``merge\&split\_stoolB.py'', respectivamente.
 
-Se ejecuta un \textit{script} por directorio y se obtienen las 3 tablas:
+Se ejecuta un \textit{script} por directorio y se obtienen las 3 tablas (que pueden encontrarse en el material suplementario o en la dirección \url{https://github.com/TeresaRubio/TFM/tree/a/Tablas}:
 \begin{listing}[style=consola, numbers=none]
 $ cd Saliva_DonorA
 $ python merge&split_salivaA.py
